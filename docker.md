@@ -668,9 +668,9 @@ bash-5.1$
 
 ---
 
-### Category 4: Networking
+## Category 4: Networking
 
-#### 12. Explain Docker network types.
+### 12. Explain Docker network types.
 **Answer**
 
 - **bridge:** Default network for standalone containers on a host. Containers on the same bridge can communicate.  
@@ -681,7 +681,7 @@ bash-5.1$
 
 ---
 
-#### 13. How do containers communicate with each other?
+### 13. How do containers communicate with each other?
 **Answer**
 
 - On the same bridge network: use container name as hostname (Docker DNS).  
@@ -691,7 +691,7 @@ bash-5.1$
 
 ---
 
-#### 14. What is Docker Compose and when to use it?
+### 14. What is Docker Compose and when to use it?
 **Answer**
 
 Docker Compose lets you define and run multi-container applications using a YAML file (`docker-compose.yml`). Use it for:
@@ -701,9 +701,9 @@ Docker Compose lets you define and run multi-container applications using a YAML
 
 ---
 
-### Category 5: Security & Best Practices
+## Category 5: Security & Best Practices
 
-#### 15. What are Docker security best practices?
+### 15. What are Docker security best practices?
 **Answer**
 
 - Run containers as a non-root user where possible.  
@@ -716,7 +716,7 @@ Docker Compose lets you define and run multi-container applications using a YAML
 
 ---
 
-#### 16. How do you limit container resources?
+### 16. How do you limit container resources?
 **Answer**
 
 Example:
@@ -730,7 +730,7 @@ docker run --memory=512m --cpus=1.5 --pids-limit=100 my-app
 
 ---
 
-#### 17. What is container scanning and why is it important?
+### 17. What is container scanning and why is it important?
 **Answer**
 
 Container scanning analyzes images to find known vulnerabilities in packages and OS components.
@@ -740,9 +740,9 @@ Importance: Discover and remediate vulnerabilities before deploying images to pr
 
 ---
 
-### Category 6: Troubleshooting & Real-time Scenarios
+## Category 6: Troubleshooting & Real-time Scenarios
 
-#### 18. Container is running but application isn't accessible. How to debug?
+### 18. Container is running but application isn't accessible. How to debug?
 **Answer**
 
 - Check container logs: `docker logs <container_name>`  
@@ -753,7 +753,7 @@ Importance: Discover and remediate vulnerabilities before deploying images to pr
 
 ---
 
-#### 19. How to debug a container that exits immediately?
+### 19. How to debug a container that exits immediately?
 **Answer**
 
 - Run interactively to observe behavior:  
@@ -767,7 +767,7 @@ Importance: Discover and remediate vulnerabilities before deploying images to pr
 
 ---
 
-#### 20. Docker build is failing due to space issues. How to resolve?
+### 20. Docker build is failing due to space issues. How to resolve?
 **Answer**
 
 - Clean up unused Docker resources: `docker system prune` (be cautious — can remove stopped containers, networks, images).  
@@ -777,7 +777,7 @@ Importance: Discover and remediate vulnerabilities before deploying images to pr
 
 ---
 
-#### 21. How to monitor Docker container performance?
+### 21. How to monitor Docker container performance?
 **Answer**
 
 - `docker stats` for real-time metrics per container.  
@@ -787,7 +787,7 @@ Importance: Discover and remediate vulnerabilities before deploying images to pr
 
 ---
 
-#### 22. How to backup and restore Docker containers?
+### 22. How to backup and restore Docker containers?
 **Answer**
 
 **Backup**
@@ -806,9 +806,9 @@ For persistent data, backup volumes (use `docker run --volumes-from` or use volu
 
 ---
 
-### Category 7: Advanced Concepts
+## Category 7: Advanced Concepts
 
-#### 23. What is Docker Swarm and how does it compare to Kubernetes?
+### 23. What is Docker Swarm and how does it compare to Kubernetes?
 **Answer**
 
 - **Docker Swarm:** Docker's native orchestration solution; simpler to set up and use.  
@@ -821,7 +821,7 @@ Comparison:
 
 ---
 
-#### 24. Explain Docker build cache and how it works.
+### 24. Explain Docker build cache and how it works.
 **Answer**
 
 Docker caches layers created by build instructions. If a build instruction and its context haven't changed, Docker reuses the cached layer. Cache is invalidated when:
@@ -831,7 +831,7 @@ Docker caches layers created by build instructions. If a build instruction and i
 
 ---
 
-#### 25. What are .dockerignore files and why use them?
+### 25. What are .dockerignore files and why use them?
 **Answer**
 
 Similar to `.gitignore` — `.dockerignore` excludes files from the build context sent to the daemon.
@@ -843,7 +843,7 @@ Benefits:
 
 ---
 
-#### 26. How do you handle application configuration in Docker?
+### 26. How do you handle application configuration in Docker?
 **Answer**
 
 - Use environment variables for simple configuration.  
@@ -853,7 +853,7 @@ Benefits:
 
 ---
 
-#### 27. What is the difference between ADD and COPY?
+### 27. What is the difference between ADD and COPY?
 **Answer**
 
 - **COPY:** Simple and predictable — copies files and directories from the build context into the image.  
@@ -863,7 +863,7 @@ Benefits:
 
 ---
 
-#### 28. How to reduce Docker image build time?
+### 28. How to reduce Docker image build time?
 **Answer**
 
 - Leverage build cache (order Dockerfile layers to maximize cache hits).  
@@ -874,7 +874,7 @@ Benefits:
 
 ---
 
-#### 29. What are Docker health checks?
+### 29. What are Docker health checks?
 **Answer**
 
 Health checks are configured in the Dockerfile to let Docker determine whether an application in the container is healthy.
@@ -887,7 +887,7 @@ HEALTHCHECK --interval=30s --timeout=3s \
 
 ---
 
-#### 30. How do you update running containers without downtime?
+### 30. How do you update running containers without downtime?
 **Answer**
 
 - Build a new image version.  
