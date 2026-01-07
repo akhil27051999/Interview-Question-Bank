@@ -227,6 +227,7 @@ CMD ["gunicorn", "--bind", "0.0.0.0:5000", "wsgi:app"]
 
 **1. Layer Caching**
   - Copy and install dependencies before copying the application code to make use of Docker build cache.
+    
     - `Good:`
 	```dockerfile
 	COPY requirements.txt .
@@ -255,24 +256,58 @@ CMD ["gunicorn", "--bind", "0.0.0.0:5000", "wsgi:app"]
 
 ---
 
-#### 8. What are multi-stage builds and why are they useful?
+### 8. What are multi-stage builds and why are they useful?
 **Answer**
 
-Multi-stage builds use multiple `FROM` statements so you can build artifacts in one stage and copy only the final artifacts into a smaller runtime image. They reduce final image size and keep build dependencies out of the runtime image.
+Multi-stage builds use multiple `FROM` statements so we can build artifacts in one stage and copy only the final artifacts into a smaller runtime image. They reduce final image size and keep build dependencies out of the runtime image.
 
-Example:
-```dockerfile
-# Build stage
-FROM golang:1.19 AS builder
-WORKDIR /app
-COPY . .
-RUN go build -o myapp
+**Why use them?**
 
-# Final stage
-FROM alpine:latest
-COPY --from=builder /app/myapp /
-CMD ["./myapp"]
-```
+  - Produce significantly smaller images by excluding build-time dependencies (compilers, headers).
+  - Improve security by reducing attack surface.
+  - Separate build artifacts from runtime files.
+    
+  - `Project multi-stage example`: 
+
+    build stage installs dependencies into /root/.local, runtime stage copies them over and runs as non-root user.
+
+	```dockerfile
+	# Stage 1: Build Python dependencies
+	FROM python:3.10-alpine AS build
+	WORKDIR /api/app
+
+	# Install build dependencies for psycopg2
+	RUN apk add --no-cache gcc musl-dev postgresql-dev
+
+	# Copy requirements and install dependencies
+	COPY requirements.txt ./
+	RUN pip install --user --no-cache-dir -r requirements.txt \
+	    && find /root/.local -name '*.pyc' -delete \
+		&& find /root/.local -name '__pycache__' -delete
+
+	# Stage 2: Main application image
+	FROM python:3.10-alpine AS main
+	WORKDIR /api
+	
+	# Install PostgreSQL client for pg_isready
+	RUN apk add --no-cache postgresql-client
+
+	# Copy installed Python packages from build stage
+	COPY --from=build /root/.local /root/.local
+
+	# Copy the entire app folder
+	COPY . ./app
+
+	# Add pip binaries to PATH
+	ENV PATH=/root/.local/bin:$PATH
+	ENV FLASK_APP=app/wsgi.py
+	
+	# Expose port
+	EXPOSE 5000
+
+	# Start Gunicorn server
+	CMD ["gunicorn", "app.wsgi:app"]
+	```
 
 ---
 
