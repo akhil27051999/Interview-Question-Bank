@@ -343,6 +343,8 @@ Common Use Cases:
 - Use external secret managers (HashiCorp Vault, AWS Secrets Manager, Azure Key Vault).  
 - Ensure secrets are not baked into images or committed to source control.
 
+---
+
 ### Lab Scenario: Using Docker Volumes with MySQL (Named Volumes vs Bind Mounts)
 
 **Goal:** Run a MySQL container with persistent data using a Docker volume. Practice creating, inspecting, sharing, and removing volumes.
