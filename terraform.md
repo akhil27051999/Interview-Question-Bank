@@ -1,9 +1,4 @@
-# DevOps Interview Preparation Guide — Terraform (Reformatted)
-
-This file contains the Terraform section of the DevOps Interview Preparation Guide, reformatted for clarity and interview use.  
-Each question is presented as a numbered heading (Q#). Answers are placed under a bold "Answer" subheading. Examples and commands are inside fenced code blocks. Use this as a reference, study guide, or to include in your main README.
-
----
+# DevOps Interview Preparation Guide — Terraform
 
 ## Table of Contents
 - [Category 1: Terraform Fundamentals](#category-1-terraform-fundamentals)
@@ -439,12 +434,3 @@ Practices:
 - Document any manual/preconditions.  
 - Use automated `plan`/`apply` in CI and periodically test recoveries.  
 - Use infrastructure testing and drift detection.
-
----
-
-If you'd like, I can:
-- Integrate this reformatted Terraform section into your main README (replacing the original).  
-- Reformat the remaining technology sections (Docker, Kubernetes, AWS, CI/CD, Monitoring, Linux & Shell, Networking) in the same style.  
-- Split each section into separate Markdown files, or generate printable cheat-sheets / flashcards.
-
-Which would you like next?
