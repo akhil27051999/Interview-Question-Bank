@@ -401,11 +401,3 @@ DR considerations:
 - Use multi-region or multi-account redundancy for critical services.  
 - Regularly test restore and failover procedures.
 
----
-
-If you want, I can:
-- Export this formatted CI/CD section to `ci-cd/README.md`.  
-- Split each category into separate Markdown files.  
-- Generate printable cheat-sheets or spaced-repetition flashcards from these Q&As.
-
-Which would you like next?
