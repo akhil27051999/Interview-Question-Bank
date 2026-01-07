@@ -521,14 +521,19 @@ mysql> SELECT * FROM users;
 
 # We'll see the previous records. Data persisted across container removal.
 
-mysql> 
+mysql>
+
+# Step 6: Share the same volume between 2 containers
+
+bash-5.1$ docker run -d --name mysql-lab3 -v mydbdata:/var/lib/mysql mysql:8
+1a8707e864e9a1648a6d3d1786104dc630111cb590b43b8425e70979ae38ca1f
+- Both containers see the same data.
 ```
 ---
 
 ### Bind Mounts 
 
 ```sh
-
 # Step 1: Create a Host Directory
 
 bash-5.1$ mkdir -p ~/mysql-data
@@ -638,8 +643,23 @@ bash-5.1$ ls mysql-data/
 #ib_16384_1.dblwr      auto.cnf               binlog.index           client-cert.pem        ibdata1                mysql.sock             private_key.pem        server-key.pem         undo_001
 #innodb_redo           binlog.000001          ca-key.pem             client-key.pem         mysql                  mysql_upgrade_history  public_key.pem         sys                    undo_002
 bash-5.1$ 
-bash-5.1$ 
+bash-5.1$
+
 ```
+#### Interview Tip:
+
+> Use named volumes for production data (Docker manages it), and bind mounts for development (you need direct access to host files).
+
+#### Key Differences: Named vs Bind Mounts
+
+| Feature           | Named Volume                                | Bind Mount                                 |
+| ----------------- | ------------------------------------------- | ------------------------------------------ |
+| Managed by Docker | ✅                                          | ❌                                        |
+| Location          | Docker decides (`/var/lib/docker/volumes/`) | Host directory you choose                  |
+| Ease of use       | Easy to backup, share, reuse                | More flexible, direct access to host files |
+| Portability       | High                                        | Medium (depends on host path)              |
+| Use Case          | Databases, production data                  | Dev environment, config sharing, logs      |
+
 ---
 
 ### Category 4: Networking
