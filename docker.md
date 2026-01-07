@@ -311,9 +311,9 @@ Multi-stage builds use multiple `FROM` statements so we can build artifacts in o
 
 ---
 
-### Category 3: Storage & Volumes
+## Category 3: Storage & Volumes
 
-#### 9. What are Docker volumes and when to use them?
+### 9. What are Docker volumes and when to use them?
 **Answer**
 
 Volumes provide persistent storage for containers independent of the container lifecycle.
@@ -326,7 +326,7 @@ Common Use Cases:
 
 ---
 
-#### 10. Difference between bind mounts and named volumes?
+### 10. Difference between bind mounts and named volumes?
 **Answer**
 
 - **Bind Mounts:** Map a host directory or file into the container. Dependent on the host filesystem and paths. Great for development (live code).  
@@ -334,7 +334,7 @@ Common Use Cases:
 
 ---
 
-#### 11. How do you manage sensitive data in Docker?
+### 11. How do you manage sensitive data in Docker?
 **Answer**
 
 - Use **Docker Secrets** in Swarm mode for sensitive information.  
@@ -343,11 +343,11 @@ Common Use Cases:
 - Use external secret managers (HashiCorp Vault, AWS Secrets Manager, Azure Key Vault).  
 - Ensure secrets are not baked into images or committed to source control.
 
-## Lab Scenario: Using Docker Volumes with MySQL (Named Volumes vs Bind Mounts)
+### Lab Scenario: Using Docker Volumes with MySQL (Named Volumes vs Bind Mounts)
 
 **Goal:** Run a MySQL container with persistent data using a Docker volume. Practice creating, inspecting, sharing, and removing volumes.
 
-### Named Volumes
+#### Named Volumes
 
 ```sh
 bash-5.1$ docker volume ls
@@ -535,7 +535,7 @@ bash-5.1$ docker run --rm -v mydbdata:/data busybox tar cvf /backup.tar /data
 ```
 ---
 
-### Bind Mounts 
+#### Bind Mounts 
 
 ```sh
 # Step 1: Create a Host Directory
