@@ -816,9 +816,3 @@ By completing all phases:
 - Be confident explaining network issues from Physical → Application layer.  
 - Have a complete lab record to reference for learning or interviews.
 
----
-
-If you want, I can:
-- Produce a printable PDF from this README format, or  
-- Generate smaller quick-reference cheat sheets (one page per layer), or  
-- Convert commands into runnable scripts for the lab VMs. Which would you like next?
