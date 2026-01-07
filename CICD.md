@@ -1,9 +1,4 @@
-# DevOps Interview Preparation Guide — CI/CD (Reformatted)
-
-This file contains the CI/CD section of the DevOps Interview Preparation Guide, reformatted for clarity and interview use.  
-Each question is a numbered heading (Q#). Answers are placed under a bold **Answer** subheading. Code examples and snippets are in fenced code blocks. Use this as a study reference, cheat-sheet, or to include in your main README.
-
----
+# DevOps Interview Preparation Guide — CI/CD 
 
 ## Table of Contents
 - [Category 1: CI/CD Fundamentals](#category-1-ci-cd-fundamentals)
