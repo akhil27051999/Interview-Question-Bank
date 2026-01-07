@@ -1,9 +1,4 @@
-# DevOps Interview Preparation Guide — Linux & Shell Scripting (Reformatted)
-
-This file contains the "Linux & Shell Scripting" section of the DevOps Interview Preparation Guide, reformatted for clarity and interview use.  
-Each question is presented as a numbered heading. Answers are clearly separated under a bold "Answer" subheading. Commands and examples are inside fenced code blocks. Use this as a study reference, cheat-sheet, or to paste into your main README.
-
----
+# DevOps Interview Preparation Guide — Linux & Shell Scripting
 
 ## Table of Contents
 - [Category 1: Linux Fundamentals](#category-1-linux-fundamentals)
@@ -1104,11 +1099,3 @@ case $1 in
 esac
 ```
 
----
-
-If you want, I can:
-- Integrate this reformatted Linux section into your main README.  
-- Produce separate Markdown files for each category.  
-- Generate printable one-page cheat sheets or flashcards from these Q&As.
-
-Which would you like next?
