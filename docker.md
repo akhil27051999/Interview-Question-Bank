@@ -1,7 +1,6 @@
-# Docker — Reformatted Q&A (DevOps Interview Prep)
+# Docker — Q&A (DevOps Interview Prep)
 
-This section contains the Docker interview questions and answers, reformatted for clarity and readability.  
-Each question is highlighted as a heading; the answer is clearly separated, indented, and styled. Code samples and commands are in fenced code blocks. Tables are used where helpful.
+This section contains the Docker interview questions and answers. 
 
 ---
 
@@ -381,11 +380,3 @@ HEALTHCHECK --interval=30s --timeout=3s \
 - Use an orchestration platform (Docker Swarm, Kubernetes) to perform rolling updates.  
 - Use blue-green or canary deployment strategies with a load balancer and health checks to switch traffic gradually.
 
----
-
-If you'd like, I can:
-- Inject this reformatted Docker section into your full README file (replacing the previous Docker content).  
-- Split each category into separate Markdown files (e.g., docker/README.md, k8s/README.md).  
-- Generate a condensed printable cheat-sheet or flashcards from these Q&As.
-
-Which option do you prefer?
