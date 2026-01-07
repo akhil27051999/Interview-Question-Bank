@@ -168,12 +168,21 @@ bash-5.1$
 A Dockerfile is a text file with instructions to build a Docker image.
 
 Common Instructions:
-- **FROM:** Base image.  
-- **RUN:** Execute commands during image build.  
-- **COPY / ADD:** Copy files from host into the image (`ADD` has extra features).  
-- **WORKDIR:** Set working directory.  
-- **EXPOSE:** Document the port the container listens on.  
-- **CMD / ENTRYPOINT:** Default command to run when the container starts.
+| Instruction    | Purpose                                 | When it Runs    | Key Notes / Best Practices                                  |
+| -------------- | --------------------------------------- | --------------- | ----------------------------------------------------------- |
+| **FROM**       | Specifies the base image                | Build time      | Must be first (except `ARG`); supports multi-stage builds   |
+| **RUN**        | Executes commands to modify the image   | Build time      | Each RUN creates a layer; combine commands to reduce layers |
+| **COPY**       | Copies files from host to image         | Build time      | Preferred over `ADD` (predictable behavior)                 |
+| **ADD**        | Copies files with extra features        | Build time      | Can extract tar files & fetch URLs (use sparingly)          |
+| **WORKDIR**    | Sets working directory inside container | Build time      | Avoids repeated `cd`; auto-creates directory                |
+| **CMD**        | Default command when container starts   | Runtime         | Can be overridden by `docker run`                           |
+| **ENTRYPOINT** | Main executable of the container        | Runtime         | Harder to override; often paired with CMD                   |
+| **EXPOSE**     | Documents container listening ports     | Build time      | Does NOT publish ports                                      |
+| **ENV**        | Sets environment variables              | Build & Runtime | Available inside container                                  |
+| **ARG**        | Defines build-time variables            | Build time only | Not available at runtime unless copied to ENV               |
+| **VOLUME**     | Creates mount point for persistent data | Runtime         | Data survives container restarts                            |
+| **USER**       | Runs container as a specific user       | Runtime         | Security best practice (avoid root)                         |
+| **LABEL**      | Adds metadata to the image              | Build time      | Useful for documentation & automation                       |
 
 ---
 
