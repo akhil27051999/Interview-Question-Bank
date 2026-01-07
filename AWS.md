@@ -300,3 +300,279 @@ Policy structure example:
     }
   ]
 }
+
+```
+
+#### Q23 — What is AWS KMS and how is it used?
+**Answer**
+
+AWS Key Management Service (KMS) is a managed service for creating and controlling cryptographic keys.
+
+Common uses:
+- Encrypting EBS volumes, S3 objects, RDS databases.  
+- Managing customer-managed keys (CMKs) and AWS-managed keys.  
+- Integrating with services (S3, EBS, RDS) and custom applications via the KMS API.  
+- Audit key usage via AWS CloudTrail.
+
+Example (KMS key policy snippet):
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Effect": "Allow",
+    "Principal": { "AWS": "arn:aws:iam::123456789012:role/MyRole" },
+    "Action": "kms:Decrypt",
+    "Resource": "*"
+  }]
+}
+```
+
+#### Q24 — Explain AWS WAF and Shield.
+**Answer**
+
+- **AWS WAF (Web Application Firewall):**
+  - Protects web applications from common exploits (e.g., SQL injection, XSS).
+  - Attach to CloudFront, Application Load Balancer (ALB), API Gateway, AppSync.
+  - Supports custom rules, managed rule groups, rate-based rules, IP sets.
+  - Useful for blocking malicious request patterns at the edge.
+
+- **AWS Shield:**
+  - DDoS protection service.
+  - **Shield Standard:** Automatic baseline protection for all AWS customers (no extra charge).
+  - **Shield Advanced:** Paid tier with enhanced detection/mitigation, cost protection, and 24/7 DDoS Response Team (DRT) access.
+  - Often used together with CloudFront/ALB and WAF for layered protection.
+
+---
+
+#### Q25 — What is CloudWatch and what does it monitor?
+**Answer**
+
+Amazon CloudWatch is an observability service for monitoring AWS resources and applications.
+
+Monitors:
+- **Metrics:** Built-in (EC2 CPU, EBS I/O) and custom application metrics.
+- **Logs:** Application/system logs (CloudWatch Logs), log-based metrics.
+- **Alarms:** Trigger SNS notifications, Auto Scaling actions, or automated remediation.
+- **Events:** Schedule tasks or respond to state changes (EventBridge integration).
+- **Dashboards:** Visualize key metrics and logs.
+
+Common uses: performance monitoring, alerting, log retention/search, and automated remediation.
+
+---
+
+#### Q26 — Compare CloudWatch and CloudTrail.
+**Answer**
+
+- **CloudWatch**
+  - Focus: Operational monitoring (metrics, logs, alarms, dashboards).
+  - Use: Track performance, health, and operational telemetry.
+- **CloudTrail**
+  - Focus: Audit and governance (API call history).
+  - Use: Security auditing, compliance, who/what/when of control-plane actions.
+
+Use both: CloudWatch for ops; CloudTrail for security/audit trails.
+
+---
+
+#### Q27 — What is AWS Config and why is it important?
+**Answer**
+
+AWS Config continuously records and evaluates AWS resource configurations.
+
+Benefits:
+- Historical configuration tracking (who changed what and when).
+- Compliance assessment via managed/custom rules.
+- Resource inventory and relationships mapping.
+- Useful for security audits, troubleshooting configuration drift, and compliance reporting.
+
+---
+
+#### Q28 — Explain AWS Systems Manager.
+**Answer**
+
+AWS Systems Manager (SSM) provides operational tooling for managing and operating fleets (EC2 and on-prem).
+
+Key features:
+- **Run Command:** Execute commands at scale without SSH.
+- **Session Manager:** Secure shell access without opening inbound ports or managing SSH keys.
+- **Patch Manager:** Automated patching for fleets.
+- **Parameter Store:** Hierarchical, secure storage for configuration and secrets (integrates with KMS).
+- **State Manager / Automation / Inventory:** Enforce configs, automate runbooks, and collect inventory.
+
+Use for central management, compliance, and secure access.
+
+---
+
+#### Q29 — What is SQS and SNS? When to use each?
+**Answer**
+
+- **SQS (Simple Queue Service)**
+  - Message queuing service (standard and FIFO queues).
+  - Use for decoupling services, buffering, retryable asynchronous processing.
+  - Guarantees: At-least-once delivery (standard) and ordering/ exactly-once semantics (FIFO with appropriate configuration).
+
+- **SNS (Simple Notification Service)**
+  - Pub/Sub (fan-out) messaging and notifications.
+  - Pushes messages to subscribers: SQS, Lambda, HTTP/S endpoints, email, SMS.
+  - Use for broadcasting events to multiple consumers, notifications, fan-out patterns.
+
+Pattern: Publish to SNS and fan-out to multiple SQS queues or Lambda consumers.
+
+---
+
+#### Q30 — Explain AWS Step Functions and use cases.
+**Answer**
+
+AWS Step Functions is a serverless workflow orchestration service that composes Lambda functions and other AWS services into state machines.
+
+Features:
+- Visual workflow definitions and execution history.
+- Built-in error handling, retries, timeouts, and branching (Choice state).
+- Parallel, Map (for-each) and Wait states for complex flows.
+
+Use cases:
+- ETL pipelines and data processing orchestrations.
+- Long-running business processes with human approvals.
+- Microservice orchestration and retries with backoff.
+- Complex workflows requiring observability and error handling.
+
+---
+
+#### Q31 — What are AWS cost optimization strategies?
+**Answer**
+
+Strategies:
+- Buy **Reserved Instances** or **Savings Plans** for stable workloads.
+- Use **Auto Scaling** to match capacity to demand.
+- Shift interruptible workloads to **Spot Instances** to cut costs.
+- Right-size instances and storage regularly (use Trusted Advisor, Compute Optimizer).
+- Use **S3 lifecycle policies** to tier infrequently accessed data to IA/Glacier.
+- Tag resources for cost allocation and use **Cost Explorer** / budgets / alerts.
+- Consolidated billing via AWS Organizations to maximize discounts.
+
+---
+
+#### Q32 — Explain AWS Organizations and Service Control Policies.
+**Answer**
+
+- **AWS Organizations:** Centralized management of multiple AWS accounts, consolidated billing, and organizational units (OUs).
+- **Service Control Policies (SCPs):** Organization-level guardrails that restrict the maximum available permissions in member accounts (deny overrides).
+
+Use SCPs to enforce security and compliance boundaries across accounts.
+
+---
+
+#### Q33 — What is AWS Direct Connect?
+**Answer**
+
+A dedicated, private network connection from on-premises locations to AWS.
+
+Benefits:
+- Lower and more consistent latency compared to internet.
+- Increased bandwidth and predictable performance.
+- Private connectivity (bypasses the public internet).
+- Useful for hybrid cloud architectures and high-throughput workloads.
+
+---
+
+#### Q34 — Explain AWS Storage Gateway.
+**Answer**
+
+Hybrid storage service connecting on-premises environments with AWS storage.
+
+Gateway types:
+- **File Gateway:** Presents NFS/SMB, stores objects in S3 (file workloads).
+- **Volume Gateway:** Exposes iSCSI block storage backed by EBS/S3 (cached or stored volumes).
+- **Tape Gateway:** Virtual tape library backed by S3/Glacier for backup workloads.
+
+Use for incremental migration, backups to cloud, and local caching for cloud storage.
+
+---
+
+#### Q35 — EC2 instance cannot connect to the Internet. How to troubleshoot?
+**Answer**
+
+Troubleshoot checklist:
+1. **Security Group:** Ensure outbound rules allow required traffic/ports.  
+2. **Subnet Route Table:** Confirm route to Internet Gateway (`0.0.0.0/0 -> igw`) for public subnet.  
+3. **Public IP / Elastic IP:** Verify instance has a public IP or is in subnet routed via NAT for private subnets.  
+4. **NACLs:** Check subnet NACLs allow outbound and inbound return traffic.  
+5. **Instance OS Firewall:** Inspect `iptables`/`ufw` for blocking rules.  
+6. **NAT Gateway/Instance:** For private subnets, ensure NAT is properly configured and reachable.  
+7. **DNS:** Verify resolver settings (`/etc/resolv.conf`) and test `nslookup`/`dig`.
+
+---
+
+#### Q36 — S3 bucket access denied errors. How to resolve?
+**Answer**
+
+Steps:
+1. **Check IAM permissions:** Ensure the caller principal has required `s3:*` actions.  
+2. **Inspect bucket policy:** Look for denies or principal restrictions.  
+3. **Object ACLs:** Verify object-level ACLs if used (modern practice favors bucket policies/IAM).  
+4. **S3 Block Public Access:** Confirm global block settings are not preventing access.  
+5. **KMS permissions:** If object encrypted with KMS CMK, ensure `kms:Decrypt` is allowed.  
+6. **Service Control Policies (SCPs):** Ensure organization-level SCPs aren't blocking actions.  
+7. **Requester Pays:** If enabled, requester must be configured to pay.
+
+---
+
+#### Q37 — High latency in application. How to investigate?
+**Answer**
+
+Investigation steps:
+- **CloudWatch Metrics:** Check EC2, ELB/ALB, RDS, and Lambda metrics for CPU, memory, I/O, and latency.  
+- **Load Balancer:** Inspect target response times and healthy/unhealthy hosts.  
+- **Database:** Look for slow queries, high connections, locks, or IO saturation.  
+- **Network:** Check cross-AZ traffic, VPC endpoints, NACLs, and routing issues.  
+- **CDN:** Use CloudFront to cache static assets; check cache hit ratios.  
+- **Tracing:** Use AWS X-Ray to track distributed latency across services.  
+- **Scaling:** Ensure Auto Scaling and connection pools are sized properly.
+
+---
+
+#### Q38 — RDS instance running out of storage. How to handle?
+**Answer**
+
+Remediation steps:
+- **Monitor:** Configure CloudWatch alarm for free storage space.  
+- **Increase storage:** Modify RDS to allocate more storage (some engines allow online resize).  
+- **Enable autoscaling:** Use storage autoscaling where supported.  
+- **Archive/purge:** Move old data to S3 or archival store and purge unnecessary data.  
+- **Optimize schema:** Archive or prune large tables and optimize indexes.  
+- **Scale:** Consider vertical scaling (larger instance/IO) or read-replicas for read load separation.
+
+---
+
+#### Q39 — Lambda function timing out. How to debug?
+**Answer**
+
+Debug approach:
+- **CloudWatch Logs:** Inspect logs for stack traces and where execution stalls.  
+- **Increase timeout:** Adjust function timeout setting if workload legitimately needs more time.  
+- **Code optimization:** Reduce cold-start and initialization overhead; shorten synchronous external calls.  
+- **External dependencies:** Check downstream service latencies (DB, APIs); add retries/backoff or asynchronous processing.  
+- **X-Ray:** Enable tracing to pinpoint slow segments.  
+- **Provisioned Concurrency:** Use to reduce cold-start latency for performance-sensitive functions.
+
+---
+
+#### Q40 — Auto Scaling not working as expected. How to troubleshoot?
+**Answer**
+
+Troubleshooting checklist:
+- **CloudWatch alarms:** Verify the metric, period, and thresholds are correct and alarms transition to ALARM state.  
+- **Scaling policies:** Confirm correct policy type (target tracking, step scaling) and cooldown periods.  
+- **Health checks:** Ensure ELB/EC2 health checks are set correctly and instances are reporting healthy.  
+- **Capacity/quotas:** Check account quotas or AZ capacity limits that may prevent launching instances.  
+- **Activity History:** Review Auto Scaling group's activity history to see failure reasons.  
+- **IAM permissions:** Ensure Auto Scaling role can create/attach instances and resources.
+
+---
+
+If you want, I can:
+- Export these formatted Q24–Q40 entries into a separate `aws/README.md`.  
+- Continue formatting other AWS Q&A items or produce printable/flashcard versions.
+
+Which would you like next?
+```
