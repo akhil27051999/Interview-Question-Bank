@@ -184,6 +184,32 @@ Common Instructions:
 | **USER**       | Runs container as a specific user       | Runtime         | Security best practice (avoid root)                         |
 | **LABEL**      | Adds metadata to the image              | Build time      | Useful for documentation & automation                       |
 
+### Basic Dockerfile Implementation for project
+
+```dockerfile
+# app/Dockerfile
+FROM python:3.10-slim
+
+# Set working directory
+WORKDIR /app
+
+# Copy requirements and install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY . .
+
+# Expose port
+EXPOSE 5000
+
+# Set environment variables
+ENV FLASK_APP=wsgi.py
+ENV FLASK_ENV=production
+
+# Run the application with Gunicorn
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "wsgi:app"]
+```
 ---
 
 #### 6. What is the difference between CMD and ENTRYPOINT?
