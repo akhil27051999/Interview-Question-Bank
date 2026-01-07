@@ -55,7 +55,7 @@ Key Differences:
 - **Stopped:** Process terminated but metadata remains.  
 - **Removed:** Container deleted from the host.
 
-```sh
+```bash
 # DOCKER LIFE-CYCLE STAGES EXPLAINATION
 
 # CONTAINER CREATED
