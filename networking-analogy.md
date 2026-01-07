@@ -56,7 +56,7 @@ This README organizes a complete analogy-driven explanation of networking concep
 
 # Networking City Analogy (VPCs, Hosts, Routing, DNS, ARP, HTTPS, Firewalls, VPN)
 
-### 1️⃣ The Big Picture: Two Neighborhoods (VPCs)
+### 1. The Big Picture: Two Neighborhoods (VPCs)
 
 - **Sunflower District → VPC 1**
   - On the left side of the image
@@ -72,7 +72,7 @@ These neighborhoods are isolated networks — VPCs. Communication between them g
 
 ---
 
-### 2️⃣ Houses → Hosts / VMs / Containers
+### 2. Houses → Hosts / VMs / Containers
 
 **Sunflower District House**
 - IP Address: `10.1.1.5` → the house’s logical address
@@ -93,7 +93,7 @@ Each door represents a network interface, MAC addresses are door numbers, and ro
 
 ---
 
-### 3️⃣ Streets & Routing → Routing Table
+### 3. Streets & Routing → Routing Table
 
 - Maple Lane / Pine Street → Subnets  
 - Street map connecting the neighborhoods → Route tables / Internet paths  
@@ -104,7 +104,7 @@ The package (data) travels along streets according to the routing table.
 
 ---
 
-### 4️⃣ DNS → Street Directory
+### 4. DNS → Street Directory
 
 A computer looks up a human-friendly address:
 
@@ -117,7 +117,7 @@ flask-app.room1.rosewood.vpc2.com → 192.168.2.20
 
 ---
 
-### 5️⃣ ARP → Asking for Door Numbers
+### 5. ARP → Asking for Door Numbers
 
 - The yellow ARP bubble shows: “Which door belongs to 192.168.2.20?”
 - ARP resolves the IP → MAC address for local delivery inside the subnet.
@@ -125,7 +125,7 @@ flask-app.room1.rosewood.vpc2.com → 192.168.2.20
 
 ---
 
-### 6️⃣ HTTPS Package → Secret Message
+### 6. HTTPS Package → Secret Message
 
 - The blue box with “HTTPS Encrypted Package” is your secure message.
 - It travels from Sunflower District → Rosewood District, following the best path.
@@ -135,7 +135,7 @@ Shows end-to-end security of HTTPS.
 
 ---
 
-### 7️⃣ Firewalls / Security Groups → Guards
+### 7. Firewalls / Security Groups → Guards
 
 - Guards at doors of the house represent firewalls / security groups.
 - Check if the package is allowed in/out.
@@ -145,7 +145,7 @@ This simulates AWS Security Groups / NACLs.
 
 ---
 
-### 8️⃣ Load Balancer → Reception Desk
+### 8. Load Balancer → Reception Desk
 
 - The reception desk decides which room or application receives incoming traffic.
 - Ensures even distribution if multiple applications/instances are available.
@@ -154,7 +154,7 @@ Equivalent to AWS Elastic Load Balancer.
 
 ---
 
-### 9️⃣ VPN Tunnel → Secret Lane
+### 9. VPN Tunnel → Secret Lane
 
 - The dark tunnel at the bottom represents VPN / VPC Peering.
 - Provides a secure, private path between neighborhoods.
@@ -162,7 +162,7 @@ Equivalent to AWS Elastic Load Balancer.
 
 ---
 
-### 1️⃣0️⃣ Color-Coded Legend
+### 10. Color-Coded Legend
 
 - Yellow / Envelope → ARP / Delivery request  
 - Blue → HTTPS Encrypted Package  
@@ -175,7 +175,7 @@ Equivalent to AWS Elastic Load Balancer.
 
 ---
 
-### 1️⃣1️⃣ Step-by-Step Flow Illustrated
+### 11. Step-by-Step Flow Illustrated
 
 1. Package creation: HTTPS encrypted message from Room 1 in Sunflower District  
 2. DNS Lookup: Finds the IP of Flask app in Rosewood District  
