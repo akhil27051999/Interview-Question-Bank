@@ -1793,6 +1793,25 @@ Importance: Discover and remediate vulnerabilities before deploying images to pr
 - Centralized logging and monitoring: ELK/EFK stack, Prometheus + cAdvisor, Datadog, Sysdig.  
 - Use resource limits and alerts in monitoring tooling.
 
+```sh
+
+bash-5.1$ docker stats
+CONTAINER ID   NAME         CPU %     MEM USAGE / LIMIT     MEM %     NET I/O       BLOCK I/O     PIDS
+84c57098d95b   nginx-cont   0.00%     3.324MiB / 3.697GiB   0.09%     1.18kB / 0B   0B / 12.3kB   3
+^Z
+[1]+  Stopped                 docker stats
+
+bash-5.1$ docker ps
+CONTAINER ID   IMAGE     COMMAND                  CREATED         STATUS         PORTS                                   NAMES
+84c57098d95b   nginx     "/docker-entrypoint.…"   2 minutes ago   Up 2 minutes   0.0.0.0:8080->80/tcp, :::8080->80/tcp   nginx-cont
+
+bash-5.1$ docker top nginx-cont
+PID                 USER                TIME                COMMAND
+700                 root                0:00                nginx: master process nginx -g daemon off;
+819                 101                 0:00                nginx: worker process
+820                 101                 0:00                nginx: worker process
+```
+
 ---
 
 ### 22. How to backup and restore Docker containers?
@@ -1827,6 +1846,53 @@ Comparison:
 - **Features & Ecosystem:** Kubernetes has more features and wide ecosystem support.  
 - **Scaling & Production Use:** Kubernetes is more commonly used for large-scale production environments.
 
+```sh
+bash-5.1$ docker swarm init
+Swarm initialized: current node (u8p4v12na6nt6axn3nkfy2dvt) is now a manager.
+
+To add a worker to this swarm, run the following command:
+
+    docker swarm join --token SWMTKN-1-2pc8yndyb03bcdkjsz0md1e0g7zqzepnmn72mxeowy02ekczez-1bycft9rn3sgcttrogw6cstqa 172.20.0.2:2377
+
+To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
+
+bash-5.1$ docker service ls
+ID        NAME      MODE      REPLICAS   IMAGE     PORTS
+
+# Create a docker service with replicas '1'
+
+bash-5.1$ docker service create --name=nginx-cont --replicas 1 nginx
+htelkqempdxr7yaztpo9gktwl
+overall progress: 1 out of 1 tasks 
+1/1: running   [==================================================>] 
+verify: Service converged 
+
+bash-5.1$ docker ps
+CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS          PORTS                                   NAMES
+2a3b5b5a4d07   nginx:latest   "/docker-entrypoint.…"   27 seconds ago   Up 26 seconds   80/tcp                                  nginx-cont.1.98p5ptndwrwbn1b8b80ofhgmg
+84c57098d95b   nginx          "/docker-entrypoint.…"   7 minutes ago    Up 7 minutes    0.0.0.0:8080->80/tcp, :::8080->80/tcp   nginx-cont
+
+# Scaling of docker serive of nginx-cont from '1' replica to '3' replicas
+
+bash-5.1$ docker service scale nginx-cont=3
+nginx-cont scaled to 3
+overall progress: 3 out of 3 tasks 
+1/3: running   [==================================================>] 
+2/3: running   [==================================================>] 
+3/3: running   [==================================================>] 
+verify: Service converged 
+
+bash-5.1$ docker service ls
+ID             NAME         MODE         REPLICAS   IMAGE          PORTS
+htelkqempdxr   nginx-cont   replicated   3/3        nginx:latest   
+bash-5.1$ docker ps
+CONTAINER ID   IMAGE          COMMAND                  CREATED              STATUS              PORTS                                   NAMES
+d7ba24065dfa   nginx:latest   "/docker-entrypoint.…"   19 seconds ago       Up 17 seconds       80/tcp                                  nginx-cont.3.cwszsns3gmojd50wa90p0y6ks
+3029246ca05b   nginx:latest   "/docker-entrypoint.…"   19 seconds ago       Up 17 seconds       80/tcp                                  nginx-cont.2.ej45jof3wl76vjak50l68eyj5
+2a3b5b5a4d07   nginx:latest   "/docker-entrypoint.…"   About a minute ago   Up About a minute   80/tcp                                  nginx-cont.1.98p5ptndwrwbn1b8b80ofhgmg
+84c57098d95b   nginx          "/docker-entrypoint.…"   7 minutes ago        Up 7 minutes        0.0.0.0:8080->80/tcp, :::8080->80/tcp   nginx-cont
+bash-5.1$ 
+```
 ---
 
 ### 24. Explain Docker build cache and how it works.
@@ -1837,6 +1903,45 @@ Docker caches layers created by build instructions. If a build instruction and i
 - The base image changes.  
 - Files referenced by `COPY`/`ADD` change (checksum differences).
 
+#### Project dockerfile 
+
+```dockerfile
+# Stage 1: Build Python dependencies
+FROM python:3.10-alpine AS build
+WORKDIR /api/app
+
+# Install build dependencies for psycopg2
+RUN apk add --no-cache gcc musl-dev postgresql-dev
+
+# Copy requirements and install dependencies
+COPY requirements.txt ./
+RUN pip install --user --no-cache-dir -r requirements.txt \
+    && find /root/.local -name '*.pyc' -delete \
+    && find /root/.local -name '__pycache__' -delete
+
+# Stage 2: Main application image
+FROM python:3.10-alpine AS main
+WORKDIR /api
+
+# Install PostgreSQL client for pg_isready
+RUN apk add --no-cache postgresql-client
+
+# Copy installed Python packages from build stage
+COPY --from=build /root/.local /root/.local
+
+# Copy the entire app folder
+COPY . ./app
+
+# Add pip binaries to PATH
+ENV PATH=/root/.local/bin:$PATH
+ENV FLASK_APP=app/wsgi.py
+
+# Expose port
+EXPOSE 5000
+
+# Start Gunicorn server
+CMD ["gunicorn", "app.wsgi:app"]
+```
 ---
 
 ### 25. What are .dockerignore files and why use them?
@@ -1849,6 +1954,27 @@ Benefits:
 - Smaller images (fewer unnecessary files).  
 - Avoid leaking sensitive files into builds.
 
+#### Project .dockerignore file
+```sh
+# ignore virtual env files into git
+/venv/*
+
+# ignore environment variable files
+.env.dev
+.env.prod
+
+# ignore testing environment variable files
+.env.test
+
+# ignore Python bytecode files
+app/__pycache__/*
+__pycache__/
+.pytest_cache
+*.pyc
+
+# ignore log files
+*.log
+```
 ---
 
 ### 26. How do you handle application configuration in Docker?
