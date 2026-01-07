@@ -302,7 +302,7 @@ Policy structure example:
 }
 
 ```
-
+---
 #### Q23 — What is AWS KMS and how is it used?
 **Answer**
 
@@ -326,7 +326,7 @@ Example (KMS key policy snippet):
   }]
 }
 ```
-
+---
 #### Q24 — Explain AWS WAF and Shield.
 **Answer**
 
