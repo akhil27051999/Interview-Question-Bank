@@ -76,7 +76,7 @@ Below are few types of networks:
 ### Answer
 LANs are widely used to connect computers/laptops and consumer electronics which enables them to share resources (e.g., printers, fax machines) and exchange information. When LANs are used by companies or organizations, they are called enterprise networks. There are two different types of LAN networks i.e. wireless LAN (no wires involved achieved using Wi-Fi) and wired LAN (achieved using LAN cable). Wireless LANs are very popular these days for places where installing wire is difficult. The below diagrams explain both wireless and wired LAN.
 
-`LAN (Local Area Network)`
+**LAN (Local Area Network)**
 <img width="6709" height="2575" alt="image" src="https://github.com/user-attachments/assets/ca220ad0-b3d6-4ea0-ad6c-6b67b9683e73" />
 
 
@@ -87,7 +87,7 @@ LANs are widely used to connect computers/laptops and consumer electronics which
 ### Answer
 VPN or the Virtual Private Network is a private WAN (Wide Area Network) built on the internet. It allows the creation of a secured tunnel (protected network) between different networks using the internet (public network). By using the VPN, a client can connect to the organization’s network remotely. The below diagram shows an organizational WAN network over Australia created using VPN:
 
-`VPN (Virtual Private Network)`
+**VPN (Virtual Private Network)**
 <img width="4643" height="3721" alt="image" src="https://github.com/user-attachments/assets/a08ffb86-856c-4f81-9253-5bec9de4573d" />
 
 ---
@@ -120,7 +120,7 @@ Few types of VPN are:
 Node: Any communicating device in a network is called a Node. Node is the point of intersection in a network. It can send/receive data and information within a network. Examples of the node can be computers, laptops, printers, servers, modems, etc.  
 Link: A link or edge refers to the connectivity between two nodes in the network. It includes the type of connectivity (wired or wireless) between the nodes and protocols used for one node to be able to communicate with the other.
 
-`Nodes and Links`
+**Nodes and Links**
 <img width="5870" height="2943" alt="image" src="https://github.com/user-attachments/assets/46b31b19-30a6-414a-8550-4765e3cf6346" />
 
 Advance your career with  Mock Assessments  
@@ -143,13 +143,13 @@ Network topology is a physical layout of the network, connecting the different n
 ### Answer
 The different types of network topology are given below:
 
-Bus Topology:
+#### Bus Topology:
 - All the nodes are connected using the central link known as the bus.
 - It is useful to connect a smaller number of devices.
 - If the main cable gets damaged, it will damage the whole network.
 <img width="5189" height="3255" alt="image" src="https://github.com/user-attachments/assets/f2e42a21-0c14-45be-9f78-445c7519b0e9" />
 
-Star Topology:
+#### Star Topology:
 - All the nodes are connected to one single node known as the central node.
 - It is more robust.
 - If the central node fails the complete network is damaged.
@@ -157,25 +157,25 @@ Star Topology:
 - Mainly used in home and office networks.
 <img width="4414" height="3914" alt="image" src="https://github.com/user-attachments/assets/77c94921-4e3a-4688-87c3-398a41e76fc3" />
 
-Ring Topology:
+#### Ring Topology:
 - Each node is connected to exactly two nodes forming a ring structure
 - If one of the nodes are damaged, it will damage the whole network
 - It is used very rarely as it is expensive and hard to install and manage
 <img width="4548" height="3799" alt="image" src="https://github.com/user-attachments/assets/45531a9c-b8af-4d34-99b5-d1cea0826a17" />
 
-Mesh Topology:
+#### Mesh Topology:
 - Each node is connected to one or many nodes.
 - It is robust as failure in one link only disconnects that node.
 - It is rarely used and installation and management are difficult.
 <img width="4916" height="3514" alt="image" src="https://github.com/user-attachments/assets/8da7a0fb-3e3c-46a2-8876-585dc90e81b7" />
 
-Tree Topology:
+#### Tree Topology:
 - A combination of star and bus topology also know as an extended bus topology.
 - All the smaller star networks are connected to a single bus.
 - If the main bus fails, the whole network is damaged.
 <img width="5115" height="3377" alt="image" src="https://github.com/user-attachments/assets/f87532ba-952a-4ae2-81a5-59157680543a" />
 
-Hybrid:
+#### Hybrid:
 - It is a combination of different topologies to form a new topology.
 - It helps to ignore the drawback of a particular topology and helps to pick the strengths from other.
 
@@ -186,7 +186,7 @@ Hybrid:
 ### Answer
 Network types can be classified and divided based on the area of distribution of the network. The below diagram would help to understand the same:
 
-`Network Types`
+**Network Types**
 <img width="1920" height="1469" alt="image" src="https://github.com/user-attachments/assets/78d9fc4f-5e9b-47c2-9d55-90956ec5d675" />
 
 ---
@@ -239,7 +239,7 @@ The router is a networking device used for connecting two or more network segmen
 ### Answer
 SMTP is the Simple Mail Transfer Protocol. SMTP sets the rule for communication between servers. This set of rules helps the software to transmit emails over the internet. It supports both End-to-End and Store-and-Forward methods. It is in always-listening mode on port 25.
 
-`SMTP Protocol`
+**SMTP Protocol**
 <img width="5875" height="2941" alt="image" src="https://github.com/user-attachments/assets/73d513f2-dc84-4b69-8326-c5049a8d4a89" />
 
 ---
@@ -258,7 +258,7 @@ The OSI model has seven layers. The principles used to arrive at the seven layer
 ### 5. Define the 7 different layers of the OSI Reference Model
 
 ### Answer
-`Here the 7 layers of the OSI reference model:`
+**Here the 7 layers of the OSI reference model**
 <img width="4630" height="3732" alt="image" src="https://github.com/user-attachments/assets/3d056f9b-a567-47a1-956a-d1e0a3c4ebb0" />
 
 | Layer       | Unit Exchanged | Description |
@@ -283,7 +283,7 @@ It is a compressed version of the OSI model with only 4 layers. It was developed
 ### 7. Define the 4 different layers of the TCP/IP Reference Model
 
 ### Answer
-`Layers of TCP/IP:`
+**Layers of TCP/IP:**
 <img width="6178" height="2796" alt="image" src="https://github.com/user-attachments/assets/504f5d07-6f87-4ff7-8a45-47f88b5c9a55" />
 
 | Layer     | Description |
@@ -357,7 +357,7 @@ UDP is the User Datagram Protocol and is based on Datagrams. Mainly, it is used 
 | Offers error checking mechanism | No error checking mechanism |
 | Protocols like HTTP, FTP, Telnet, SMTP, HTTPS, etc use TCP at the transport layer | Protocols like DNS, RIP, SNMP, RTP, BOOTP, TFTP, NIP, etc use UDP at the transport layer |
 
-`TCP VS UDP`
+**TCP VS UDP**
 <img width="5442" height="3175" alt="image" src="https://github.com/user-attachments/assets/6f30295e-8ee7-415a-8b23-522b102b15bf" />
 
 ---
@@ -382,7 +382,7 @@ It is an application layer protocol used to auto-configure devices on IP network
 ### Answer
 ARP is Address Resolution Protocol. It is a network-level protocol used to convert the logical address i.e. IP address to the device's physical address i.e. MAC address. It can also be used to get the MAC address of devices when they are trying to communicate over the local network.
 
-`ARP Protocol`
+**ARP Protocol**
 <img width="4953" height="3488" alt="image" src="https://github.com/user-attachments/assets/7404d0c8-4ee1-4498-ba02-45e6fa637bf1" />
 
 ---
@@ -414,7 +414,7 @@ MAC address is the Media Access Control address. It is a 48-bit or 64-bit unique
 ### Answer
 A subnet is a network inside a network achieved by the process called subnetting which helps divide a network into subnets. It is used for getting a higher routing efficiency and enhances the security of the network. It reduces the time to extract the host address from the routing table.
 
-`Subnet`
+**Subnet**
 <img width="6873" height="2513" alt="image" src="https://github.com/user-attachments/assets/50c72641-f01b-4f1b-879b-424e7590f554" />
 
 ---
@@ -452,7 +452,7 @@ A subnet is a network inside a network achieved by the process called subnetting
 ### Answer
 The firewall is a network security system that is used to monitor the incoming and outgoing traffic and blocks the same based on the firewall security policies. It acts as a wall between the internet (public network) and the networking devices (a private network). It is either a hardware device, software program, or a combination of both. It adds a layer of security to the network.
 
-`Firewall`
+**Firewall**
 <img width="7215" height="2394" alt="image" src="https://github.com/user-attachments/assets/85ee0449-603b-491a-8e5e-29717c3ec893" />
 
 ---
