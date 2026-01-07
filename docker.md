@@ -527,7 +527,11 @@ mysql>
 
 bash-5.1$ docker run -d --name mysql-lab3 -v mydbdata:/var/lib/mysql mysql:8
 1a8707e864e9a1648a6d3d1786104dc630111cb590b43b8425e70979ae38ca1f
-- Both containers see the same data.
+
+# Both containers see the same data.
+
+# Step 7: Test backup & restore
+bash-5.1$ docker run --rm -v mydbdata:/data busybox tar cvf /backup.tar /data
 ```
 ---
 
