@@ -1,3 +1,288 @@
+# Networking Fundamentals — Quick Reference
+
+A concise, interview-ready README covering core networking concepts: IPv4, network types, LANs, VPNs, topologies, protocols, OSI/TCP‑IP models, and common troubleshooting/terms.
+
+---
+
+## Table of Contents
+
+1. [What is an IPv4 address?](#what-is-an-ipv4-address)  
+2. [IPv4 Classes](#ipv4-classes)  
+3. [Private & Special IP Addresses](#private--special-ip-addresses)  
+4. [Types of Networks](#types-of-networks)  
+5. [Local Area Network (LAN)](#local-area-network-lan)  
+6. [Virtual Private Network (VPN)](#virtual-private-network-vpn)  
+   - [Advantages of VPN](#advantages-of-vpn)  
+   - [Types of VPN](#types-of-vpn)  
+7. [Nodes and Links](#nodes-and-links)  
+8. [Network Topology](#network-topology)  
+   - [Common Topologies](#common-topologies)  
+9. [Network Classification by Area](#network-classification-by-area)  
+10. [DNS](#dns)  
+11. [Router vs Gateway](#router-vs-gateway)  
+12. [Common Protocols (SMTP, FTP, TCP, UDP, ICMP, DHCP, ARP)](#common-protocols)  
+13. [MAC Address vs IP Address](#mac-address-vs-ip-address)  
+14. [Subnetting (What is a subnet?)](#subnetting-what-is-a-subnet)  
+15. [Hub vs Switch](#hub-vs-switch)  
+16. [ipconfig vs ifconfig](#ipconfig-vs-ifconfig)  
+17. [Firewall](#firewall)  
+18. [Unicast / Anycast / Multicast / Broadcast](#unicast--anycast--multicast--broadcast)  
+19. [What happens when you enter `google.com` in a browser?](#what-happens-when-you-enter-googlecom-in-a-browser)  
+20. [Conclusion](#conclusion)
+
+---
+
+## What is an IPv4 address?
+
+- An IPv4 address is a 32-bit logical (network-layer) address assigned to a network interface.
+- It is usually written as four decimal octets separated by dots (dotted-decimal), e.g., `192.168.1.10`.
+- Each octet is 8 bits and ranges from 0 to 255.
+
+> Note: Addresses can be assigned statically or dynamically (e.g., via DHCP).
+
+---
+
+## IPv4 Classes
+
+IPv4 addresses were historically divided into classes based on the first octet. These classes determine the default network/host division (mostly of historical interest; CIDR is used today).
+
+| Class | First Octet Range       | Typical Usage |
+|-------|-------------------------|---------------|
+| A     | 0.0.0.0 — 127.255.255.255 | Very large networks (large number of hosts) |
+| B     | 128.0.0.0 — 191.255.255.255 | Medium-sized networks |
+| C     | 192.0.0.0 — 223.255.255.255 | Small/local networks |
+| D     | 224.0.0.0 — 239.255.255.255 | Multicast |
+| E     | 240.0.0.0 — 255.255.255.254 | Experimental / reserved (research) |
+
+---
+
+## Private & Special IP Addresses
+
+- Private addresses (non-routable on the public Internet):
+
+| Class | Private Range |
+|-------|---------------|
+| A     | `10.0.0.0` — `10.255.255.255` |
+| B     | `172.16.0.0` — `172.31.255.255` |
+| C     | `192.168.0.0` — `192.168.255.255` |
+
+- Special addresses:
+  - Loopback range (used for testing): `127.0.0.0/8` (commonly `127.0.0.1`)
+  - `0.0.0.0` often means "this host" or "unspecified"
+  - Broadcast address for a subnet: the highest address in the subnet (e.g., `192.168.1.255` for `/24`)
+
+---
+
+## Types of Networks
+
+- PAN (Personal Area Network): very short range around a person (e.g., Bluetooth).
+- LAN (Local Area Network): local, privately-owned networks within a building or campus.
+- MAN (Metropolitan Area Network): covers a city or campus (e.g., citywide cable).
+- WAN (Wide Area Network): spans large geographic areas; the Internet is the largest WAN.
+- GAN (Global Area Network): global networks connecting WANs (often used to refer to the Internet and satellite links).
+
+---
+
+## Local Area Network (LAN)
+
+- Connects computers and devices in a limited area (home, office).
+- Enables resource sharing: files, printers, storage, applications.
+- Types:
+  - Wired LAN (Ethernet) — uses cables, switches.
+  - Wireless LAN (Wi‑Fi) — radio-based, flexible deployment.
+- Enterprise LANs may include VLANs, managed switches, access controls, and authentication.
+
+(Placeholders for diagrams: Wired LAN, Wireless LAN)
+
+---
+
+## Virtual Private Network (VPN)
+
+- A VPN creates a secure tunnel over a public network (Internet) to connect remote users or offices to a private network.
+- Common uses: secure remote access, site-to-site connectivity, encrypted communications.
+
+(Placeholder for diagram: Organizational WAN over Internet via VPN)
+
+### Advantages of VPN
+
+- Cost-effective remote connectivity across geographic locations vs. dedicated private links.
+- Secure transmission (encryption) for confidential data.
+- Protects organizational information against eavesdropping and certain attacks.
+- Masks or encrypts Internet traffic and remote identity.
+
+### Types of VPN
+
+- Access VPN (Remote Access): provides connectivity to individual remote users (telecommuters, mobile users).
+- Site-to-Site VPN (Router-to-Router): connects entire networks between offices.
+  - Intranet VPN: connects branches of the same organization.
+  - Extranet VPN: connects organization with partners, suppliers, or customers.
+
+---
+
+## Nodes and Links
+
+- Node: any device that can send/receive data on a network (PC, server, router, switch, printer, etc.).
+- Link: the physical or logical connection between two nodes (cables, wireless channels, link protocols).
+
+---
+
+## Network Topology
+
+Topology describes the physical or logical layout of nodes and links.
+
+### Common Topologies
+
+- Bus
+  - Single central cable (bus) to which all nodes connect.
+  - Simple but a single failure can affect the whole network.
+- Star
+  - All nodes connect to a central node (switch/hub).
+  - Easy to manage and troubleshoot; central failure affects the network.
+- Ring
+  - Each node connects to two neighbors to form a ring.
+  - Can be more complex; single node/link failure can disrupt the ring unless redundancy exists.
+- Mesh
+  - Nodes have multiple interconnections.
+  - Highly resilient; expensive and complex to deploy.
+- Tree
+  - Hierarchical combination of star and bus elements (extended bus).
+  - Failure of backbone affects the whole network.
+- Hybrid
+  - Combination of two or more topologies to leverage strengths and avoid weaknesses.
+
+(Placeholders for topology diagrams)
+
+---
+
+## Network Classification by Area
+
+Networks are commonly classified by geographic scope: PAN, LAN, MAN, WAN, and GAN/Internet.
+
+---
+
+## DNS (Domain Name System)
+
+- DNS is a hierarchical, decentralized naming system for resources on the Internet.
+- It maps human-friendly domain names (e.g., `example.com`) to IP addresses (e.g., `93.184.216.34`).
+- Default UDP port: 53 (TCP also used for zone transfers and larger responses).
+
+---
+
+## Router vs Gateway
+
+- Router: forwards packets between networks, operates at the network layer (IP). Routes traffic between similar network types.
+- Gateway: a more general term — translates between different protocols or architectures (e.g., between dissimilar networks or application protocols). Can operate at various layers.
+
+---
+
+## Common Protocols
+
+- SMTP (Simple Mail Transfer Protocol)
+  - Used for sending email between servers.
+  - Usually listens on port 25 (submission often on 587; SMTPS on 465).
+- FTP (File Transfer Protocol)
+  - Used for transferring files.
+  - Standard control port: 21 (data port varies depending on active/passive mode).
+- TCP (Transmission Control Protocol)
+  - Connection-oriented transport-layer protocol.
+  - Provides reliable, ordered delivery using a three-way handshake and congestion control.
+- UDP (User Datagram Protocol)
+  - Connectionless transport-layer protocol.
+  - Lower overhead, no guaranteed delivery or ordering — useful for DNS, VoIP, streaming.
+- ICMP (Internet Control Message Protocol)
+  - Used for network diagnostics and error messages (e.g., `ping`, `traceroute` use ICMP).
+  - ICMP is a network-layer protocol (it does not use TCP/UDP ports); it has protocol number 1.
+- DHCP (Dynamic Host Configuration Protocol)
+  - Auto-configures hosts (IP address, subnet mask, gateway, DNS).
+  - Uses UDP ports 67 (server) and 68 (client).
+- ARP (Address Resolution Protocol)
+  - Resolves IPv4 addresses to MAC (layer 2) addresses on a local network.
+
+---
+
+## MAC Address vs IP Address
+
+| MAC Address | IP Address |
+|-------------|------------|
+| Media Access Control address (hardware identifier) | Internet Protocol address (logical/network-layer) |
+| Typically 48 bits (6 bytes), expressed in hex | IPv4: 32 bits (4 bytes) — IPv6: 128 bits |
+| Embedded in the NIC (or assigned to it) | Assigned by network admin or DHCP |
+| Operates at Data Link Layer (Layer 2) | Operates at Network Layer (Layer 3) |
+| Identifies a device/interface | Identifies network location and routing information |
+
+---
+
+## What is a Subnet?
+
+- A subnet (subnetwork) is a logically segmented portion of an IP network.
+- Subnetting divides a larger network into smaller address blocks to improve routing efficiency and security.
+- Represented by network prefix notation, e.g., `192.168.1.0/24`.
+
+---
+
+## Hub vs Switch
+
+| Hub | Switch |
+|-----|--------|
+| Operates at Physical Layer (Layer 1) | Operates at Data Link Layer (Layer 2) |
+| Broadcasts incoming frames to all ports | Forwards frames to destination MAC only |
+| Typically half-duplex | Supports full-duplex |
+| Less efficient, higher collisions | More efficient, reduces collisions |
+| Cheaper, simpler | Smarter, manages MAC table and VLANs |
+
+---
+
+## ipconfig vs ifconfig
+
+| ipconfig | ifconfig |
+|----------|----------|
+| Windows command to view/configure IP settings | Unix/Linux/macOS command to view/configure interfaces |
+| Used to get DHCP/DNS settings, release/renew DHCP leases | Historically used for interface config; `ip` command replaces it on many Linux systems |
+
+---
+
+## Firewall
+
+- A firewall filters and monitors incoming/outgoing network traffic according to configured security rules.
+- Can be software, hardware, or both.
+- Acts as a boundary between trusted (private) and untrusted (public) networks.
+
+---
+
+## Unicast / Anycast / Multicast / Broadcast
+
+- Unicast: one-to-one communication (single sender to single receiver).
+- Anycast: one-to-nearest (sender to any one of a group of receivers, typically the topologically nearest).
+- Multicast: one-to-many (sender to a subscribed group of receivers).
+- Broadcast: one-to-all on a local network (e.g., ARP, DHCP requests).
+
+---
+
+## What happens when you enter `google.com` in a browser?
+
+1. Browser checks its cache for a fresh copy of the resource.
+2. If not cached, browser checks OS/DNS cache for the domain → if missing, performs a DNS lookup (usually over UDP to port 53).
+3. DNS response returns the server IP(s).
+4. Browser establishes a TCP connection to the server (three-way handshake) — or TLS handshake on HTTPS.
+5. Browser sends an HTTP(S) request over the established connection.
+6. Server processes the request and sends an HTTP response.
+7. Browser receives, processes, and renders the response; may cache it locally.
+8. Connection may be closed or persisted (keep-alive) for subsequent requests.
+
+---
+
+## Conclusion
+
+Networking is foundational to modern computing. From local LANs to global WANs (the Internet), understanding addresses, protocols, topologies, and services (DNS, DHCP, routing) is essential for system design, troubleshooting, and secure operations.
+
+Notes:
+- CIDR (Classless Inter-Domain Routing) has largely replaced strict IPv4 classful addressing in practice.
+- Many diagram placeholders above can be replaced with network diagrams (PNG/SVG) as needed.
+
+---
+
+
+
 ## Top 100 Networking Interview Questions & Answers 
 #### source: http://career.guru99.com/
 ### 1) What is a Link?
