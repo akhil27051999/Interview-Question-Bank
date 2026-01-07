@@ -1,9 +1,5 @@
 # Docker — Q&A (DevOps Interview Prep)
 
-This section contains the Docker interview questions and answers. 
-
----
-
 ## Table of Contents (Docker)
 - [Category 1: Docker Fundamentals & Architecture](#category-1-docker-fundamentals--architecture)
 - [Category 2: Dockerfile & Image Management](#category-2-dockerfile--image-management)
