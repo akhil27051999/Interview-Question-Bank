@@ -19,15 +19,15 @@ A concise, interview-ready README covering core networking concepts: IPv4, netwo
 - [11. What are Private and Special IP addresses?](#11-what-are-private-and-special-ip-addresses)
 
 ### Intermediate Interview Questions
-- [I. What is the DNS?](#i-what-is-the-dns)
-- [II. What is the use of a router and how is it different from a gateway?](#ii-what-is-the-use-of-a-router-and-how-is-it-different-from-a-gateway)
-- [III. What is the SMTP protocol?](#iii-what-is-the-smtp-protocol)
-- [IV. Describe the OSI Reference Model](#iv-describe-the-osi-reference-model)
-- [V. Define the 7 different layers of the OSI Reference Model](#v-define-the-7-different-layers-of-the-osi-reference-model)
-- [VI. Describe the TCP/IP Reference Model](#vi-describe-the-tcpip-reference-model)
-- [VII. Define the 4 different layers of the TCP/IP Reference Model](#vii-define-the-4-different-layers-of-the-tcpip-reference-model)
-- [VIII. Differentiate OSI Reference Model with TCP/IP Reference Model](#viii-differentiate-osi-reference-model-with-tcpip-reference-model)
-- [IX. What are the HTTP and the HTTPS protocol?](#ix-what-are-the-http-and-the-https-protocol)
+- [1. What is the DNS?](#1-what-is-the-dns)
+- [2. What is the use of a router and how is it different from a gateway?](#2-what-is-the-use-of-a-router-and-how-is-it-different-from-a-gateway)
+- [3. What is the SMTP protocol?](#3-what-is-the-smtp-protocol)
+- [4. Describe the OSI Reference Model](#4-describe-the-osi-reference-model)
+- [5. Define the 7 different layers of the OSI Reference Model](#5-define-the-7-different-layers-of-the-osi-reference-model)
+- [6. Describe the TCP/IP Reference Model](#6-describe-the-tcpip-reference-model)
+- [7. Define the 4 different layers of the TCP/IP Reference Model](#7-define-the-4-different-layers-of-the-tcpip-reference-model)
+- [8. Differentiate OSI Reference Model with TCP/IP Reference Model](#8-differentiate-osi-reference-model-with-tcpip-reference-model)
+- [9. What are the HTTP and the HTTPS protocol?](#9-what-are-the-http-and-the-https-protocol)
 
 ### Advanced Interview Questions
 - [A1. What is the FTP protocol?](#a1-what-is-the-ftp-protocol)
