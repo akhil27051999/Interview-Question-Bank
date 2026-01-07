@@ -11,9 +11,9 @@
 
 ---
 
-### Category 1: Docker Fundamentals & Architecture
+## Category 1: Docker Fundamentals & Architecture
 
-#### 1. What is Docker and how does it differ from traditional virtualization?
+### 1. What is Docker and how does it differ from traditional virtualization?
 **Answer**
 
 > Docker is a platform for developing, shipping, and running applications in containers.
@@ -26,7 +26,7 @@ Key Differences:
 
 ---
 
-#### 2. Explain Docker architecture and its main components.
+### 2. Explain Docker architecture and its main components.
 **Answer**
 
 - **Docker Daemon:** Background service that manages containers, images, networks, volumes.  
@@ -38,7 +38,7 @@ Key Differences:
 
 ---
 
-#### 3. What is the difference between a Docker image and container?
+### 3. What is the difference between a Docker image and container?
 **Answer**
 
 - **Image:** Read-only template containing application code and dependencies; built from a Dockerfile.  
@@ -46,7 +46,7 @@ Key Differences:
 
 ---
 
-#### 4. Explain Docker container lifecycle states.
+### 4. Explain Docker container lifecycle states.
 **Answer**
 
 - **Created:** Container object created but not started.  
@@ -55,9 +55,9 @@ Key Differences:
 - **Stopped:** Process terminated but metadata remains.  
 - **Removed:** Container deleted from the host.
 
-```bash
-# DOCKER LIFE-CYCLE STAGES EXPLAINATION
+#### DOCKER LIFE-CYCLE STAGES EXPLAINATION
 
+```bash
 # CONTAINER CREATED
 
 bash-5.1$ docker ps -a
@@ -160,9 +160,9 @@ bash-5.1$
 
 ---
 
-### Category 2: Dockerfile & Image Management
+## Category 2: Dockerfile & Image Management
 
-#### 5. What is a Dockerfile and explain common instructions?
+### 5. What is a Dockerfile and explain common instructions?
 **Answer**
 
 A Dockerfile is a text file with instructions to build a Docker image.
@@ -184,7 +184,7 @@ Common Instructions:
 | **USER**       | Runs container as a specific user       | Runtime         | Security best practice (avoid root)                         |
 | **LABEL**      | Adds metadata to the image              | Build time      | Useful for documentation & automation                       |
 
-### Basic Dockerfile Implementation for project
+#### Basic Dockerfile Implementation for project
 
 ```dockerfile
 # app/Dockerfile
@@ -212,7 +212,7 @@ CMD ["gunicorn", "--bind", "0.0.0.0:5000", "wsgi:app"]
 ```
 ---
 
-#### 6. What is the difference between CMD and ENTRYPOINT?
+### 6. What is the difference between CMD and ENTRYPOINT?
 **Answer**
 
 - **CMD:** Default command/arguments that can be overridden at runtime (`docker run image command`).  
@@ -222,14 +222,36 @@ CMD ["gunicorn", "--bind", "0.0.0.0:5000", "wsgi:app"]
 
 ---
 
-#### 7. How do you optimize Docker image size?
+### 7. How do you optimize Docker image size?
 **Answer**
 
-- Use minimal base images (e.g., Alpine).  
-- Combine related `RUN` commands to reduce the number of layers.  
-- Use a `.dockerignore` to exclude unnecessary files from the build context.  
-- Clean package manager caches in the same `RUN` step where packages are installed.  
-- Use multi-stage builds to omit build-time dependencies from the final image.
+**1. Layer Caching**
+  - Copy and install dependencies before copying the application code to make use of Docker build cache.
+    - `Good:`
+	```dockerfile
+	COPY requirements.txt .
+	RUN pip install -r requirements.txt
+	COPY . .
+	```
+
+	- `Bad:`
+	```dockerfile
+	COPY . .
+	RUN pip install -r requirements.txt
+	```
+
+**2. Use Minimal Base Images**
+  - Alpine or slim variants reduce image size. Be aware of compatibility (some wheels require build tools).
+**3. Install Only Required Packages**
+  - Avoid installing unnecessary OS packages in the runtime image.
+
+**4. Use --no-cache-dir with pip**
+  - Prevents caching wheels in the image: pip install --no-cache-dir -r requirements.txt
+
+**5. Multi-stage Builds**
+  - Build dependencies in a builder stage and copy only the installed packages to the runtime image to keep final image small.
+**6. .dockerignore**
+  - Exclude local files, tests, and secrets from the build context to speed up builds and avoid leaking secrets.
 
 ---
 
