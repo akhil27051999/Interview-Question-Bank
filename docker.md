@@ -1759,6 +1759,10 @@ Importance: Discover and remediate vulnerabilities before deploying images to pr
 - Check application configuration and listen address (e.g., `0.0.0.0` vs `localhost`).  
 - Verify firewall and network settings on the host.
 
+#### Scenario : Container is RUNNING but Application is NOT Accessible
+
+**Interview-Ready Explanation: The container was running and the port was mapped correctly, but the application was bound to localhost. After changing the bind address to 0.0.0.0, external access worked.**
+
 ```sh
 # Problem : Container is RUNNING but Application is NOT Accessible
 
