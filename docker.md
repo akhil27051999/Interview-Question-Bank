@@ -2004,6 +2004,80 @@ bash-5.1$
 `Interview Gold Answer`:
 
 - **The container failed in the Created state because the ENTRYPOINT script lacked execute permissions.Docker found the file but couldn’t execute it.I fixed it by adding a shebang and executable permissions, and enforced it in the Dockerfile using chmod.**
+
+
+```sh
+
+# Run a analytics container with memory=20m
+
+bash-5.1$ docker run \
+  --name analytics \
+  --memory=20m \
+  python:3.10 \
+  python -c "a = ' ' * 200_000_000"
+Unable to find image 'python:3.10' locally
+3.10: Pulling from library/python
+281b80c799de: Pull complete 
+15f14138abe4: Pull complete 
+378c64c44580: Pull complete 
+02e37abc533a: Pull complete 
+26be60fca407: Pull complete 
+e380570fb967: Pull complete 
+a080cbb336ed: Pull complete 
+Digest: sha256:bcc149dce8e0b1bf879ad69c253ef39351f1a4b8ced55a5ce594cec159aad65a
+Status: Downloaded newer image for python:3.10
+
+# Check the container status 
+
+bash-5.1$ docker ps -a
+CONTAINER ID   IMAGE            COMMAND                  CREATED          STATUS                       PORTS     NAMES
+d3ea75efef83   python:3.10      "python -c 'a = ' ' …"   8 seconds ago    Exited (137) 6 seconds ago             analytics
+2ab4729d0692   report-service   "sleep infinity"         14 minutes ago   Up 14 minutes                          report
+
+# observation: the container exits with code 137 which means the container is ran out of memory
+
+# For detailed observation, inspect the container for both OOMKilled status and the Memory
+
+bash-5.1$ docker inspect analytics | grep -i oom
+            "OOMKilled": true,
+            "OomScoreAdj": 0,
+            "OomKillDisable": null,
+
+bash-5.1$ docker inspect analytics | grep -i Memory
+            "Memory": 20971520,
+            "KernelMemory": 0,
+            "KernelMemoryTCP": 0,
+            "MemoryReservation": 0,
+            "MemorySwap": 41943040,
+            "MemorySwappiness": null,
+
+# Run interactively to observe
+
+bash-5.1$ docker run -it --memory=20m python:3.10 sh
+# python -c "a = ' ' * 200_000_000"
+Killed
+# exit
+
+# Remove the exited/failed container
+
+bash-5.1$ docker run --name analytics --memory=200m python:3.10 python -c "a = ' ' * 200_000_000"
+docker: Error response from daemon: Conflict. The container name "/analytics" is already in use by container "d3ea75efef83456d8072d2309d7dbfffd7b4910dfda015581e2054e574db8357". You have to remove (or rename) that container to be able to reuse that name.
+See 'docker run --help'.
+bash-5.1$ docker rm analytics
+analytics
+
+# Fix / Avoid OOM by increasing memory for a new analytics container
+
+bash-5.1$ docker run --name analytics --memory=200m python:3.10 python -c "a = ' ' * 200_000_000"
+bash-5.1$ docker ps -a
+CONTAINER ID   IMAGE            COMMAND                  CREATED          STATUS                        PORTS     NAMES
+890fcad6c65a   python:3.10      "python -c 'a = ' ' …"   5 seconds ago    Exited (0) 4 seconds ago                analytics
+2ab4729d0692   report-service   "sleep infinity"         16 minutes ago   Up 16 minutes                           report
+bash-5.1$ 
+
+# Now the container is not having OOMKilled issue of Memory
+
+```
 ---
 
 ### 20. Docker build is failing due to space issues. How to resolve?
