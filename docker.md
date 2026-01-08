@@ -2212,6 +2212,9 @@ bash-5.1$
 ```sh
 bash-5.1$ mkdir docker-space-lab
 bash-5.1$ cd docker-space-lab
+
+# Create Dockerfiles that generate large images
+
 bash-5.1$ sudo vi Dockerfile.large1
 bash-5.1$ sudo vi Dockerfile.large2
 bash-5.1$ ls
@@ -2227,6 +2230,7 @@ FROM alpine
 RUN dd if=/dev/zero of=/largefile2 bs=1M count=50
 CMD ["sleep", "infinity"]
 
+# Build multiple images
 
 bash-5.1$ docker build -t large-image1 -f Dockerfile.large1 .
 docker build -t large-image2 -f Dockerfile.large2 .
@@ -2269,11 +2273,14 @@ Removing intermediate container f94983e7da7f
 Successfully built 8e3e4332973b
 Successfully tagged large-image2:latest
 
+# Run containers
 
 bash-5.1$ docker run -d --name container1 large-image1
 docker run -d --name container2 large-image2
 28401a841850a63f62e3d46fb6b44ef563719bf0805ececc59b706ebe34cf64b
 684760a84a58d6956b1573d7d240f6a318359a833210555e985ee10e06f028fa
+
+# Check Docker disk usage
 
 bash-5.1$ docker system df
 TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
@@ -2294,6 +2301,10 @@ Step 3/3 : CMD ["sleep", "infinity"]
  ---> 75ad6b8fc252
 Successfully built 75ad6b8fc252
 Successfully tagged another-image:latest
+
+# Simulate disk full error
+
+# Cleanup Docker resources
 
 bash-5.1$ docker image prune
 WARNING! This will remove all dangling images.
@@ -2320,6 +2331,8 @@ WARNING! This will remove:
 Are you sure you want to continue? [y/N] y
 Total reclaimed space: 0B
 
+# Verify space freed
+
 bash-5.1$ docker system df
 TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
 Images          2         2         113.3MB   8.437MB (7%)
@@ -2328,6 +2341,7 @@ Local Volumes   0         0         0B        0B
 Build Cache     0         0         0B        0B
 bash-5.1$ 
 ```
+
 ---
 
 ### 21. How to monitor Docker container performance?
