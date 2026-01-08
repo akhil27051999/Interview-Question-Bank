@@ -1869,6 +1869,23 @@ bash-5.1$
 - Confirm entrypoint/CMD syntax and file existence.  
 - Check resource constraints and health checks causing restarts.
 
+---
+
+#### Lab Scenario: You joined a DevOps team. A CI pipeline builds three microservice containers:
+  - auth-service
+  - report-service
+  - analytics-service
+
+	*All three containers exit immediately after deployment. Your task is to identify the root cause for each.*
+
+#### SERVICE 1 — auth-service (❌ Failure: Missing ENTRYPOINT File)
+
+`Interview Gold Answer`:
+
+  - he container failed in the Created state because the ENTRYPOINT script lacked execute permissions.
+  - Docker found the file but couldn’t execute it.
+  - I fixed it by adding a shebang and executable permissions, and enforced it in the Dockerfile using chmod.
+  
 ```sh
 bash-5.1$ ls
 
@@ -2001,10 +2018,111 @@ bash-5.1$ docker logs auth
 Auth service started
 bash-5.1$ 
 ```
+
+#### SERVICE 2 — report-service (❌ Failure: CMD Completes Normally (Exit 0))
+
 `Interview Gold Answer`:
 
-- **The container failed in the Created state because the ENTRYPOINT script lacked execute permissions.Docker found the file but couldn’t execute it.I fixed it by adding a shebang and executable permissions, and enforced it in the Dockerfile using chmod.**
+  - “The container for report-service exited immediately with exit code 0, which indicates a normal, successful termination. 
+  - In Docker, a container’s lifecycle is tied to its main process. Here, the CMD executes echo 'Report service started', which runs successfully and then exits.
+  - Since there is no long-running foreground process, the container stops immediately.
+  - To keep a container running for services, we should replace short-lived commands with a long-running foreground process, such as the actual application process or a placeholder like sleep infinity.
 
+```sh
+# Create a Dockerfile named report
+
+bash-5.1$ sudo vi Dockerfile.report
+bash-5.1$ cat Dockerfile.report 
+FROM alpine
+CMD ["echo", "Report service started"]
+
+# Build the image using that Dockerfile
+
+bash-5.1$ docker build -t report-service -f Dockerfile.report .
+Sending build context to Docker daemon   5.12kB
+Step 1/2 : FROM alpine
+ ---> e7b39c54cdec
+Step 2/2 : CMD ["echo", "Report service started"]
+ ---> Running in fa4f95f57d58
+Removing intermediate container fa4f95f57d58
+ ---> 04476b1f81cf
+Successfully built 04476b1f81cf
+Successfully tagged report-service:latest
+
+# Run a container for report service
+
+bash-5.1$ docker run --name report report-service
+Report service started
+
+# Verify container status
+
+bash-5.1$ docker ps -a
+CONTAINER ID   IMAGE            COMMAND                  CREATED          STATUS                      PORTS     NAMES
+88c991ff55c3   report-service   "echo 'Report servic…"   13 seconds ago   Exited (0) 12 seconds ago             report
+b72bfd487d66   auth-service     "/app/start.sh"          24 minutes ago   Up 24 minutes                         auth
+
+# Container exits with Exit status (0)
+
+# Check the container logs
+
+bash-5.1$ docker logs report
+Report service started
+
+# Inspect the container for the CMD/ENTRYPOINT instructions
+
+bash-5.1$ docker inspect report | grep Cmd
+            "Cmd": [
+
+# Root Cause: the container exits because of 
+# > Main process (echo) finished
+# > No foreground process → container exited
+
+
+# Fix: Update the Dockerfile with the Real-process that runs without exits
+
+bash-5.1$ sudo vi Dockerfile.report 
+bash-5.1$ cat Dockerfile.report 
+FROM alpine
+CMD ["sleep", "infinity"]
+
+# Rebuild the image for the report service
+
+bash-5.1$ docker build -t report-service -f Dockerfile.report .
+Sending build context to Docker daemon   5.12kB
+Step 1/2 : FROM alpine
+ ---> e7b39c54cdec
+Step 2/2 : CMD ["sleep", "infinity"]
+ ---> Running in 2c966edd54a9
+Removing intermediate container 2c966edd54a9
+ ---> 6c1d4d2f67e5
+Successfully built 6c1d4d2f67e5
+Successfully tagged report-service:latest
+
+bash-5.1$ docker rm report
+report
+
+# Start a new container for the report service
+
+bash-5.1$ docker run -d --name report report-service
+2ab4729d0692e76f55c39371098c79ef2e091a6f03733e4c1cad9a8c880a23b6
+
+# Verify the container status
+
+bash-5.1$ docker ps 
+CONTAINER ID   IMAGE            COMMAND            CREATED         STATUS         PORTS     NAMES
+2ab4729d0692   report-service   "sleep infinity"   4 seconds ago   Up 3 seconds             report
+
+bash-5.1$ docker logs report
+bash-5.1$ 
+
+```
+#### SERVICE 3 — analytics-service (❌ Failure: OOM Kill (Exit 137))
+
+`Interview Gold Answer`:
+
+  - “The container exited with code 137. This is a SIGKILL, usually caused by exceeding memory limits.
+  - I verified the limit using docker inspect and can reproduce the failure interactively.
+  - To fix it, either increase memory for the container or optimize the app’s memory usage.”
 
 ```sh
 
