@@ -2209,6 +2209,125 @@ bash-5.1$
 - Check disk usage where Docker stores data (Docker root dir).  
 - Use smaller base images and multi-stage builds to reduce image sizes.
 
+```sh
+bash-5.1$ mkdir docker-space-lab
+bash-5.1$ cd docker-space-lab
+bash-5.1$ sudo vi Dockerfile.large1
+bash-5.1$ sudo vi Dockerfile.large2
+bash-5.1$ ls
+
+Dockerfile.large1  Dockerfile.large2
+bash-5.1$ cat Dockerfile.large1
+FROM alpine
+RUN dd if=/dev/zero of=/largefile1 bs=1M count=50
+CMD ["sleep", "infinity"]
+
+bash-5.1$ cat Dockerfile.large2
+FROM alpine
+RUN dd if=/dev/zero of=/largefile2 bs=1M count=50
+CMD ["sleep", "infinity"]
+
+
+bash-5.1$ docker build -t large-image1 -f Dockerfile.large1 .
+docker build -t large-image2 -f Dockerfile.large2 .
+
+Sending build context to Docker daemon  3.072kB
+Step 1/3 : FROM alpine
+latest: Pulling from library/alpine
+1074353eec0d: Pull complete 
+Digest: sha256:865b95f46d98cf867a156fe4a135ad3fe50d2056aa3f25ed31662dff6da4eb62
+Status: Downloaded newer image for alpine:latest
+ ---> e7b39c54cdec
+Step 2/3 : RUN dd if=/dev/zero of=/largefile1 bs=1M count=50
+ ---> Running in 207fa4c1b0e3
+50+0 records in
+50+0 records out
+52428800 bytes (50.0MB) copied, 0.051057 seconds, 979.3MB/s
+Removing intermediate container 207fa4c1b0e3
+ ---> e884c72bfc85
+Step 3/3 : CMD ["sleep", "infinity"]
+ ---> Running in bd500131afc0
+Removing intermediate container bd500131afc0
+ ---> 75ad6b8fc252
+Successfully built 75ad6b8fc252
+Successfully tagged large-image1:latest
+
+Sending build context to Docker daemon  3.072kB
+Step 1/3 : FROM alpine
+ ---> e7b39c54cdec
+Step 2/3 : RUN dd if=/dev/zero of=/largefile2 bs=1M count=50
+ ---> Running in 5d703781acea
+50+0 records in
+50+0 records out
+52428800 bytes (50.0MB) copied, 0.051295 seconds, 974.8MB/s
+Removing intermediate container 5d703781acea
+ ---> 954ea813abd9
+Step 3/3 : CMD ["sleep", "infinity"]
+ ---> Running in f94983e7da7f
+Removing intermediate container f94983e7da7f
+ ---> 8e3e4332973b
+Successfully built 8e3e4332973b
+Successfully tagged large-image2:latest
+
+
+bash-5.1$ docker run -d --name container1 large-image1
+docker run -d --name container2 large-image2
+28401a841850a63f62e3d46fb6b44ef563719bf0805ececc59b706ebe34cf64b
+684760a84a58d6956b1573d7d240f6a318359a833210555e985ee10e06f028fa
+
+bash-5.1$ docker system df
+TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
+Images          3         2         113.3MB   8.437MB (7%)
+Containers      2         2         0B        0B
+Local Volumes   0         0         0B        0B
+Build Cache     0         0         0B        0B
+
+bash-5.1$ docker build -t another-image -f Dockerfile.large1 .
+Sending build context to Docker daemon  3.072kB
+Step 1/3 : FROM alpine
+ ---> e7b39c54cdec
+Step 2/3 : RUN dd if=/dev/zero of=/largefile1 bs=1M count=50
+ ---> Using cache
+ ---> e884c72bfc85
+Step 3/3 : CMD ["sleep", "infinity"]
+ ---> Using cache
+ ---> 75ad6b8fc252
+Successfully built 75ad6b8fc252
+Successfully tagged another-image:latest
+
+bash-5.1$ docker image prune
+WARNING! This will remove all dangling images.
+Are you sure you want to continue? [y/N] y
+Total reclaimed space: 0B
+
+bash-5.1$ docker image prune -a
+WARNING! This will remove all images without at least one container associated to them.
+Are you sure you want to continue? [y/N] y
+Deleted Images:
+untagged: alpine:latest
+untagged: alpine@sha256:865b95f46d98cf867a156fe4a135ad3fe50d2056aa3f25ed31662dff6da4eb62
+untagged: another-image:latest
+
+Total reclaimed space: 0B
+
+bash-5.1$ docker system prune -a
+WARNING! This will remove:
+  - all stopped containers
+  - all networks not used by at least one container
+  - all images without at least one container associated to them
+  - all build cache
+
+Are you sure you want to continue? [y/N] y
+Total reclaimed space: 0B
+
+bash-5.1$ docker system df
+TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
+Images          2         2         113.3MB   8.437MB (7%)
+Containers      2         2         0B        0B
+Local Volumes   0         0         0B        0B
+Build Cache     0         0         0B        0B
+bash-5.1$ 
+```
 ---
 
 ### 21. How to monitor Docker container performance?
