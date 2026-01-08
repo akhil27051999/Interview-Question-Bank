@@ -1869,6 +1869,141 @@ bash-5.1$
 - Confirm entrypoint/CMD syntax and file existence.  
 - Check resource constraints and health checks causing restarts.
 
+```sh
+bash-5.1$ ls
+
+# Create a sample authentication file 
+
+bash-5.1$ touch start.sh
+bash-5.1$ vi start.sh
+bash-5.1$ cat start.sh 
+#!/bin/sh
+echo "Auth service started"
+sleep infinity
+
+# Create a Dockerfile for authentication service
+
+bash-5.1$ sudo vi Dockerfile.auth
+bash-5.1$ ls
+Dockerfile.auth  start.sh
+bash-5.1$ cat Dockerfile.auth 
+FROM alpine
+WORKDIR /app
+COPY start.sh /app/start.sh
+ENTRYPOINT ["/app/start.sh"]
+
+# Build a Docker image using the Dockerfile.auth
+
+bash-5.1$ docker build -t auth-service -f Dockerfile.auth .
+Sending build context to Docker daemon  3.584kB
+Step 1/4 : FROM alpine
+ ---> e7b39c54cdec
+Step 2/4 : WORKDIR /app
+ ---> Using cache
+ ---> 1360888528f4
+Step 3/4 : COPY start.sh /app/start.sh
+ ---> f2a1225d0f0d
+Step 4/4 : ENTRYPOINT ["/app/start.sh"]
+ ---> Running in fdbd5e1acd2a
+Removing intermediate container fdbd5e1acd2a
+ ---> 4213f3e7f96e
+Successfully built 4213f3e7f96e
+Successfully tagged auth-service:latest
+
+bash-5.1$ docker images
+REPOSITORY     TAG       IMAGE ID       CREATED         SIZE
+auth-service   latest    4213f3e7f96e   6 seconds ago   8.44MB
+alpine         latest    e7b39c54cdec   3 weeks ago     8.44MB
+
+# Run the container using the auth-service image
+
+bash-5.1$ docker run --name auth auth-service
+docker: Error response from daemon: failed to create shim: OCI runtime create failed: container_linux.go:380: starting container process caused: exec: "/app/start.sh": permission denied: unknown.
+ERRO[0000] error waiting for container: context canceled 
+
+bash-5.1$ docker run --name auth auth-service
+docker: Error response from daemon: Conflict. The container name "/auth" is already in use by container "e5f6dd7e9d5923ba43bc2cbc4e28f858458760b5e1957487fee016b850b3c56c". You have to remove (or rename) that container to be able to reuse that name.
+See 'docker run --help'.
+
+bash-5.1$ docker ps -a
+CONTAINER ID   IMAGE          COMMAND           CREATED         STATUS    PORTS     NAMES
+e5f6dd7e9d59   auth-service   "/app/start.sh"   2 minutes ago   Created             auth
+
+bash-5.1$ docker stop auth
+auth
+bash-5.1$ docker rm auth
+auth
+bash-5.1$ docker ps
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+bash-5.1$ docker ps -a
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+bash-5.1$ ls
+Dockerfile.auth  start.sh
+
+bash-5.1$ docker run --name auth auth-service
+docker: Error response from daemon: failed to create shim: OCI runtime create failed: container_linux.go:380: starting container process caused: exec: "/app/start.sh": permission denied: unknown.
+ERRO[0000] error waiting for container: context canceled 
+
+# Issue: File exists but its not executable
+
+# Make the file executable
+
+bash-5.1$ chmod +x start.sh
+bash-5.1$ ls -l start.sh
+-rwxr-xr-x    1 user     user            54 Jan  8 09:51 start.sh
+
+# Ensures permissions are correct inside the image, even if someone forgets chmod locally.
+
+bash-5.1$ vi Dockerfile.auth 
+bash-5.1$ sudo vi Dockerfile.auth 
+bash-5.1$ cat Dockerfile.auth 
+FROM alpine
+WORKDIR /app
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+ENTRYPOINT ["/app/start.sh"]
+
+# Rebuild the authentication image
+
+bash-5.1$ docker build -t auth-service -f Dockerfile.auth .
+Sending build context to Docker daemon  4.096kB
+Step 1/5 : FROM alpine
+ ---> e7b39c54cdec
+Step 2/5 : WORKDIR /app
+ ---> Using cache
+ ---> 1360888528f4
+Step 3/5 : COPY start.sh /app/start.sh
+ ---> c132f02ce1da
+Step 4/5 : RUN chmod +x /app/start.sh
+ ---> Running in 37e0e4e6a958
+Removing intermediate container 37e0e4e6a958
+ ---> c27923af4440
+Step 5/5 : ENTRYPOINT ["/app/start.sh"]
+ ---> Running in 8f2c82a3d792
+Removing intermediate container 8f2c82a3d792
+ ---> 6398ddf88009
+Successfully built 6398ddf88009
+Successfully tagged auth-service:latest
+
+# Start a container and Verify
+
+bash-5.1$ docker run -d --name auth auth-service
+b72bfd487d66a4b17490247b0bec7d31006ad739dae2ed62a18be3798fd4fbbc
+
+bash-5.1$ docker ps
+CONTAINER ID   IMAGE          COMMAND           CREATED         STATUS         PORTS     NAMES
+b72bfd487d66   auth-service   "/app/start.sh"   9 seconds ago   Up 8 seconds             auth
+
+# Check the logs whether the app is correctly working or not
+
+bash-5.1$ docker logs auth
+Auth service started
+bash-5.1$ 
+```
+`Interview Gold Answer`:
+
+- **The container failed in the Created state because the ENTRYPOINT script lacked execute permissions.Docker found the file but couldn’t execute it.I fixed it by adding a shebang and executable permissions, and enforced it in the Dockerfile using chmod.**
 ---
 
 ### 20. Docker build is failing due to space issues. How to resolve?
