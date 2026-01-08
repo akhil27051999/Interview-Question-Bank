@@ -1759,6 +1759,98 @@ Importance: Discover and remediate vulnerabilities before deploying images to pr
 - Check application configuration and listen address (e.g., `0.0.0.0` vs `localhost`).  
 - Verify firewall and network settings on the host.
 
+```sh
+# Problem : Container is RUNNING but Application is NOT Accessible
+
+bash-5.1$ docker ps
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+# Run the container with a hidden mistake
+bash-5.1$ docker run -d \
+  --name web-app \
+  -p 8080:3000 \
+  hashicorp/http-echo \
+  -listen=127.0.0.1:3000 \
+  -text="Hello from Docker"
+Unable to find image 'hashicorp/http-echo:latest' locally
+latest: Pulling from hashicorp/http-echo
+3d17c666b2a2: Pull complete 
+e5dbef90bae3: Pull complete 
+2047f8b74670: Pull complete 
+eebb06941f3e: Pull complete 
+02cd68c0cbf6: Pull complete 
+d3c894b5b2b0: Pull complete 
+b40161cd83fc: Pull complete 
+65efb1cabba4: Pull complete 
+13547472c521: Pull complete 
+5d4746900976: Pull complete 
+Digest: sha256:fcb75f691c8b0414d670ae570240cbf95502cc18a9ba57e982ecac589760a186
+Status: Downloaded newer image for hashicorp/http-echo:latest
+765fb25776f3bf2b2eb5fe59a798c2ccdaccca52566eb6309a3264156b09b674
+
+bash-5.1$ docker ps
+CONTAINER ID   IMAGE                 COMMAND                  CREATED         STATUS         PORTS                                                 NAMES
+765fb25776f3   hashicorp/http-echo   "/http-echo -listen=…"   4 seconds ago   Up 3 seconds   5678/tcp, 0.0.0.0:8080->3000/tcp, :::8080->3000/tcp   web-app
+
+# Curl the app and check the reachability
+
+bash-5.1$ curl http://localhost:8080
+curl: (56) Recv failure: Connection reset by peer
+
+# TROUBLESHOOTING STEPS
+
+# Step 1: Check container logs
+
+bash-5.1$ docker ps
+CONTAINER ID   IMAGE                 COMMAND                  CREATED              STATUS              PORTS                                                 NAMES
+765fb25776f3   hashicorp/http-echo   "/http-echo -listen=…"   About a minute ago   Up About a minute   5678/tcp, 0.0.0.0:8080->3000/tcp, :::8080->3000/tcp   web-app
+
+# Step 2: Check container logs
+
+bash-5.1$ docker logs web-app
+2026/01/08 08:40:43 [INFO] server is listening on 127.0.0.1:3000
+
+# Step 3: Verify port mapping
+
+bash-5.1$ docker port web-app
+3000/tcp -> 0.0.0.0:8080
+3000/tcp -> :::8080
+
+# Step 4: Enter the container and test internally
+
+bash-5.1$ docker exec -it web-app sh
+OCI runtime exec failed: exec failed: container_linux.go:380: starting container process caused: exec: "sh": executable file not found in $PATH: unknown
+
+bash-5.1$ docker exec -it web-app /bin/sh
+OCI runtime exec failed: exec failed: container_linux.go:380: starting container process caused: exec: "/bin/sh": stat /bin/sh: no such file or directory: unknown
+
+bash-5.1$ curl http://localhost:8080
+curl: (56) Recv failure: Connection reset by peer
+
+# Problem
+# - The application is bound to localhost (127.0.0.1)
+# - Docker can’t forward traffic from outside the container to localhost.
+
+# FIX THE ISSUE
+
+# Step 1: Stop and remove the broken container
+
+bash-5.1$ docker rm -f web-app
+web-app
+bash-5.1$ docker run -d \
+  --name web-app \
+  -p 8080:3000 \
+  hashicorp/http-echo \
+  -listen=0.0.0.0:3000 \
+  -text="Hello from Docker"
+ed9c7b0db37b771117cf4b147633b42838769ef743432ee4878951d69b348ab6
+
+# Step 2: Verify Fix
+
+bash-5.1$ curl http://localhost:8080
+Hello from Docker
+bash-5.1$ 
+```
 ---
 
 ### 19. How to debug a container that exits immediately?
