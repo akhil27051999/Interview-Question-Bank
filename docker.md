@@ -1474,10 +1474,10 @@ bash-5.1$
 ---
 #### Docker Network Connectivity
 
-#### Test the network connectivity between two Docker containers by pinging from one container to another.
-- Create a network named my_network
-- Container Names: container1 and container2
-- Image: nginx and nginx:1.23.4
+- Test the network connectivity between two Docker containers by pinging from one container to another.
+  - Create a network named my_network
+  - Container Names: container1 and container2
+  - Image: nginx and nginx:1.23.4
 
 
 ```sh
@@ -1759,7 +1759,7 @@ Importance: Discover and remediate vulnerabilities before deploying images to pr
 - Check application configuration and listen address (e.g., `0.0.0.0` vs `localhost`).  
 - Verify firewall and network settings on the host.
 
-#### Lab Scenario : Container is RUNNING but Application is NOT Accessible
+### Lab Scenario : Container is RUNNING but Application is NOT Accessible
 
 `Interview Gold Answer`:
 
@@ -1874,7 +1874,7 @@ bash-5.1$
 
 ---
 
-#### Lab Scenario: You joined a DevOps team. A CI pipeline builds three microservice containers:
+### Lab Scenario: You joined a DevOps team. A CI pipeline builds three microservice containers:
   - auth-service
   - report-service
   - analytics-service
