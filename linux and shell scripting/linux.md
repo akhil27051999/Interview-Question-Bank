@@ -67,6 +67,122 @@ ln file.txt hardlink.txt
 # Create soft link
 ln -s file.txt softlink.txt
 ```
+```sh
+# ------------------- Create the base setup -------------------
+
+user@568d442825b6: mkdir -p /opt/app/bin /etc/app /var/log/app /backup
+user@568d442825b6: echo "console.log('Hello App')" > /opt/app/bin/app.js
+user@568d442825b6: echo "DB=prod" > /etc/app/app.conf
+user@568d442825b6: echo "App started" > /var/log/app/app.log
+
+
+# ------------------- Create a HARD LINK for config backup -------------------
+
+user@568d442825b6:~$ ln /etc/app/app.conf /backup/app.conf.hard
+
+# Check inode numbers: 
+user@568d442825b6:~$ ls -li /etc/app/app.conf /backup/app.conf.hard
+543386 -rw-rw-r-- 2 user user 8 Jan 10 12:20 /backup/app.conf.hard
+543386 -rw-rw-r-- 2 user user 8 Jan 10 12:20 /etc/app/app.conf
+
+# Observation: Both have same inode number and same data on disk
+
+
+# ------------------- Create a SOFT LINK (SYMLINK) for logs -------------------
+
+user@568d442825b6:~$ ln -s /var/log/app/app.log /opt/app/app.log
+user@568d442825b6:~$ ls -l /opt/app/app.log
+lrwxrwxrwx 1 user user 20 Jan 10 12:26 /opt/app/app.log -> /var/log/app/app.log
+
+# 1. Different inode
+# 2. Symlink stores path, not data
+# 3. Arrow (->) shows target
+
+
+# ------------------- Modify data & observe behavior -------------------
+
+user@568d442825b6:~$ echo "New entry" >> /backup/app.conf.hard
+
+# Now check the main file
+user@568d442825b6:~$ cat /etc/app/app.conf
+DB=prod
+New entry
+
+# Observation: Changes reflect everywhere because both point to the same inode. ✔
+
+
+# ------------------- Delete original file and test links -------------------
+
+# Delete original config file 
+user@568d442825b6:~$ rm /etc/app/app.conf
+user@568d442825b6:~$ cat /backup/app.conf.hard
+DB=prod
+New entry
+
+# Observation: 
+# ✔ File still exists
+# ✔ Data is safe
+# ✔ Inode still valid
+
+# Delete original log file
+user@568d442825b6:~$ rm /var/log/app/app.log
+user@568d442825b6:~$ cat /opt/app/app.log
+cat: /opt/app/app.log: No such file or directory
+
+# Observation: 
+#  ❌ Broken link
+#  ❌ “No such file or directory”
+
+
+# ------------------- Move original file -------------------
+user@568d442825b6:~$ mv /backup/app.conf.hard /backup/app.conf.moved
+user@568d442825b6:~$ ls -li /backup/app.conf.moved 
+543386 -rw-rw-r-- 1 user user 18 Jan 10 12:28 /backup/app.conf.moved
+
+# Observation: Hard link still works (same inode)
+
+
+user@568d442825b6:~$ mv /var/log/app /var/log/app_new
+mv: cannot move '/var/log/app' to '/var/log/app_new': Permission denied
+# ❌ Symlink breaks because path changed
+
+
+# ------------------- Filesystem boundary test -------------------
+
+user@568d442825b6:~$ df -h
+Filesystem      Size  Used Avail Use% Mounted on
+overlay          29G  4.3G   25G  15% /
+tmpfs            64M     0   64M   0% /dev
+tmpfs            64M  876K   64M   2% /run
+tmpfs           4.0M     0  4.0M   0% /run/lock
+shm              64M     0   64M   0% /dev/shm
+/dev/root        29G  4.3G   25G  15% /var/log/amazon/ssm
+tmpfs           1.9G     0  1.9G   0% /proc/acpi
+tmpfs           1.9G     0  1.9G   0% /proc/scsi
+tmpfs           1.9G     0  1.9G   0% /sys/firmware
+tmpfs           1.9G   20K  1.9G   1% /tmp
+tmpfs            52M  8.0K   52M   1% /run/user/1001
+
+user@568d442825b6:~$ ln /etc/app/app.conf /tmp/app.conf.hard
+ln: failed to access '/etc/app/app.conf': No such file or directory
+
+# ❌ If /etc and /tmp are on different filesystems → fails
+
+
+# ------------------- Permissions behavior -------------------
+
+user@568d442825b6:~$ chmod 000 /backup/app.conf.moved
+
+# Hard link respects file permissions
+
+user@568d442825b6:~$ cat /backup/app.conf.moved
+cat: /backup/app.conf.moved: Permission denied
+
+# Soft link permissions don’t matter — target file permissions apply
+
+user@568d442825b6:~$ 
+```
+```
 
 ---
 
