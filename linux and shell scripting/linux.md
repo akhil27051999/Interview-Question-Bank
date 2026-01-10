@@ -68,7 +68,7 @@ ln file.txt hardlink.txt
 ln -s file.txt softlink.txt
 ```
 
-### Practice Lab : hard links and soft links
+### Practice Lab : Hard links and Soft links
 
 ```bash
 # ------------------- Create the base setup -------------------
