@@ -1,9 +1,4 @@
-# DevOps Interview Preparation Guide — Kubernetes (Reformatted)
-
-This file contains the Kubernetes section of the DevOps Interview Preparation Guide, reformatted for readability and interview use.  
-Each question is shown as a heading; the answer is clearly separated under a highlighted "Answer" subheading. Commands and examples are in fenced code blocks. Tables are used where helpful.
-
----
+# DevOps Interview Preparation Guide — Kubernetes (
 
 ## Contents
 - [Category 1: Fundamentals & Architecture](#category-1-fundamentals--architecture)
@@ -39,7 +34,6 @@ Main components:
 | kube-proxy | Maintains network rules on the node to allow network communication to Pods. |
 | Container Runtime | Software that runs containers (e.g., Docker, containerd, CRI-O). |
 
----
 
 ## Q2 — What is the difference between a Pod, a Service, and a Deployment?
 **Answer**
@@ -125,8 +119,6 @@ Pod phases (high-level):
 - **Failed**: All containers terminated and at least one terminated in failure.  
 - **Unknown**: State cannot be obtained (e.g., node communication error).
 
----
-
 ## Q4 — What is etcd in Kubernetes and why is it important?
 **Answer**
 
@@ -135,7 +127,6 @@ Pod phases (high-level):
 - It is the "source of truth"; losing etcd or its data can cause cluster state loss and outages.
 - Protect etcd with backups, TLS, and encryption at rest in production.
 
----
 
 # Category 2: Configuration & Security
 
@@ -237,7 +228,6 @@ spec:
               name: my-secret
               key: password
 ```
----
 
 ## Q6 — How do you secure a Kubernetes cluster? (Real-time question)
 **Answer**
@@ -251,8 +241,6 @@ Key practices:
 - Use trusted base images and scan images for vulnerabilities.  
 - Use TLS for all API and inter-component communication.  
 - Audit logs, monitor control plane and kube-system components, and rotate credentials.
-
----
 
 ## Q7 — What are the types of Kubernetes probes and what is their use?
 **Answer**
@@ -324,8 +312,6 @@ readinessProbe:
   initialDelaySeconds: 5
   periodSeconds: 3
 ```
-
----
 
 ## Q8 — What is the difference between requests and limits in a Pod's resources?
 **Answer**
@@ -717,7 +703,7 @@ Network Policies act as firewalls for Pods, allowing fine-grained control over P
 
 # Category 4: Storage
 
-## Q14 — How is storage managed in Kubernetes?
+## Q13 — How is storage managed in Kubernetes?
 **Answer**
 
 **Definition:** Kubernetes manages storage using abstractions like Volumes, PersistentVolumes (PV), and PersistentVolumeClaims (PVC) to provide persistent and dynamic storage for Pods, independent of Pod lifecycle.
@@ -780,7 +766,7 @@ spec:
 
 Kubernetes abstracts storage via Volumes, PVs, and PVCs, allowing Pods to use persistent storage that survives restarts and can be dynamically provisioned.
 
-## Q15 — What is the difference between emptyDir and hostPath?
+## Q14 — What is the difference between emptyDir and hostPath?
 **Answer**
 
 ### emptyDir
@@ -850,7 +836,7 @@ emptyDir is ephemeral storage tied to Pod lifetime, while hostPath maps a host n
 
 # Category 5: Deployment & Scheduling
 
-## Q16 — What is the difference between a Deployment and a StatefulSet?
+## Q15 — What is the difference between a Deployment and a StatefulSet?
 **Answer**
 
 ### Deployment
@@ -935,7 +921,7 @@ spec:
 Deployments manage stateless Pods with interchangeable replicas, while StatefulSets manage stateful Pods with stable identities, ordering, and persistent storage.
 
 
-## Q17 — How do you perform a rolling update and rollback with a Deployment?
+## Q16 — How do you perform a rolling update and rollback with a Deployment?
 **Answer**
 
 ### Rolling Update and Rollback with Deployment
@@ -1003,7 +989,7 @@ spec:
 Rolling updates replace Pods incrementally without downtime, and rollbacks restore the Deployment to a previous working revision.
 
 
-## Q18 — What are Taints and Tolerations?
+## Q17 — What are Taints and Tolerations?
 **Answer**
 
 ### Taints and Tolerations
@@ -1059,7 +1045,7 @@ Taints repel Pods from nodes, and Tolerations allow Pods to tolerate those taint
 
 ---
 
-## Q19 — What are Node Affinity and Pod Affinity/Anti-Affinity?
+## Q18 — What are Node Affinity and Pod Affinity/Anti-Affinity?
 
 **Answer**
 
@@ -1150,7 +1136,7 @@ Node Affinity controls which nodes a Pod can run on, Pod Affinity co-locates Pod
 
 # Category 6: Troubleshooting & Commands (Real-time Scenarios)
 
-## Q20 — A Pod is stuck in Pending state. How do you debug it?
+## Q19 — A Pod is stuck in Pending state. How do you debug it?
 **Answer**
 
 ### Debugging a Pod in Pending State
@@ -1163,47 +1149,48 @@ Node Affinity controls which nodes a Pod can run on, Pod Affinity co-locates Pod
 
 **Action:** 
 
-  1. Check Pod Status and Events
-  
-    ```sh
-	kubectl describe pod <pod-name>
-	```
+#### 1. Check Pod Status and Events
+
+```sh
+kubectl describe pod <pod-name>
+```
   - Look for Events section
   - Common messages:
     - 0/3 nodes are available: Insufficient cpu/memory
 	- node(s) didn't match node selector
 	- taint/toleration conflicts
 
-  2. Check Node Resources
+#### 2. Check Node Resources
 
-    ```sh
-	kubectl get nodes -o wide
-	kubectl describe node <node-name>
-	```
-    - Ensure nodes have enough CPU, memory
-    - Verify ready status
+```sh
+kubectl get nodes -o wide
+kubectl describe node <node-name>
+```
+- Ensure nodes have enough CPU, memory
+- Verify ready status
 
-  3. Check Resource Requests and Limits
+#### 3. Check Resource Requests and Limits
 
-    - Pods with high requests may not fit on any node
-	- Adjust requests or scale nodes
+- Pods with high requests may not fit on any node
+- Adjust requests or scale nodes
 
-  4. Check Node Affinity / Taints / Tolerations
-	- Node labels must match nodeSelector or nodeAffinity
-	- Pod must tolerate taints on nodes
+#### 4. Check Node Affinity / Taints / Tolerations
+- Node labels must match nodeSelector or nodeAffinity
+- Pod must tolerate taints on nodes
   
-  5. Check Namespace Quotas or LimitRanges
+#### 5. Check Namespace Quotas or LimitRanges
 
-    ```sh
-	kubectl get resourcequota -n <namespace>
-	kubectl describe limitrange -n <namespace>
-	```
-	- Quotas may prevent new Pods from scheduling
+```sh
+kubectl get resourcequota -n <namespace>
+kubectl describe limitrange -n <namespace>
+```
+- Quotas may prevent new Pods from scheduling
 
-  6. Check Scheduler Logs (Optional for deeper debugging)
-    ```sh
-	kubectl -n kube-system logs <kube-scheduler-pod-name>
-	```
+#### 6. Check Scheduler Logs (Optional for deeper debugging)
+
+```sh
+kubectl -n kube-system logs <kube-scheduler-pod-name>
+```
 
 **Common Causes:**
 | Cause                                 | Description                                               |
@@ -1219,25 +1206,129 @@ A Pod in Pending state usually indicates scheduling issues; check events, node r
 
 ---
 
-## Q21 — A Pod is in CrashLoopBackOff state. What are the steps to debug?
+## Q20 — A Pod is in CrashLoopBackOff state. What are the steps to debug?
+
 **Answer**
 
-1. Check logs:
-```bash
-kubectl logs <pod-name> [-c <container-name>]
-kubectl logs <pod-name> --previous
-```
-2. Describe the Pod for events:
-```bash
+### Debugging a Pod in CrashLoopBackOff
+**Definition:** A Pod is in CrashLoopBackOff when its container starts, crashes, and Kubernetes keeps trying to restart it repeatedly.
+
+**Use Case:**
+  - Ensure application containers start and run correctly
+  - Identify issues with image, configuration, or startup scripts
+
+**Action:** 
+
+#### 1. Check Pod Status and Events
+```sh
 kubectl describe pod <pod-name>
 ```
-3. Exec into the Pod (if possible):
-```bash
+- Look under Events for:
+  - Back-off restarting failed container
+  - CrashLoopBackOff reason
+  - Provides initial clues about why the container failed
+
+#### 2. Check Container Logs
+```sh
+kubectl logs <pod-name>        # Default container
+kubectl logs <pod-name> -c <container-name>  # Multi-container Pod
+kubectl logs <pod-name> --previous  # Logs from previous crash
+```
+- Look for stack traces, errors, or misconfigurations
+  
+#### 3. Check Image and Command
+- Verify container image exists and is correct version
+- Check command / args in Pod spec for typos or missing binaries
+
+#### 4. Check Resource Limits
+- Too low CPU/memory limits can cause container crashes
+- Adjust resources.limits or requests if needed
+
+#### 5. Check ConfigMaps and Secrets
+- Missing or misconfigured environment variables or mounted volumes can crash the container
+
+#### 6. Run Interactive Debug Session (Optional)
+```sh
+kubectl run debug --image=busybox --rm -it -- /bin/sh
 kubectl exec -it <pod-name> -- /bin/sh
 ```
-4. Check resource limits (OOMKilled), ConfigMaps/Secrets, entrypoint/cmd, and start-up dependencies.
+- Manually inspect filesystem, config, or connectivity
 
----
+#### Common Causes:
+| Cause                          | Description                                       |
+| ------------------------------ | ------------------------------------------------- |
+| **Application error**          | Crashes due to bugs or exceptions                 |
+| **Bad image / command**        | Missing binaries or wrong entrypoint              |
+| **Missing ConfigMap / Secret** | Environment variables or volumes not mounted      |
+| **Resource limits exceeded**   | Container OOMKilled or CPU throttled              |
+| **Dependency failure**         | Pod fails because external service is unreachable |
+
+#### Interview One-Liner
+CrashLoopBackOff occurs when a container repeatedly fails to start; check events, logs, commands, configs, and resource limits to debug.
+
+## Q21 — A pod struck in ImagePullBackOff. How will you debug ?
+
+### Debugging a Pod in ImagePullBackOff
+
+**Definition:** A Pod is in ImagePullBackOff when Kubernetes fails to pull the container image from the container registry.
+
+**Use Case:**
+  - Ensure containers start successfully
+  - Identify image availability, authentication, or configuration issues
+  
+**Action:** 
+
+#### 1. Check Pod Status and Events
+```sh
+kubectl describe pod <pod-name>
+```
+- Look under Events for:
+  - Failed to pull image "<image>"
+  - Back-off pulling image
+  - Provides error reason (e.g., image not found, unauthorized)
+
+#### 2. Verify Image Name and Tag
+- Ensure the image name, tag, and registry are correct
+- Common mistakes:
+  - Typos in image name or tag
+  - Missing tag (defaults to latest)
+  - Private registry used without credentials
+
+#### 3. Check Image Pull Secrets (for private registries)
+  ```sh
+  kubectl get secrets
+  kubectl describe secret <secret-name>
+  ```
+  - Add secret to Pod spec if pulling from private registry:
+  ```yaml
+  imagePullSecrets:
+    - name: my-registry-secret
+  ```
+#### 4. Test Image Pull Manually
+  ```sh
+  docker pull <image>
+  ```
+  - Helps verify registry access and credentials
+
+#### 5. Check Node Connectivity to Registry
+  - Ensure nodes can reach the registry (firewall, DNS, proxy issues)
+
+#### 6. Check Node Disk / Cache Issues
+  - Sometimes cached or corrupted images cause pull failures
+  ```sh
+  docker system prune -a   # on node (if safe)
+  ```
+#### Common Causes:
+| Cause                      | Description                                |
+| -------------------------- | ------------------------------------------ |
+| **Wrong image name / tag** | Image doesn’t exist in registry            |
+| **Private registry**       | Missing imagePullSecret for authentication |
+| **Network / DNS issues**   | Node cannot reach container registry       |
+| **Registry rate limits**   | Pull request rejected by registry          |
+| **Node disk issues**       | Corrupted image cache or insufficient disk |
+
+#### Interview One-Liner
+ImagePullBackOff occurs when Kubernetes cannot pull a container image; check image name, tag, registry credentials, network, and node disk issues to debug.
 
 ## Q22 — How do you check the health of your cluster?
 **Answer**
@@ -1281,31 +1372,262 @@ Requires Metrics Server installed in the cluster.
 ## Q25 — What are Custom Resource Definitions (CRDs) and Operators?
 **Answer**
 
-- **CRD**: Extend the Kubernetes API by defining new resource types (e.g., `CronTab`).  
-- **Operator**: A custom controller (often built around CRDs) that encodes operational knowledge for managing complex applications (backups, upgrades, scaling) in a Kubernetes-native way.
+### Custom Resource Definitions (CRDs) and Operators
 
----
+**Definition:** 
+- Custom Resource Definitions (CRDs):
+  A CRD allows you to extend the Kubernetes API with custom resources, letting you define your own 
+  resource types beyond the built-in ones (Pod, Deployment, Service, etc.).
 
-## Q26 — What are Init Containers?
+- Operators: Operators are controllers that use CRDs to automate the management of complex applications in Kubernetes, such as deploying, scaling, backing up, or upgrading stateful applications.
+
+**Use Case:**
+  - CRDs:
+    - Represent application-specific resources like MySQLCluster, RedisCache, or BackupJob
+	- Enable Kubernetes-native management of custom workloads
+  - Operators:
+    - Automate lifecycle management of stateful apps
+	- Handle scaling, failover, upgrades, backups automatically
+	- Implement domain-specific knowledge into Kubernetes
+
+**Action:** 
+  - CRD: Define the schema for a new resource type, and Kubernetes API allows CRUD operations on it.
+  - Operator: Watches for CRD instances and executes logic to maintain the desired state.
+
+**YAML:**
+```yaml
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: mydatabases.example.com
+spec:
+  group: example.com
+  versions:
+    - name: v1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                size:
+                  type: integer
+  scope: Namespaced
+  names:
+    plural: mydatabases
+    singular: mydatabase
+    kind: MyDatabase
+```
+#### Operator Example (Conceptual):
+```txt
+CRD instance: MyDatabase
+  spec:
+    size: 3
+
+Operator watches MyDatabase:
+  - Creates 3 MySQL Pods
+  - Monitors health
+  - Handles failover and scaling automatically
+```
+
+#### Interview One-Liner
+
+CRDs extend Kubernetes with custom resources, and Operators automate the lifecycle management of these resources using Kubernetes-native APIs.
+
+## Q26 — What are Init Containers and Sidecars?
+
 **Answer**
 
-Init containers run before app containers in a Pod and must complete successfully before the main containers start. Used for initialization tasks such as migrations, config bootstrapping, or waiting for external services.
+### Init Containers
+
+**Definition:** Init Containers are special containers that run before the main application container(s) in a Pod. They must complete successfully before the main containers start.
+
+**Use Case:**
+  - Initialize data or configuration before app starts
+  - Perform pre-checks (e.g., database availability, schema migrations)
+  - Ensure dependencies are ready before main container execution
+
+**Action:** 
+  - Pod will not start main containers until all Init Containers succeed
+  - Each Init Container runs sequentially
+
+**YAML:**
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: init-container-pod
+spec:
+  initContainers:
+    - name: init-myservice
+      image: busybox
+      command: ['sh', '-c', 'echo Initializing; sleep 5']
+  containers:
+    - name: myapp
+      image: nginx
+```
+
+### Sidecar Containers
+
+**Definition:** Sidecar Containers are additional containers running alongside the main container in the same Pod to support the main application.
+
+**Use Case:**
+  - Logging or monitoring agents (e.g., Fluentd)
+  - Proxy or helper services (e.g., Envoy, Nginx)
+  - Configuration updates, cache refresh, or database sync
+
+**Action:** 
+  - Runs concurrently with main container
+  - Shares the Pod’s network and storage
+  - Supports main container functionality without modifying it
+
+**YAML:**
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sidecar-pod
+spec:
+  containers:
+    - name: myapp
+      image: nginx
+      volumeMounts:
+        - name: shared-data
+          mountPath: /usr/share/nginx/html
+    - name: log-agent
+      image: fluentd
+      volumeMounts:
+        - name: shared-data
+          mountPath: /var/log
+  volumes:
+    - name: shared-data
+      emptyDir: {}
+```
+
+#### Interview One-Liner
+
+Init Containers run sequentially before main containers for initialization tasks, while Sidecar Containers run alongside the main container to provide supporting functionality.
 
 ---
 
 ## Q27 — What is the Horizontal Pod Autoscaler (HPA) and how does it work?
 **Answer**
 
-HPA scales the number of Pod replicas based on observed metrics (CPU or custom metrics). It queries the Metrics Server (or custom metrics API), compares current usage to target, and adjusts replicas accordingly.
+### Horizontal Pod Autoscaler (HPA)
+**Definition:** The Horizontal Pod Autoscaler (HPA) automatically scales the number of Pod replicas in a Deployment, ReplicaSet, or StatefulSet based on observed metrics, such as CPU, memory, or custom metrics.
 
----
+**Use Case:**
+  - Automatically handle variable workloads without manual intervention
+  - Ensure application performance under high load
+  - Reduce resource wastage during low traffic periods
+
+**Action:** 
+  - Monitors metrics from the metrics API (e.g., CPU usage)
+  - Compares metrics against target thresholds
+  - Increases or decreases replicas to maintain the desired performance
+  - Works continuously in the control loop
+
+**YAML:**
+```yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: web-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: web-deployment
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50
+```
+
+#### HPA Workflow / Steps:
+
+  1. HPA fetches metrics for the target Pods (CPU, memory, or custom).
+  2. Compares the current usage with the target threshold.
+  3. Calculates the desired number of replicas using:
+
+  ```txt
+  desiredReplicas = ceil(currentMetric / targetMetric * currentReplicas)
+  ```
+  4. Updates the Deployment/ReplicaSet with the new replica count.
+  5. Kubernetes scheduler creates or deletes Pods accordingly.
+
+#### Common Use Cases / Metrics:
+
+| Metric Type        | Description                                                                    |
+| ------------------ | ------------------------------------------------------------------------------ |
+| CPU Utilization    | Scale Pods based on CPU usage percentage                                       |
+| Memory Utilization | Scale Pods based on memory usage                                               |
+| Custom Metrics     | Scale based on application-specific metrics (e.g., queue length, request rate) |
+
+#### Interview One-Liner
+
+HPA automatically adjusts the number of Pod replicas based on observed metrics to ensure applications scale dynamically with workload demand.
 
 ## Q28 — What is a DaemonSet?
 **Answer**
 
-DaemonSet ensures a copy of a Pod runs on all (or selected) nodes. Useful for node-level services: log collection, node monitoring, storage daemons.
+### DaemonSet
 
----
+**Definition:** A DaemonSet ensures that a copy of a Pod runs on all (or selected) nodes in a Kubernetes cluster.
+
+**Use Case:**
+  - Deploy cluster-level services such as monitoring, logging, or security agents
+  - Ensure network or storage services run on every node (e.g., Fluentd, Prometheus Node Exporter, Calico)
+  - Automatically run Pods on new nodes as they are added to the cluster
+
+**Action:** 
+  - Kubernetes automatically schedules the DaemonSet Pod on all eligible nodes
+  - When a new node joins, the DaemonSet controller schedules the Pod on it
+  - Deleting a node or the DaemonSet removes Pods accordingly
+
+
+**YAML:**
+```yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: fluentd-ds
+spec:
+  selector:
+    matchLabels:
+      app: fluentd
+  template:
+    metadata:
+      labels:
+        app: fluentd
+    spec:
+      containers:
+        - name: fluentd
+          image: fluent/fluentd:latest
+          resources:
+            limits:
+              memory: "200Mi"
+              cpu: "100m"
+```
+#### Key Points:
+| Feature       | Description                                         |
+| ------------- | --------------------------------------------------- |
+| Pod Placement | Runs **one Pod per node**                           |
+| Use Case      | Logging agents, monitoring agents, networking tools |
+| Node Addition | New nodes automatically get the DaemonSet Pod       |
+| Node Removal  | Pods on deleted nodes are removed automatically     |
+
+#### Interview One-Liner
+
+A DaemonSet ensures that a Pod runs on all or selected nodes, making it ideal for cluster-level services like logging, monitoring, or networking.
 
 ## Q29 — What is the role of the Kubelet?
 **Answer**
@@ -1316,11 +1638,143 @@ Kubelet runs on every node and:
 - Instructs the container runtime to run/stop containers
 - Runs liveness/readiness probes and reports status
 
----
+#### Kubelet Workflow (Conceptual):
 
-## Q30 — What is the difference between a ReplicaSet and a Deployment?
+```txt
+API Server -> Kubelet on Node -> Container Runtime -> Pod Containers
+```
+1. API Server sends PodSpec to Kubelet.
+2. Kubelet ensures containers are created, running, and configured properly.
+3. Kubelet monitors Pod health and reports status back.
+4. Kubelet handles volume mounting, secrets, and config management for Pods.
+
+
+## Q30 — What are the different kubernetes deployment strategies?
 **Answer**
 
-- **ReplicaSet**: Ensures a specified number of replicas of a Pod are running. Lower-level controller.  
-- **Deployment**: Manages ReplicaSets and provides declarative updates, rolling updates, and rollback. Typically you manage Deployments (not ReplicaSets) directly.
+### Kubernetes Deployment Strategies
 
+### 1. Rolling Update
+
+**Definition:** Gradually replaces old Pods with new Pods without downtime, updating a few Pods at a time.
+
+**Use Case:**
+  - Deploy new versions of stateless applications safely
+  - Maintain availability during updates
+
+**Action:** 
+  - Kubernetes updates Pods incrementally according to maxUnavailable and maxSurge settings
+  - Old Pods are terminated only after new Pods are running
+
+**YAML:**
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-deployment
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.21
+```
+
+### 2. Recreate
+
+**Definition:** Deletes all existing Pods before creating new ones for the updated Deployment.
+
+**Use Case:** 
+  - Applications that cannot run multiple versions simultaneously
+  - Stateful or legacy apps that require exclusive access to resources
+
+**Action:** 
+  - All old Pods are terminated first, then new Pods are created
+  - Causes downtime during deployment
+
+**YAML:**
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-deployment
+spec:
+  replicas: 3
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.21
+```
+
+### 3. Blue-Green Deployment
+
+**Definition:** Runs two separate environments (blue = current, green = new) and switches traffic to the new environment when ready.
+
+**Use Case:**
+  - Zero-downtime deployment with instant rollback
+  - Safely test new version before switching traffic
+
+**Action:** 
+  - Deploy new Pods alongside old Pods
+  - Update Service selector to route traffic from old (blue) to new (green)
+  - Old environment can be kept as backup
+
+#### Conceptual Example:
+```txt
+Service selector initially -> blue Pods
+Deploy green Pods
+Switch Service selector -> green Pods
+Delete blue Pods (optional)
+```
+
+### 4. Canary Deployment
+
+**Definition:** Releases new version to a small subset of users first, then gradually increases traffic if successful.
+
+**Use Case:**
+  - Test new features safely in production
+  - Limit exposure to potential issues
+
+**Action:** 
+  - Deploy new Pods (canary) alongside old Pods
+  - Use Ingress or Service weight to send a percentage of traffic to canary
+  - Monitor performance, then scale up or roll back
+
+#### Conceptual Example:
+```txt
+10% traffic -> new version (canary)
+90% traffic -> old version
+If stable -> increase canary traffic to 100%
+```
+#### Comparison Table
+
+| Strategy       | Downtime | Complexity | Use Case                              |
+| -------------- | -------- | ---------- | ------------------------------------- |
+| Rolling Update | None     | Low        | Safe updates of stateless apps        |
+| Recreate       | Yes      | Low        | Apps that can’t run multiple versions |
+| Blue-Green     | None     | Medium     | Instant rollback, zero-downtime       |
+| Canary         | None     | High       | Gradual testing in production         |
+
+#### Interview One-Liner
+Kubernetes deployment strategies (RollingUpdate, Recreate, Blue-Green, Canary) control how Pods are updated to minimize downtime and risk during application releases.
