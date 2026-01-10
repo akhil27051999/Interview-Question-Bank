@@ -59,7 +59,7 @@ Key directories and purpose:
 - **Hard link**: Direct reference to the same inode. Cannot cross filesystems. File remains until all hard links removed.  
 - **Soft link (symbolic)**: Pointer to a filename (path). Can cross filesystems; becomes broken if the original is deleted.
 
-Examples:
+`Examples:`
 ```bash
 # Create hard link
 ln file.txt hardlink.txt
@@ -182,8 +182,6 @@ cat: /backup/app.conf.moved: Permission denied
 
 user@568d442825b6:~$ 
 ```
-```
-
 ---
 
 ### Q4 — Explain Linux process states.
