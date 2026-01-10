@@ -69,6 +69,7 @@ This README organizes a complete analogy-driven explanation of networking concep
   - Street inside: Pine Street (subnet)
 
 These neighborhoods are isolated networks — VPCs. Communication between them goes through routers / streets (routing).
+<img width="1536" height="1024" alt="ChatGPT Image Dec 31, 2025, 06_56_04 PM" src="https://github.com/user-attachments/assets/f5a368a2-897f-4ff0-9629-c18099947946" />
 
 ---
 
@@ -200,6 +201,7 @@ Equivalent to AWS Elastic Load Balancer.
 ---
 
 # OSI Model Explained Using the City Analogy
+<img width="1536" height="1024" alt="ChatGPT Image Dec 31, 2025, 07_08_45 PM" src="https://github.com/user-attachments/assets/f7c0c339-0dd6-48ae-b87b-c2390227c90c" />
 
 ## Layer-by-layer descriptions (7 → 1)
 
