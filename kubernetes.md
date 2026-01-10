@@ -16,9 +16,9 @@ Each question is shown as a heading; the answer is clearly separated under a hig
 
 ---
 
-## Category 1: Fundamentals & Architecture
+# Category 1: Fundamentals & Architecture
 
-### Q1 — What is Kubernetes and what are its main components?
+## Q1 — What is Kubernetes and what are its main components?
 **Answer**
 
 Kubernetes is an open-source container orchestration platform for automating the deployment, scaling, and management of containerized applications.
@@ -41,10 +41,10 @@ Main components:
 
 ---
 
-### Q2 — What is the difference between a Pod, a Service, and a Deployment?
+## Q2 — What is the difference between a Pod, a Service, and a Deployment?
 **Answer**
 
-### **1. Pod**
+### 1. Pod
 **Definition:**  The smallest and simplest unit in Kubernetes. A Pod represents a single instance of a running process and can contain one or more containers.
 
 **Use Case:**  Running applications or services in containers.
@@ -63,7 +63,7 @@ spec:
         - containerPort: 80
 ```
 
-### **2. Deployment**
+### 2. Deployment
 
 **Definition:**  Provides declarative updates to Pods and manages ReplicaSets. Supports rolling updates, rollbacks, and scaling.
 
@@ -93,7 +93,7 @@ spec:
           ports:
             - containerPort: 80
 ```
-### **3. Service**
+### 3. Service
 **Definition:**  A `Service` provides a stable internal endpoint for accessing a group of Pods. The `ClusterIP` type is the default, and is only accessible from within the cluster.
 
 **Use Case:**  Internal communication between microservices or applications.
@@ -115,7 +115,7 @@ spec:
 
 ---
 
-### Q3 — Explain the Pod lifecycle.
+## Q3 — Explain the Pod lifecycle.
 **Answer**
 
 Pod phases (high-level):
@@ -127,7 +127,7 @@ Pod phases (high-level):
 
 ---
 
-### Q4 — What is etcd in Kubernetes and why is it important?
+## Q4 — What is etcd in Kubernetes and why is it important?
 **Answer**
 
 - **etcd** is a strongly consistent, distributed key-value store.
@@ -137,12 +137,12 @@ Pod phases (high-level):
 
 ---
 
-## Category 2: Configuration & Security
+# Category 2: Configuration & Security
 
-### Q5 — What is the difference between a ConfigMap and a Secret?
+## Q5 — What is the difference between a ConfigMap and a Secret?
 **Answer**
 
-### **ConfigMap**
+### ConfigMap
 **Definition:**  Stores non-sensitive config data in key-value format. Useful for app configuration.
 
 **Use Case:**  Pass environment variables or files to containers.
@@ -188,7 +188,7 @@ spec:
         name: my-configmap
 ```
 
-### **Secrets**
+### Secrets
 
 **Definition:** Stores sensitive information like credentials, tokens, SSH keys in base64 encoded format.
 In production enable encryption at rest for Secrets and restrict access via RBAC.
@@ -239,7 +239,7 @@ spec:
 ```
 ---
 
-### Q6 — How do you secure a Kubernetes cluster? (Real-time question)
+## Q6 — How do you secure a Kubernetes cluster? (Real-time question)
 **Answer**
 
 Key practices:
@@ -254,10 +254,10 @@ Key practices:
 
 ---
 
-### Q7 — What are the types of Kubernetes probes and what is their use?
+## Q7 — What are the types of Kubernetes probes and what is their use?
 **Answer**
 
-### **Kubernetes Probes**
+### Kubernetes Probes
 
 **Definition:** 
 Probes are health check mechanisms in Kubernetes used to determine whether a container is running, ready to serve traffic, or has started successfully.
@@ -270,7 +270,7 @@ Ensure application reliability by restarting unhealthy containers, controlling t
 - Readiness Probe
 - Startup Probe
 
-### **1. Startup Probe**
+### 1. Startup Probe
 **Definition:** Checks whether a container has started successfully.
 
 **Use Case:**  
@@ -287,7 +287,7 @@ startupProbe:
   initialDelaySeconds: 10
   periodSeconds: 5
 ```
-### **2. Liveness Probe**
+### 2. Liveness Probe
 
 **Definition:** Checks whether the container is still running and responsive.
 
@@ -307,7 +307,7 @@ livenessProbe:
   periodSeconds: 5
 ```
 
-### **3. Readiness Probe**
+### 3. Readiness Probe
 **Definition:** Checks whether the container is ready to accept incoming traffic.
 
 **Use Case:**  
@@ -327,10 +327,10 @@ readinessProbe:
 
 ---
 
-### Q8 — What is the difference between requests and limits in a Pod's resources?
+## Q8 — What is the difference between requests and limits in a Pod's resources?
 **Answer**
 
-### **Resource Requests and Limits**
+### Resource Requests and Limits
 
 **Definition:** Resource requests define the minimum CPU and memory required by a container, while limits define the maximum resources a container is allowed to consume.
 
@@ -339,7 +339,7 @@ readinessProbe:
   - Prevents a single container from over-consuming CPU or memory
   - Ensures fair resource sharing in a cluster
 
-### **How Kubernetes Uses Requests and Limits**
+### How Kubernetes Uses Requests and Limits
 
 **Scheduler Behavior:**
   - Uses requests to decide which node can run the Pod
@@ -364,19 +364,19 @@ spec:
 ```
 **Key Points:**
 
-*1. CPU*
+1. CPU
   - 500m = 0.5 CPU core
   - Exceeding CPU limit → Throttling
 
-*2. Memory*
+2. Memory
   - Memory is not compressible
   - Exceeding memory limit → OOMKilled
 
 
 
-## Category 3: Networking & Services
+# Category 3: Networking & Services
 
-### Q9 — How does Kubernetes networking work?
+## Q9 — How does Kubernetes networking work?
 **Answer**
 
 Kubernetes networking model requires:
@@ -388,20 +388,126 @@ A CNI plugin (Calico, Flannel, Cilium, etc.) implements the network (overlay or 
 
 ---
 
-### Q10 — What is a Kubernetes Service and what are its types?
+## Q10 — What is a Kubernetes Service and what are its types?
 **Answer**
 
-A Service exposes a logical set of Pods and provides stable discovery.
+### Kubernetes Service
 
-Types:
-- **ClusterIP** (default): Exposes service inside the cluster.  
-- **NodePort**: Exposes service on a static port on every node.  
-- **LoadBalancer**: Provisions an external cloud load balancer and exposes service externally.  
-- **ExternalName**: Maps a service to an external DNS name (CNAME).
+**Definition:** A Service is an abstraction that exposes a set of Pods as a network service, providing a stable IP and DNS name.
+
+**Use Case:**
+  - Provides stable networking despite Pod restarts
+  - Load balances traffic across multiple Pods
+  - Decouples applications from Pod lifecycle changes
+
+**Common Commands:**
+```sh
+kubectl get services
+kubectl describe service <service-name>
+```
+
+### 1. ClusterIP Service
+
+**Definition:** Default Service type that exposes the application internally within the cluster.
+
+**Use Case:** 
+  - Communication between internal services
+  - Backend or internal microservices
+  - Not accessible from outside the cluster
+
+**Action:** Traffic is accessible only within the cluster
+
+**YAML:**
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+spec:
+  selector:
+    app: my-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+```
+
+### 2. NodePort Service
+
+**Definition:** Exposes the Service on a static port on each Node’s IP.
+
+**Use Case:**
+  - External access via <NodeIP>:<NodePort>
+  - Useful for testing and quick access
+  - Not recommended for production
+
+**Action:** Traffic enters through the node’s IP and port
+
+**YAML:**
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-nodeport-service
+spec:
+  type: NodePort
+  selector:
+    app: my-app
+  ports:
+    - port: 80
+      targetPort: 8080
+      nodePort: 30080
+```
+
+### 3. LoadBalancer Service
+
+**Definition:** Exposes the Service externally using a cloud provider’s load balancer.
+
+**Use Case:** 
+  - Production-grade external access
+  - Automatically provisions a cloud load balancer (AWS, GCP, Azure)
+
+**Action:** Traffic is routed via an external load balancer
+
+**YAML:**
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-loadbalancer-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: my-app
+  ports:
+    - port: 80
+      targetPort: 8080
+```
+
+### 4. ExternalName Service
+
+**Definition:** Maps a Service to an external DNS name instead of a ClusterIP.
+
+**Use Case:**
+  - Access external services (e.g., external DB, SaaS APIs)
+  - No proxying—only DNS resolution
+
+**Action:** Service resolves directly to an external DNS name
+
+**YAML:**
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-external-service
+spec:
+  type: ExternalName
+  externalName: external.example.com
+```
 
 ---
 
-### Q11 — What is the difference between ClusterIP and LoadBalancer?
+## Q11 — What is the difference between ClusterIP and LoadBalancer?
 **Answer**
 
 - **ClusterIP**: Internal-facing service accessible only within the cluster.  
@@ -409,7 +515,7 @@ Types:
 
 ---
 
-### Q12 — What is an Ingress and why is it used?
+## Q12 — What is an Ingress and why is it used?
 **Answer**
 
 - **Ingress**: Kubernetes API object to manage external HTTP/HTTPS access to services, providing host/path-based routing and TLS termination.  
@@ -417,7 +523,7 @@ Types:
 
 ---
 
-### Q13 — What are Network Policies?
+## Q13 — What are Network Policies?
 **Answer**
 
 - **NetworkPolicy**: Kubernetes resource that controls ingress/egress traffic to/from Pods.  
@@ -425,9 +531,9 @@ Types:
 
 ---
 
-## Category 4: Storage
+# Category 4: Storage
 
-### Q14 — How is storage managed in Kubernetes?
+## Q14 — How is storage managed in Kubernetes?
 **Answer**
 
 - **Volume**: Directory accessible to containers in a Pod (lifecycle = Pod).  
@@ -437,7 +543,7 @@ Types:
 
 ---
 
-### Q15 — What is the difference between emptyDir and hostPath?
+## Q15 — What is the difference between emptyDir and hostPath?
 **Answer**
 
 - **emptyDir**: Ephemeral storage created when Pod is scheduled on a node; deleted when Pod dies. Good for scratch or sharing between containers in a Pod.  
@@ -445,9 +551,9 @@ Types:
 
 ---
 
-## Category 5: Deployment & Scheduling
+# Category 5: Deployment & Scheduling
 
-### Q16 — What is the difference between a Deployment and a StatefulSet?
+## Q16 — What is the difference between a Deployment and a StatefulSet?
 **Answer**
 
 - **Deployment**: For stateless apps. Pods are interchangeable, and scaling/updates are unordered.  
@@ -455,7 +561,7 @@ Types:
 
 ---
 
-### Q17 — How do you perform a rolling update and rollback with a Deployment?
+## Q17 — How do you perform a rolling update and rollback with a Deployment?
 **Answer**
 
 - Trigger rolling update by updating the Pod template (e.g., image). Example:
@@ -470,7 +576,7 @@ You can target a specific revision with `--to-revision`.
 
 ---
 
-### Q18 — What are Taints and Tolerations?
+## Q18 — What are Taints and Tolerations?
 **Answer**
 
 - **Taint (node)**: Marks node with key/value and effect (NoSchedule, PreferNoSchedule, NoExecute) to repel Pods.  
@@ -480,7 +586,7 @@ Use case: dedicate nodes (e.g., GPU nodes) or isolate workloads.
 
 ---
 
-### Q19 — What are Node Affinity and Pod Affinity/Anti-Affinity?
+## Q19 — What are Node Affinity and Pod Affinity/Anti-Affinity?
 **Answer**
 
 - **Node Affinity**: Constrains Pods onto nodes matching node labels (e.g., `disktype=ssd`).  
@@ -489,9 +595,9 @@ Use case: dedicate nodes (e.g., GPU nodes) or isolate workloads.
 
 ---
 
-## Category 6: Troubleshooting & Commands (Real-time Scenarios)
+# Category 6: Troubleshooting & Commands (Real-time Scenarios)
 
-### Q20 — A Pod is stuck in Pending state. How do you debug it?
+## Q20 — A Pod is stuck in Pending state. How do you debug it?
 **Answer**
 
 Steps:
@@ -510,7 +616,7 @@ kubectl describe node <node-name>
 
 ---
 
-### Q21 — A Pod is in CrashLoopBackOff state. What are the steps to debug?
+## Q21 — A Pod is in CrashLoopBackOff state. What are the steps to debug?
 **Answer**
 
 1. Check logs:
@@ -530,7 +636,7 @@ kubectl exec -it <pod-name> -- /bin/sh
 
 ---
 
-### Q22 — How do you check the health of your cluster?
+## Q22 — How do you check the health of your cluster?
 **Answer**
 
 Useful commands:
@@ -545,7 +651,7 @@ Also check critical `kube-system` Pods and control plane logs.
 
 ---
 
-### Q23 — How do you curl a Service from within the cluster for testing?
+## Q23 — How do you curl a Service from within the cluster for testing?
 **Answer**
 
 Run a temporary pod with curl:
@@ -557,7 +663,7 @@ curl http://<service-name>.<namespace>.svc.cluster.local
 
 ---
 
-### Q24 — What is the command to see the CPU and Memory usage of Pods?
+## Q24 — What is the command to see the CPU and Memory usage of Pods?
 **Answer**
 
 ```bash
@@ -567,9 +673,9 @@ Requires Metrics Server installed in the cluster.
 
 ---
 
-## Category 7: Advanced Concepts
+# Category 7: Advanced Concepts
 
-### Q25 — What are Custom Resource Definitions (CRDs) and Operators?
+## Q25 — What are Custom Resource Definitions (CRDs) and Operators?
 **Answer**
 
 - **CRD**: Extend the Kubernetes API by defining new resource types (e.g., `CronTab`).  
@@ -577,28 +683,28 @@ Requires Metrics Server installed in the cluster.
 
 ---
 
-### Q26 — What are Init Containers?
+## Q26 — What are Init Containers?
 **Answer**
 
 Init containers run before app containers in a Pod and must complete successfully before the main containers start. Used for initialization tasks such as migrations, config bootstrapping, or waiting for external services.
 
 ---
 
-### Q27 — What is the Horizontal Pod Autoscaler (HPA) and how does it work?
+## Q27 — What is the Horizontal Pod Autoscaler (HPA) and how does it work?
 **Answer**
 
 HPA scales the number of Pod replicas based on observed metrics (CPU or custom metrics). It queries the Metrics Server (or custom metrics API), compares current usage to target, and adjusts replicas accordingly.
 
 ---
 
-### Q28 — What is a DaemonSet?
+## Q28 — What is a DaemonSet?
 **Answer**
 
 DaemonSet ensures a copy of a Pod runs on all (or selected) nodes. Useful for node-level services: log collection, node monitoring, storage daemons.
 
 ---
 
-### Q29 — What is the role of the Kubelet?
+## Q29 — What is the role of the Kubelet?
 **Answer**
 
 Kubelet runs on every node and:
@@ -609,17 +715,9 @@ Kubelet runs on every node and:
 
 ---
 
-### Q30 — What is the difference between a ReplicaSet and a Deployment?
+## Q30 — What is the difference between a ReplicaSet and a Deployment?
 **Answer**
 
 - **ReplicaSet**: Ensures a specified number of replicas of a Pod are running. Lower-level controller.  
 - **Deployment**: Manages ReplicaSets and provides declarative updates, rolling updates, and rollback. Typically you manage Deployments (not ReplicaSets) directly.
 
----
-
-If you'd like, I can:
-- Integrate this reformatted Kubernetes section into your main README (replacing the original).  
-- Reformat the remaining technology sections (Docker, Terraform, AWS, CI/CD, Monitoring, Linux & Shell, Networking) in the same style.  
-- Produce separate Markdown files per technology or create printable cheat sheets / flashcards.
-
-Which would you like next?
