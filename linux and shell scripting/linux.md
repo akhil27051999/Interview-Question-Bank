@@ -68,6 +68,8 @@ ln file.txt hardlink.txt
 ln -s file.txt softlink.txt
 ```
 
+### Practice Lab : hard links and soft links
+
 ```bash
 # ------------------- Create the base setup -------------------
 
@@ -283,6 +285,8 @@ umask 022
 # Dirs:  777-022=755  (rwxr-xr-x)
 ```
 
+### Practice Lab : User & Permission Management
+
 ```sh
 # ------------------- User and Group Setup -------------------
 
@@ -345,11 +349,12 @@ bash: app.log: Permission denied
 user@6cd6e0189f89:/var/www/myapp/logs$ sudo chown appuser:webgroup /var/www/myapp/logs/app.log
 user@6cd6e0189f89:/var/www/myapp/logs$ ls -l /var/www/myapp/logs/app.log
 -rw-r--r-- 1 appuser webgroup 0 Jan 10 13:12 /var/www/myapp/logs/app.log
+
 # > File still 644 → group can’t write yet.
 
 # Changes file permissions → group write enabled (664 = rw-rw-r--)
-user@6cd6e0189f89:/var/www/myapp/logs$ sudo chmod 664 /var/www/myapp/logs/app.log
 
+user@6cd6e0189f89:/var/www/myapp/logs$ sudo chmod 664 /var/www/myapp/logs/app.log
 user@6cd6e0189f89:/var/www/myapp/logs$ echo "logs from app" > app.log 
 bash: app.log: Permission denied
 
@@ -362,6 +367,7 @@ user@6cd6e0189f89:/var/www/myapp/logs$ sudo -u appuser whoami
 appuser
 user@6cd6e0189f89:/var/www/myapp/logs$ sudo passwd -S appuser
 appuser L 01/10/2026 0 99999 7 -1
+
 # Fails because appuser has no password (passwd -S appuser shows L = locked)
 
 user@6cd6e0189f89:/var/www/myapp/logs$ sudo -u appuser echo "logs from app" >> app.log
