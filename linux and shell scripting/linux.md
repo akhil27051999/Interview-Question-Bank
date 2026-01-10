@@ -458,6 +458,323 @@ ss -tulpn | grep 8080
 fuser -k 8080/tcp
 ```
 
+### Lab Scenario: Process Management in Linux
+
+**Process:** A process is a running instance of a program.
+When a program (like ls, bash, nginx) is executed, the OS loads it into memory and assigns it a Process ID (PID).    
+**Each process has:**
+  - PID (Process ID)
+  - PPID (Parent Process ID)
+  - CPU & memory usage
+  - Open files
+  - Environment variables
+  - State (running, sleeping, stopped, zombie)
+
+| Aspect         | Parent Process                         | Child Process                 |
+| -------------- | -------------------------------------- | ----------------------------- |
+| Definition     | Process that creates another process   | Process created by a parent   |
+| PID            | Has its own PID                        | Has its own PID               |
+| PPID           | PPID points to its own parent          | PPID points to parent process |
+| Creation       | Creates child using `fork()`           | Created by parent             |
+| Execution      | May continue running                   | Executes assigned task        |
+| Responsibility | Reaps child process (prevents zombies) | Exits after completion        |
+| Example        | `bash`                                 | `ls`, `yes`                   |
+
+
+**You manage a Linux server running: Production Server Under High Load**
+  - A web application
+  - A log-processing script
+  - A misbehaving CPU-intensive job
+  - A hung process
+
+**Users complain:**
+  1. Server is slow
+  2. CPU usage is high
+  3. Some processes don’t terminate normally
+
+     
+#### 1. Identify the Top CPU Consumer and Lower Its Priority
+
+```sh
+# Start a CPU-hog (if not already running)
+
+user@28cd0a24aa57:~$ yes > /dev/null &
+[1] 347
+
+# To display a detailed, comprehensive overview of all running processes on the system
+
+user@28cd0a24aa57:~$ ps -aux
+bad data in /proc/uptime
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root           1  0.0  0.0   1136   640 ?        Ss   18:32   0:00 /sbin/docker-init -- /usr/bin/tini -- /usr/local/bin/judge/setup.sh
+root          59  0.0  0.0   2504  1408 ?        S    18:32   0:00 /usr/bin/tini -- /usr/local/bin/judge/setup.sh
+root          60  0.0  0.0   3984  3072 ?        S    18:32   0:00 /bin/bash /usr/local/bin/judge/setup.sh
+root          70  0.0  0.4 1757316 15820 ?       Ssl  18:32   0:00 /ecs-execute-command-fe6f4bc4-4cf3-4cf1-bad6-3803f0dd0922/amazon-ssm-agent
+root          95  0.0  0.0   4524  2944 ?        S    18:32   0:00 su - user -c ttyd -W -p 7681 --ping-interval 45 -t fontSize=16 bash
+user          97  0.0  0.0   2616  1664 ?        Ss   18:32   0:00 -sh -c ttyd -W -p 7681 --ping-interval 45 -t fontSize=16 bash
+user         100  0.0  0.0  10120  1280 ?        Sl   18:32   0:00 ttyd -W -p 7681 --ping-interval 45 -t fontSize 16 bash
+root         125  0.0  0.6 1840724 25592 ?       Sl   18:32   0:00 /ecs-execute-command-fe6f4bc4-4cf3-4cf1-bad6-3803f0dd0922/ssm-agent-worker
+root         137  0.0  0.0   2552  1408 ?        S    18:32   0:00 tail -f /dev/null
+user         138  0.0  0.0   4116  3328 pts/0    Ss+  18:32   0:00 bash
+user         141  0.0  0.0   2644  1792 pts/0    S+   18:32   0:00 script -a -q -f -o 500M /mnt/.script_logs/script.log --timing=/dev/null -c bash
+user         142  0.0  0.0   2616  1536 pts/1    Ss   18:32   0:00 sh -c bash
+user         143  0.0  0.0   4248  3328 pts/1    S    18:32   0:00 bash
+user         347  0.0  0.0   2516  1024 pts/1    R    18:44   1:33 yes
+user         423  0.0  0.0   5900  2816 pts/1    R+   18:46   0:00 ps -aux
+
+# Identify the top CPU process
+
+user@28cd0a24aa57:~$ top
+top - 18:45:03 up 0 min,  0 users,  load average: 0.49, 0.13, 0.04
+Tasks:  15 total,   2 running,  13 sleeping,   0 stopped,   0 zombie
+%Cpu(s): 14.4 us, 36.3 sy,  0.0 ni, 49.3 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+MiB Mem :   3785.6 total,    359.2 free,    357.4 used,   3069.0 buff/cache
+MiB Swap:      0.0 total,      0.0 free,      0.0 used.   3128.8 avail Mem 
+
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND                                                                                                          
+    347 user      20   0    2516   1024   1024 R 100.0   0.0   0:36.61 yes                                                                                                              
+      1 root      20   0    1136    640    640 S   0.0   0.0   0:00.04 docker-init                                                                                                      
+     59 root      20   0    2504   1408   1408 S   0.0   0.0   0:00.01 tini                                                                                                             
+     60 root      20   0    3984   3072   2816 S   0.0   0.1   0:00.00 setup.sh                                                                                                         
+     70 root      20   0 1757316  15820   9600 S   0.0   0.4   0:00.07 amazon-ssm-agen                                                                                                  
+     95 root      20   0    4524   2944   2688 S   0.0   0.1   0:00.00 su                                                                                                               
+     97 user      20   0    2616   1664   1664 S   0.0   0.0   0:00.00 sh                                                                                                               
+    100 user      20   0   10120   1280   1024 S   0.0   0.0   0:00.02 ttyd                                                                                                             
+    125 root      20   0 1840724  25592  15616 S   0.0   0.7   0:00.09 ssm-agent-worke                                                                                                  
+    137 root      20   0    2552   1408   1408 S   0.0   0.0   0:00.01 tail                                                                                                             
+    138 user      20   0    4116   3328   2944 S   0.0   0.1   0:00.00 bash                                                                                                             
+    141 user      20   0    2644   1792   1664 S   0.0   0.0   0:00.00 script                                                                                                           
+    142 user      20   0    2616   1536   1536 S   0.0   0.0   0:00.00 sh                                                                                                               
+    143 user      20   0    4248   3328   2816 S   0.0   0.1   0:00.00 bash                                                                                                             
+    361 user      20   0    6116   3072   2688 R   0.0   0.1   0:00.00
+
+user@28cd0a24aa57:~$ ps -eo pid,ppid,%mem,comm,%cpu --sort=-%cpu | head
+    PID    PPID %MEM COMMAND         %CPU
+      1       0  0.0 docker-init      0.0
+     59       1  0.0 tini             0.0
+     60      59  0.0 setup.sh         0.0
+     70       0  0.4 amazon-ssm-agen  0.0
+     95      60  0.0 su               0.0
+     97      95  0.0 sh               0.0
+    100      97  0.0 ttyd             0.0
+    125      70  0.6 ssm-agent-worke  0.0
+    137      60  0.0 tail             0.0
+
+user@28cd0a24aa57:~$ ps -o pid,ni,comm -p 347
+    PID  NI COMMAND
+    347   0 yes
+
+# Lower its priority (increase nice value)
+
+user@28cd0a24aa57:~$ renice 15 -p 347
+347 (process ID) old priority 0, new priority 15
+
+# Verify:
+
+user@28cd0a24aa57:~$ ps -o pid,ni,comm -p 347
+    PID  NI COMMAND
+    347  15 yes
+
+# → Lower priority = higher nice value
+# → Prevents CPU hog from starving other processes
+```
+
+#### 2. Gracefully Stop a Process, Then Force Kill It
+
+```sh
+
+# Start a test process
+
+user@28cd0a24aa57:~$ sleep 600 &
+[3] 588
+
+# List out running jobs
+
+user@28cd0a24aa57:~$ jobs -l
+[1]    347 Running                 yes > /dev/null &
+[2]-   422 Running                 yes > /dev/null &
+[3]+   588 Running                 sleep 600 &
+
+# To display a detailed, comprehensive overview of all running processes on the system
+user@28cd0a24aa57:~$ ps aux
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root           1  0.0  0.0   1136   640 ?        Ss   18:32   0:00 /sbin/docker-init -- /usr/bin/tini -- /usr/local/bin/judge/setup.sh
+root          59  0.0  0.0   2504  1408 ?        S    18:32   0:00 /usr/bin/tini -- /usr/local/bin/judge/setup.sh
+root          60  0.0  0.0   3984  3072 ?        S    18:32   0:00 /bin/bash /usr/local/bin/judge/setup.sh
+root          70  0.0  0.4 1757316 15948 ?       Ssl  18:32   0:00 /ecs-execute-command-fe6f4bc4-4cf3-4cf1-bad6-3803f0dd0922/amazon-ssm-agent
+root          95  0.0  0.0   4524  2944 ?        S    18:32   0:00 su - user -c ttyd -W -p 7681 --ping-interval 45 -t fontSize=16 bash
+user          97  0.0  0.0   2616  1664 ?        Ss   18:32   0:00 -sh -c ttyd -W -p 7681 --ping-interval 45 -t fontSize=16 bash
+user         100  0.0  0.0  10188  1280 ?        Rl   18:32   0:00 ttyd -W -p 7681 --ping-interval 45 -t fontSize 16 bash
+root         125  0.0  0.6 1840724 25592 ?       Sl   18:32   0:00 /ecs-execute-command-fe6f4bc4-4cf3-4cf1-bad6-3803f0dd0922/ssm-agent-worker
+root         137  0.0  0.0   2552  1408 ?        S    18:32   0:00 tail -f /dev/null
+user         138  0.0  0.0   4116  3328 pts/0    Ss+  18:32   0:00 bash
+user         141  0.0  0.0   2644  1792 pts/0    S+   18:32   0:00 script -a -q -f -o 500M /mnt/.script_logs/script.log --timing=/dev/null -c bash
+user         142  0.0  0.0   2616  1536 pts/1    Ss   18:32   0:00 sh -c bash
+user         143  0.0  0.0   4248  3328 pts/1    S    18:32   0:00 bash
+user         347  0.0  0.0   2516  1024 pts/1    RN   18:44   9:43 yes
+user         422  0.0  0.0   2516  1152 pts/1    R    18:45   8:13 yes
+user         588  0.0  0.0   2516  1280 pts/1    S    18:53   0:00 sleep 600
+user         589  0.0  0.0   5900  2816 pts/1    R+   18:54   0:00 ps aux
+
+# Graceful stop (SIGTERM – signal 15)
+
+user@28cd0a24aa57:~$ kill 588
+user@28cd0a24aa57:~$ ps aux
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root           1  0.0  0.0   1136   640 ?        Ss   18:32   0:00 /sbin/docker-init -- /usr/bin/tini -- /usr/local/bin/judge/setup.sh
+root          59  0.0  0.0   2504  1408 ?        S    18:32   0:00 /usr/bin/tini -- /usr/local/bin/judge/setup.sh
+root          60  0.0  0.0   3984  3072 ?        S    18:32   0:00 /bin/bash /usr/local/bin/judge/setup.sh
+root          70  0.0  0.4 1757316 15948 ?       Ssl  18:32   0:00 /ecs-execute-command-fe6f4bc4-4cf3-4cf1-bad6-3803f0dd0922/amazon-ssm-agent
+root          95  0.0  0.0   4524  2944 ?        S    18:32   0:00 su - user -c ttyd -W -p 7681 --ping-interval 45 -t fontSize=16 bash
+user          97  0.0  0.0   2616  1664 ?        Ss   18:32   0:00 -sh -c ttyd -W -p 7681 --ping-interval 45 -t fontSize=16 bash
+user         100  0.0  0.0  10120  1280 ?        Sl   18:32   0:00 ttyd -W -p 7681 --ping-interval 45 -t fontSize 16 bash
+root         125  0.0  0.6 1840724 25592 ?       Sl   18:32   0:00 /ecs-execute-command-fe6f4bc4-4cf3-4cf1-bad6-3803f0dd0922/ssm-agent-worker
+root         137  0.0  0.0   2552  1408 ?        S    18:32   0:00 tail -f /dev/null
+user         138  0.0  0.0   4116  3328 pts/0    Ss+  18:32   0:00 bash
+user         141  0.0  0.0   2644  1792 pts/0    S+   18:32   0:00 script -a -q -f -o 500M /mnt/.script_logs/script.log --timing=/dev/null -c bash
+user         142  0.0  0.0   2616  1536 pts/1    Ss   18:32   0:00 sh -c bash
+user         143  0.0  0.0   4248  3328 pts/1    S    18:32   0:00 bash
+user         347  0.0  0.0   2516  1024 pts/1    RN   18:44  10:06 yes
+user         422  0.0  0.0   2516  1152 pts/1    R    18:45   8:36 yes
+user         612  0.0  0.0   5900  2816 pts/1    R+   18:54   0:00 ps aux
+[3]+  Terminated              sleep 600
+
+# Check the process after kill
+
+user@28cd0a24aa57:~$ ps -p 588
+    PID TTY          TIME CMD
+user@28cd0a24aa57:~$ ps -p 347
+    PID TTY          TIME CMD
+    347 pts/1    00:10:32 yes
+
+# Force kill (SIGKILL – signal 9)
+
+user@28cd0a24aa57:~$ kill -9 588
+bash: kill: (588) - No such process
+
+# Reffernece for how to force kill a existing process
+
+user@28cd0a24aa57:~$ kill -9 422
+
+user@28cd0a24aa57:~$ ps aux
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root           1  0.0  0.0   1136   640 ?        Ss   18:32   0:00 /sbin/docker-init -- /usr/bin/tini -- /usr/local/bin/judge/setup.sh
+root          59  0.0  0.0   2504  1408 ?        S    18:32   0:00 /usr/bin/tini -- /usr/local/bin/judge/setup.sh
+root          60  0.0  0.0   3984  3072 ?        S    18:32   0:00 /bin/bash /usr/local/bin/judge/setup.sh
+root          70  0.0  0.4 1757316 15948 ?       Ssl  18:32   0:00 /ecs-execute-command-fe6f4bc4-4cf3-4cf1-bad6-3803f0dd0922/amazon-ssm-agent
+root          95  0.0  0.0   4524  2944 ?        S    18:32   0:00 su - user -c ttyd -W -p 7681 --ping-interval 45 -t fontSize=16 bash
+user          97  0.0  0.0   2616  1664 ?        Ss   18:32   0:00 -sh -c ttyd -W -p 7681 --ping-interval 45 -t fontSize=16 bash
+user         100  0.0  0.0  10120  1280 ?        Rl   18:32   0:00 ttyd -W -p 7681 --ping-interval 45 -t fontSize 16 bash
+root         125  0.0  0.6 1840724 25592 ?       Sl   18:32   0:00 /ecs-execute-command-fe6f4bc4-4cf3-4cf1-bad6-3803f0dd0922/ssm-agent-worker
+root         137  0.0  0.0   2552  1408 ?        S    18:32   0:00 tail -f /dev/null
+user         138  0.0  0.0   4116  3328 pts/0    Ss+  18:32   0:00 bash
+user         141  0.0  0.0   2644  1792 pts/0    S+   18:32   0:00 script -a -q -f -o 500M /mnt/.script_logs/script.log --timing=/dev/null -c bash
+user         142  0.0  0.0   2616  1536 pts/1    Ss   18:32   0:00 sh -c bash
+user         143  0.0  0.0   4248  3328 pts/1    S    18:32   0:00 bash
+user         347  0.0  0.0   2516  1024 pts/1    RN   18:44  11:08 yes
+user         660  0.0  0.0   5900  2816 pts/1    R+   18:55   0:00 ps aux
+[2]+  Killed                  yes > /dev/null
+user@28cd0a24aa57:~$ 
+```
+
+#### 3. Find a Zombie Process and Fix It
+
+```sh
+# Create a zombie process
+user@28cd0a24aa57:~$ bash -c 'sleep 1 & exit'
+
+user@28cd0a24aa57:~$ ps aux
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root           1  0.0  0.0   1136   640 ?        Ss   18:32   0:00 /sbin/docker-init -- /usr/bin/tini -- /usr/local/bin/judge/setup.sh
+root          59  0.0  0.0   2504  1408 ?        S    18:32   0:00 /usr/bin/tini -- /usr/local/bin/judge/setup.sh
+root          60  0.0  0.0   3984  3072 ?        S    18:32   0:00 /bin/bash /usr/local/bin/judge/setup.sh
+root          70  0.0  0.4 1757316 15948 ?       Ssl  18:32   0:00 /ecs-execute-command-fe6f4bc4-4cf3-4cf1-bad6-3803f0dd0922/amazon-ssm-agent
+root          95  0.0  0.0   4524  2944 ?        S    18:32   0:00 su - user -c ttyd -W -p 7681 --ping-interval 45 -t fontSize=16 bash
+user          97  0.0  0.0   2616  1664 ?        Ss   18:32   0:00 -sh -c ttyd -W -p 7681 --ping-interval 45 -t fontSize=16 bash
+user         100  0.0  0.0  10124  1280 ?        Rl   18:32   0:00 ttyd -W -p 7681 --ping-interval 45 -t fontSize 16 bash
+root         125  0.0  0.6 1840724 25592 ?       Sl   18:32   0:00 /ecs-execute-command-fe6f4bc4-4cf3-4cf1-bad6-3803f0dd0922/ssm-agent-worker
+root         137  0.0  0.0   2552  1408 ?        S    18:32   0:00 tail -f /dev/null
+user         138  0.0  0.0   4116  3328 pts/0    Ss+  18:32   0:00 bash
+user         141  0.0  0.0   2644  1792 pts/0    R+   18:32   0:00 script -a -q -f -o 500M /mnt/.script_logs/script.log --timing=/dev/null -c bash
+user         142  0.0  0.0   2616  1536 pts/1    Ss   18:32   0:00 sh -c bash
+user         143  0.0  0.0   4248  3328 pts/1    S    18:32   0:00 bash
+user         347  0.0  0.0   2516  1024 pts/1    RN   18:44  12:30 yes
+user         691  0.0  0.0   5900  2560 pts/1    R+   18:57   0:00 ps aux
+
+# Identify zombie
+user@28cd0a24aa57:~$ ps aux | awk '$8 ~ /Z/ { print }'
+user@28cd0a24aa57:~$ ps -eo pid,ppid,state,cmd | grep Z
+    733     143 S grep --color=auto Z
+
+user@28cd0a24aa57:~$ kill -9 733   
+bash: kill: (733) - No such process
+# ✕ Zombies cannot be killed directly 
+
+# We must kill the parent process.
+user@28cd0a24aa57:~$ kill -9 143
+
+bad data in /proc/uptime
+bad data in /proc/uptime
+bad data in /proc/uptime
+bad data in /proc/uptime
+bad data in /proc/uptime
+bad data in /proc/uptime
+Killed
+
+user@28cd0a24aa57:~$ ps aux | grep Z
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+user         802  0.0  0.0   3312  1664 pts/0    S+   19:00   0:00 grep --color=auto Z
+
+# Note:
+# → Zombies exist because parent didn’t reap child
+# → Killing parent cleans them up
+
+```
+
+#### 4. Move a Stopped Job to Background and Foreground
+
+```sh
+
+# Move a Stopped Job to Background and Foreground
+
+user@28cd0a24aa57:~$ sleep 300
+
+# Suspend it using Ctrl + z
+^Z                                       
+[1]+  Stopped                 sleep 300  
+
+# Move to background
+
+user@28cd0a24aa57:~$ bg %1
+[1]+ sleep 300 &
+
+# List the jobs running
+
+user@28cd0a24aa57:~$ jobs -l
+[1]+   884 Running                 sleep 300 &
+
+# Move to foreground
+
+user@28cd0a24aa57:~$ fg %1
+sleep 300
+^Z
+[1]+  Stopped                 sleep 300
+
+# Job : 2 
+user@28cd0a24aa57:~$ sleep 200 &
+[2] 898
+
+user@28cd0a24aa57:~$ fg %1
+sleep 300
+^Z      
+[1]+  Stopped                 sleep 300
+
+user@28cd0a24aa57:~$ fg %2
+sleep 200
+^Z
+[2]+  Stopped                 sleep 200
+```
+
 ---
 
 ## Category 4: Disk & Filesystem Management
