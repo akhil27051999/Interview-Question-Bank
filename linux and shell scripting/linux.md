@@ -457,6 +457,7 @@ ss -tulpn | grep 8080
 # Kill process using port 8080
 fuser -k 8080/tcp
 ```
+---
 
 ### Lab Scenario: Process Management in Linux
 
@@ -481,7 +482,7 @@ When a program (like ls, bash, nginx) is executed, the OS loads it into memory a
 | Example        | `bash`                                 | `ls`, `yes`                   |
 
 
-**You manage a Linux server running: Production Server Under High Load**
+### You manage a Linux server running: Production Server Under High Load
   - A web application
   - A log-processing script
   - A misbehaving CPU-intensive job
