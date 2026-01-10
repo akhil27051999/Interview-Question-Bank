@@ -111,7 +111,7 @@ user@568d442825b6:~$ cat /etc/app/app.conf
 DB=prod
 New entry
 
-# Observation: Changes reflect everywhere because both point to the same inode. ✔
+# Observation: Changes reflect everywhere because both point to the same inode. ✓
 
 
 # ------------------- Delete original file and test links -------------------
@@ -123,9 +123,9 @@ DB=prod
 New entry
 
 # Observation: 
-# ✔ File still exists
-# ✔ Data is safe
-# ✔ Inode still valid
+# ✓ File still exists
+# ✓ Data is safe
+# ✓ Inode still valid
 
 # Delete original log file
 user@568d442825b6:~$ rm /var/log/app/app.log
@@ -133,8 +133,8 @@ user@568d442825b6:~$ cat /opt/app/app.log
 cat: /opt/app/app.log: No such file or directory
 
 # Observation: 
-#  ❌ Broken link
-#  ❌ “No such file or directory”
+#  ✕ Broken link
+#  ✕ “No such file or directory”
 
 
 # ------------------- Move original file -------------------
@@ -147,7 +147,7 @@ user@568d442825b6:~$ ls -li /backup/app.conf.moved
 
 user@568d442825b6:~$ mv /var/log/app /var/log/app_new
 mv: cannot move '/var/log/app' to '/var/log/app_new': Permission denied
-# ❌ Symlink breaks because path changed
+# ✕ Symlink breaks because path changed
 
 
 # ------------------- Filesystem boundary test -------------------
@@ -169,19 +169,19 @@ tmpfs            52M  8.0K   52M   1% /run/user/1001
 user@568d442825b6:~$ ln /etc/app/app.conf /tmp/app.conf.hard
 ln: failed to access '/etc/app/app.conf': No such file or directory
 
-# ❌ If /etc and /tmp are on different filesystems → fails
+# ✕ If /etc and /tmp are on different filesystems → fails
 
 
 # ------------------- Permissions behavior -------------------
 
 user@568d442825b6:~$ chmod 000 /backup/app.conf.moved
 
-# Hard link respects file permissions
+# ✓ Hard link respects file permissions
 
 user@568d442825b6:~$ cat /backup/app.conf.moved
 cat: /backup/app.conf.moved: Permission denied
 
-# Soft link permissions don’t matter — target file permissions apply
+# ✕ Soft link permissions don’t matter — target file permissions apply 
 
 user@568d442825b6:~$ 
 ```
@@ -295,20 +295,20 @@ user
 user@6cd6e0189f89:~$ sudo useradd appuser
 [sudo] password for user: 
 
-# > Creates a new user called appuser.
-# > By default, no password is set → login via su will fail.
-# > This user will simulate a service account (like a Node.js app).
+# → Creates a new user called appuser.
+# → By default, no password is set → login via su will fail.
+# → This user will simulate a service account (like a Node.js app).
 
 
 user@6cd6e0189f89:~$ sudo groupadd webgroup
 
-# > Creates a new group called webgroup.
-# > You can use this group to manage shared permissions.
+# → Creates a new group called webgroup.
+# → You can use this group to manage shared permissions.
 
 user@6cd6e0189f89:~$ sudo usermod -aG webgroup appuser
 
-# > Adds appuser to the webgroup.
-# > -aG = append to supplementary groups.
+# → Adds appuser to the webgroup.
+# → -aG = append to supplementary groups.
 
 #  ------------------- Verify User and Group existance -------------------
 
@@ -340,9 +340,9 @@ user@6cd6e0189f89:/var/www/myapp/logs$ echo "logs from app" > app.log
 bash: app.log: Permission denied
 
 # Fails because:
-# > Current user = user
-# > File owned by root
-# Others only have read → no write permission
+# → Current user = user
+# → File owned by root
+# → Others only have read → no write permission
 
 # ------------------- Changes owner to appuser, group = webgroup -------------------
 
@@ -350,17 +350,18 @@ user@6cd6e0189f89:/var/www/myapp/logs$ sudo chown appuser:webgroup /var/www/myap
 user@6cd6e0189f89:/var/www/myapp/logs$ ls -l /var/www/myapp/logs/app.log
 -rw-r--r-- 1 appuser webgroup 0 Jan 10 13:12 /var/www/myapp/logs/app.log
 
-# > File still 644 → group can’t write yet.
-
-# Changes file permissions → group write enabled (664 = rw-rw-r--)
+# ------------------- Changes file permissions → (664 = rw-rw-r--) -------------------
 
 user@6cd6e0189f89:/var/www/myapp/logs$ sudo chmod 664 /var/www/myapp/logs/app.log
 user@6cd6e0189f89:/var/www/myapp/logs$ echo "logs from app" > app.log 
 bash: app.log: Permission denied
 
-# Still fails! because, The directory /var/www/myapp/logs is owned by root with 755 permissions, so normal users cannot create/write files in it or redirect.
+# Still fails! because, The directory /var/www/myapp/logs is owned by root with 755 permissions,
+# So normal users cannot create/write files in it or redirect.
 
-user@6cd6e0189f89:/var/www/myapp/logs$ su appuser
+user@6cd6e0189f89:~$ whoami
+user
+user@6cd6e0189f89:/var/www/myapp/logs$ su appuser # Switch user 
 Password: 
 su: Authentication failure
 user@6cd6e0189f89:/var/www/myapp/logs$ sudo -u appuser whoami
