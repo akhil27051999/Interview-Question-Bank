@@ -1006,40 +1006,216 @@ Rolling updates replace Pods incrementally without downtime, and rollbacks resto
 ## Q18 — What are Taints and Tolerations?
 **Answer**
 
-- **Taint (node)**: Marks node with key/value and effect (NoSchedule, PreferNoSchedule, NoExecute) to repel Pods.  
-- **Toleration (pod)**: Lets a Pod tolerate a node's taint and be scheduled there.
+### Taints and Tolerations
 
-Use case: dedicate nodes (e.g., GPU nodes) or isolate workloads.
+**Definition:** 
+  - Taints: Applied to nodes to repel certain Pods, preventing them from being scheduled unless the Pod tolerates the taint.
+  - Tolerations: Applied to Pods to allow them to be scheduled on nodes with matching taints.
+
+**Use Case:**
+  - Reserve nodes for specific workloads (e.g., GPU workloads, critical services)
+  - Prevent general Pods from being scheduled on special-purpose nodes
+  - Ensure isolation and quality-of-service for workloads
+
+**Action:** 
+  - Nodes reject Pods that do not have a matching toleration
+  - Pods with a matching toleration can be scheduled on the tainted node
+
+**Taint Example:**
+
+```sh
+# Taint a node so only GPU workloads can run
+kubectl taint nodes node1 gpu=true:NoSchedule
+```
+- Effect: NoSchedule prevents Pods without the gpu=true toleration from being scheduled on node1
+
+**Toleration Example (Pod YAML):**
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gpu-pod
+spec:
+  containers:
+    - name: gpu-app
+      image: nvidia/cuda:latest
+  tolerations:
+    - key: "gpu"
+      operator: "Equal"
+      value: "true"
+      effect: "NoSchedule"
+```
+#### Types of Taint Effects:
+
+| **Effect**         | **Meaning**                                                                           |
+| ------------------ | ------------------------------------------------------------------------------------- |
+| `NoSchedule`       | Pod is **not scheduled** unless it tolerates the taint                                |
+| `PreferNoSchedule` | Kubernetes **avoids scheduling** Pods on this node if possible                        |
+| `NoExecute`        | Pod is **evicted** if it doesn’t tolerate the taint, or **prevented from scheduling** |
+
+#### Interview One-Liner
+
+Taints repel Pods from nodes, and Tolerations allow Pods to tolerate those taints and get scheduled on the node.
 
 ---
 
 ## Q19 — What are Node Affinity and Pod Affinity/Anti-Affinity?
+
 **Answer**
 
-- **Node Affinity**: Constrains Pods onto nodes matching node labels (e.g., `disktype=ssd`).  
-- **Pod Affinity**: Co-locate Pods together (run on same node or zone).  
-- **Pod Anti-Affinity**: Spread Pods across nodes (prevent colocating Pods for HA).
+### Node Affinity and Pod Affinity/Anti-Affinity
 
----
+**Definition:** 
+- `Node Affinity`: Rules that constrain which nodes a Pod can be scheduled on, based on node labels.
+- `Pod Affinity`: Rules that prefer or require Pods to be scheduled on the same node or zone as other Pods.
+- `Pod Anti-Affinity`: Rules that prefer or require Pods to avoid being scheduled on the same node or zone as other Pods.
+
+**Use Case:**
+
+  - `Node Affinity`:
+    - Schedule Pods to nodes with specific hardware (GPU, SSD, region)
+	- Ensure critical workloads run on certain nodes
+
+  - `Pod Affinity`:
+    - Co-locate related services for low-latency communication
+	- Group microservices that often interact
+
+  - `Pod Anti-Affinity`:
+    - Spread Pods across nodes for high availability
+	- Avoid single points of failure
+
+**Action:**
+  - Scheduler considers these rules during Pod placement
+  - Hard requirement → Pod won’t schedule unless condition is met 
+    ```txt
+	(requiredDuringSchedulingIgnoredDuringExecution)
+	```
+
+  - Soft preference → Scheduler tries to follow but may schedule elsewhere 
+    ```txt
+	(preferredDuringSchedulingIgnoredDuringExecution)
+	```
+
+**Node Affinity Example (Pod YAML):**
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gpu-pod
+spec:
+  containers:
+    - name: gpu-app
+      image: nvidia/cuda:latest
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: gpu
+                operator: In
+                values:
+                  - "true"
+```
+
+**Pod Affinity Example:**
+```yaml
+affinity:
+  podAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchLabels:
+            app: frontend
+        topologyKey: "kubernetes.io/hostname"
+```
+  - This schedules the Pod on the same node as other Pods with label app=frontend.
+
+**Pod Anti-Affinity Example:**
+```yaml
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app: backend
+          topologyKey: "kubernetes.io/hostname"
+```
+  - This prefers to schedule Pods away from other backend Pods, spreading them across nodes.
+
+#### Interview One-Liner
+
+Node Affinity controls which nodes a Pod can run on, Pod Affinity co-locates Pods, and Pod Anti-Affinity spreads Pods for high availability.
 
 # Category 6: Troubleshooting & Commands (Real-time Scenarios)
 
 ## Q20 — A Pod is stuck in Pending state. How do you debug it?
 **Answer**
 
-Steps:
-1. Describe the Pod:
-```bash
-kubectl describe pod <pod-name>
-```
-2. Check events for scheduling errors (insufficient resources, selector/affinity mismatch, no matching nodes).  
-3. Inspect node resource usage:
-```bash
-kubectl top nodes
-kubectl get nodes
-kubectl describe node <node-name>
-```
-4. Verify taints/tolerations and node selectors/affinities.
+### Debugging a Pod in Pending State
+
+**Definition:** A Pod is in Pending when it has been accepted by the Kubernetes cluster but cannot be scheduled onto a node yet.
+
+**Use Case:**
+  - Ensure Pods are successfully scheduled and running
+  - Identify resource, affinity, or configuration issues preventing scheduling
+
+**Action:** 
+
+  1. Check Pod Status and Events
+  
+    ```sh
+	kubectl describe pod <pod-name>
+	```
+  - Look for Events section
+  - Common messages:
+    - 0/3 nodes are available: Insufficient cpu/memory
+	- node(s) didn't match node selector
+	- taint/toleration conflicts
+
+  2. Check Node Resources
+
+    ```sh
+	kubectl get nodes -o wide
+	kubectl describe node <node-name>
+	```
+    - Ensure nodes have enough CPU, memory
+    - Verify ready status
+
+  3. Check Resource Requests and Limits
+
+    - Pods with high requests may not fit on any node
+	- Adjust requests or scale nodes
+
+  4. Check Node Affinity / Taints / Tolerations
+	- Node labels must match nodeSelector or nodeAffinity
+	- Pod must tolerate taints on nodes
+  
+  5. Check Namespace Quotas or LimitRanges
+
+    ```sh
+	kubectl get resourcequota -n <namespace>
+	kubectl describe limitrange -n <namespace>
+	```
+	- Quotas may prevent new Pods from scheduling
+
+  6. Check Scheduler Logs (Optional for deeper debugging)
+    ```sh
+	kubectl -n kube-system logs <kube-scheduler-pod-name>
+	```
+
+**Common Causes:**
+| Cause                                 | Description                                               |
+| ------------------------------------- | --------------------------------------------------------- |
+| **Insufficient resources**            | CPU or memory requested by Pod exceeds available on nodes |
+| **Taints / Tolerations mismatch**     | Pod does not tolerate node taints                         |
+| **Node affinity / selector mismatch** | Pod cannot match node labels                              |
+| **Resource quotas exceeded**          | Namespace or cluster limits prevent scheduling            |
+| **All nodes NotReady**                | Nodes are unschedulable or cordoned                       |
+
+#### Interview One-Liner
+A Pod in Pending state usually indicates scheduling issues; check events, node resources, affinity, taints, and quotas to debug.
 
 ---
 
