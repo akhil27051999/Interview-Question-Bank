@@ -1,4 +1,4 @@
-# DevOps Interview Preparation Guide — Kubernetes (
+# DevOps Interview Preparation Guide — Kubernetes
 
 ## Contents
 - [Category 1: Fundamentals & Architecture](#category-1-fundamentals--architecture)
