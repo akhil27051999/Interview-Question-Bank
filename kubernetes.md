@@ -1,9 +1,4 @@
-# DevOps Interview Preparation Guide — Kubernetes (Reformatted)
-
-This file contains the Kubernetes section of the DevOps Interview Preparation Guide, reformatted for readability and interview use.  
-Each question is shown as a heading; the answer is clearly separated under a highlighted "Answer" subheading. Commands and examples are in fenced code blocks. Tables are used where helpful.
-
----
+# DevOps Interview Preparation Guide — Kubernetes
 
 ## Contents
 - [Category 1: Fundamentals & Architecture](#category-1-fundamentals--architecture)
