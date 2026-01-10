@@ -44,7 +44,7 @@ Main components:
 ### Q2 — What is the difference between a Pod, a Service, and a Deployment?
 **Answer**
 
-#### **1. Pod**
+### **1. Pod**
 **Definition:**  The smallest and simplest unit in Kubernetes. A Pod represents a single instance of a running process and can contain one or more containers.
 
 **Use Case:**  Running applications or services in containers.
@@ -63,7 +63,7 @@ spec:
         - containerPort: 80
 ```
 
-#### **2. Deployment**
+### **2. Deployment**
 
 **Definition:**  Provides declarative updates to Pods and manages ReplicaSets. Supports rolling updates, rollbacks, and scaling.
 
@@ -93,7 +93,7 @@ spec:
           ports:
             - containerPort: 80
 ```
-#### **3. Service**
+### **3. Service**
 **Definition:**  A `Service` provides a stable internal endpoint for accessing a group of Pods. The `ClusterIP` type is the default, and is only accessible from within the cluster.
 
 **Use Case:**  Internal communication between microservices or applications.
@@ -142,7 +142,7 @@ Pod phases (high-level):
 ### Q5 — What is the difference between a ConfigMap and a Secret?
 **Answer**
 
-#### **ConfigMap**
+### **ConfigMap**
 **Definition:**  Stores non-sensitive config data in key-value format. Useful for app configuration.
 
 **Use Case:**  Pass environment variables or files to containers.
@@ -188,7 +188,7 @@ spec:
         name: my-configmap
 ```
 
-#### **Secrets**
+### **Secrets**
 
 **Definition:** Stores sensitive information like credentials, tokens, SSH keys in base64 encoded format.
 In production enable encryption at rest for Secrets and restrict access via RBAC.
@@ -270,7 +270,7 @@ Ensure application reliability by restarting unhealthy containers, controlling t
 - Readiness Probe
 - Startup Probe
 
-#### **1. Startup Probe**
+### **1. Startup Probe**
 **Definition:** Checks whether a container has started successfully.
 
 **Use Case:**  
@@ -287,7 +287,7 @@ startupProbe:
   initialDelaySeconds: 10
   periodSeconds: 5
 ```
-#### **2. Liveness Probe**
+### **2. Liveness Probe**
 
 **Definition:** Checks whether the container is still running and responsive.
 
@@ -307,7 +307,7 @@ livenessProbe:
   periodSeconds: 5
 ```
 
-#### **3. Readiness Probe**
+### **3. Readiness Probe**
 **Definition:** Checks whether the container is ready to accept incoming traffic.
 
 **Use Case:**  
@@ -330,7 +330,7 @@ readinessProbe:
 ### Q8 — What is the difference between requests and limits in a Pod's resources?
 **Answer**
 
-#### **Resource Requests and Limits**
+### **Resource Requests and Limits**
 
 **Definition:** Resource requests define the minimum CPU and memory required by a container, while limits define the maximum resources a container is allowed to consume.
 
@@ -339,7 +339,7 @@ readinessProbe:
   - Prevents a single container from over-consuming CPU or memory
   - Ensures fair resource sharing in a cluster
 
-#### **How Kubernetes Uses Requests and Limits**
+### **How Kubernetes Uses Requests and Limits**
 
 **Scheduler Behavior:**
   - Uses requests to decide which node can run the Pod
