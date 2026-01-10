@@ -374,6 +374,7 @@ user@6cd6e0189f89:/var/www/myapp/logs$ sudo -u appuser echo "logs from app" >> a
 bash: app.log: Permission denied
 
 # ------------------- tee runs as root, appends to the file -------------------
+
 user@6cd6e0189f89:/var/www/myapp/logs$ echo "logs from app" | sudo tee -a app.log
 logs from app
 user@6cd6e0189f89:/var/www/myapp/logs$ cat app.log 
