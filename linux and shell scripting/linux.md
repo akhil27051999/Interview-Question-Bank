@@ -281,6 +281,97 @@ umask 022
 # Files: 666-022=644  (rw-r--r--)
 # Dirs:  777-022=755  (rwxr-xr-x)
 ```
+```sh
+```sh
+# ------------------- User and Group Setup -------------------
+
+user@6cd6e0189f89:~$ whoami
+user
+user@6cd6e0189f89:~$ sudo useradd appuser
+[sudo] password for user: 
+
+# > Creates a new user called appuser.
+# > By default, no password is set → login via su will fail.
+# > This user will simulate a service account (like a Node.js app).
+
+
+user@6cd6e0189f89:~$ sudo groupadd webgroup
+
+# > Creates a new group called webgroup.
+# > You can use this group to manage shared permissions.
+
+user@6cd6e0189f89:~$ sudo usermod -aG webgroup appuser
+
+# > Adds appuser to the webgroup.
+# > -aG = append to supplementary groups.
+
+#  ------------------- Verify User and Group existance -------------------
+
+user@6cd6e0189f89:~$ cat /etc/passwd | grep appuser
+appuser:x:1001:1001::/home/appuser:/bin/sh
+user@6cd6e0189f89:~$ cat /etc/group | grep webgroup
+webgroup:x:1002:appuser
+
+# Observation: Users and groups set up correctly.
+
+
+# ------------------- Create Application Directory Structure -------------------
+
+user@6cd6e0189f89:~$ sudo mkdir -p /var/www/myapp/logs
+user@6cd6e0189f89:~$ cd /var/www/myapp/logs
+user@6cd6e0189f89:/var/www/myapp/logs$
+
+# ------------------- Create Log File and Set incorrect permissions (simulate issue) -------------------
+
+user@6cd6e0189f89:/var/www/myapp/logs$ sudo touch /var/www/myapp/logs/app.log
+user@6cd6e0189f89:/var/www/myapp/logs$ sudo chown root:root /var/www/myapp/logs/app.log
+user@6cd6e0189f89:/var/www/myapp/logs$ sudo chmod 644 /var/www/myapp/logs/app.log
+
+# Permissions: 644 → rw- owner, r-- group, r-- others.
+
+user@6cd6e0189f89:/var/www/myapp/logs$ ls
+app.log
+user@6cd6e0189f89:/var/www/myapp/logs$ echo "logs from app" > app.log 
+bash: app.log: Permission denied
+
+# Fails because:
+# > Current user = user
+# > File owned by root
+# Others only have read → no write permission
+
+# ------------------- Changes owner to appuser, group = webgroup -------------------
+
+user@6cd6e0189f89:/var/www/myapp/logs$ sudo chown appuser:webgroup /var/www/myapp/logs/app.log
+user@6cd6e0189f89:/var/www/myapp/logs$ ls -l /var/www/myapp/logs/app.log
+-rw-r--r-- 1 appuser webgroup 0 Jan 10 13:12 /var/www/myapp/logs/app.log
+# > File still 644 → group can’t write yet.
+
+# Changes file permissions → group write enabled (664 = rw-rw-r--)
+user@6cd6e0189f89:/var/www/myapp/logs$ sudo chmod 664 /var/www/myapp/logs/app.log
+
+user@6cd6e0189f89:/var/www/myapp/logs$ echo "logs from app" > app.log 
+bash: app.log: Permission denied
+
+# Still fails! because, The directory /var/www/myapp/logs is owned by root with 755 permissions, so normal users cannot create/write files in it or redirect.
+
+user@6cd6e0189f89:/var/www/myapp/logs$ su appuser
+Password: 
+su: Authentication failure
+user@6cd6e0189f89:/var/www/myapp/logs$ sudo -u appuser whoami
+appuser
+user@6cd6e0189f89:/var/www/myapp/logs$ sudo passwd -S appuser
+appuser L 01/10/2026 0 99999 7 -1
+# Fails because appuser has no password (passwd -S appuser shows L = locked)
+
+user@6cd6e0189f89:/var/www/myapp/logs$ sudo -u appuser echo "logs from app" >> app.log
+bash: app.log: Permission denied
+
+# ------------------- tee runs as root, appends to the file -------------------
+user@6cd6e0189f89:/var/www/myapp/logs$ echo "logs from app" | sudo tee -a app.log
+logs from app
+user@6cd6e0189f89:/var/www/myapp/logs$ cat app.log 
+logs from app
+```
 
 ---
 
