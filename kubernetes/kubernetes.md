@@ -112,12 +112,23 @@ spec:
 ## Q3 — Explain the Pod lifecycle.
 **Answer**
 
-Pod phases (high-level):
+### Pod phases (high-level):
 - **Pending**: Pod accepted by the cluster, containers not yet created or started.  
 - **Running**: Pod bound to a node and containers are created; at least one container is running or restarting.  
 - **Succeeded**: All containers terminated successfully and will not be restarted.  
 - **Failed**: All containers terminated and at least one terminated in failure.  
 - **Unknown**: State cannot be obtained (e.g., node communication error).
+  
+#### Pod-Lifecyle summary:
+
+| Phase            | Meaning                 |
+| ---------------- | ----------------------- |
+| Pending          | Waiting to be scheduled |
+| Running          | Containers executing    |
+| Succeeded        | Completed successfully  |
+| Failed           | Completed with error    |
+| CrashLoopBackOff | Repeated crashes        |
+| Terminating      | Shutting down           |
 
 ## Q4 — What is etcd in Kubernetes and why is it important?
 **Answer**
