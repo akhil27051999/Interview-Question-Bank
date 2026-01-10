@@ -44,9 +44,74 @@ Main components:
 ### Q2 — What is the difference between a Pod, a Service, and a Deployment?
 **Answer**
 
-- **Pod**: The smallest and simplest Kubernetes object. Represents one or more containers that share storage/network and a spec for how to run them.  
-- **Deployment**: Higher-level abstraction that manages Pods and ReplicaSets. Provides declarative updates, rolling updates, and rollbacks.  
-- **Service**: Stable network endpoint that exposes a logical set of Pods and a policy to access them (provides stable IP and DNS name).
+#### **1. Pod**
+**Definition:**  The smallest and simplest unit in Kubernetes. A Pod represents a single instance of a running process and can contain one or more containers.
+
+**Use Case:**  Running applications or services in containers.
+
+**YAML:**
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-pod
+spec:
+  containers:
+    - name: nginx-container
+      image: nginx
+      ports:
+        - containerPort: 80
+```
+
+#### **2. Deployment**
+
+**Definition:**  Provides declarative updates to Pods and manages ReplicaSets. Supports rolling updates, rollbacks, and scaling.
+
+**Use Case:** Rolling updates, rollback, and horizontal scaling of applications.
+
+**YAML:**
+
+```yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+        - name: nginx
+          image: nginx
+          ports:
+            - containerPort: 80
+```
+#### **3. Service**
+**Definition:**  A `Service` provides a stable internal endpoint for accessing a group of Pods. The `ClusterIP` type is the default, and is only accessible from within the cluster.
+
+**Use Case:**  Internal communication between microservices or applications.
+
+**YAML:**
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-clusterip-service
+spec:
+  type: ClusterIP
+  selector:
+    app: myapp
+  ports:
+    - port: 80
+      targetPort: 8080
+```
 
 ---
 
@@ -77,9 +142,101 @@ Pod phases (high-level):
 ### Q5 — What is the difference between a ConfigMap and a Secret?
 **Answer**
 
-- **ConfigMap**: Stores non-confidential configuration data as key-value pairs (plain text). Use for app configs, flags, env vars.  
-- **Secret**: Stores sensitive data (passwords, tokens, keys). Data is base64-encoded in the API (not encrypted by default). In production enable encryption at rest for Secrets and restrict access via RBAC.
+#### **ConfigMap**
+**Definition:**  Stores non-sensitive config data in key-value format. Useful for app configuration.
 
+**Use Case:**  Pass environment variables or files to containers.
+
+**YAML:**
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-configmap
+data:
+  APP_ENV: production
+  DB_HOST: db-service
+
+```
+#### Mount ConfigMap in Pod
+Inject configuration into Pods via environment variables or volume mounts.
+
+**YAML:**
+
+```yaml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-using-configmap
+spec:
+  containers:
+    - name: myapp
+      image: myapp:latest
+      env:
+        - name: APP_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: my-configmap
+              key: APP_ENV
+      volumeMounts:
+        - mountPath: "/etc/config"
+          name: config-volume
+  volumes:
+    - name: config-volume
+      configMap:
+        name: my-configmap
+```
+
+#### **Secrets**
+
+**Definition:** Stores sensitive information like credentials, tokens, SSH keys in base64 encoded format.
+In production enable encryption at rest for Secrets and restrict access via RBAC.
+
+**Use Case:** Inject secrets into Pods securely.
+
+**YAML:**
+
+```yaml
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: my-secret
+type: Opaque
+data:
+  username: YWRtaW4=
+  password: cGFzc3dvcmQ=
+```
+#### Mount Secret in Pod
+
+**Use Case:**
+Use secrets as environment variables or files in containers.
+
+**YAML:**
+
+```yaml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-using-secret
+spec:
+  containers:
+    - name: myapp
+      image: myapp:latest
+      env:
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: my-secret
+              key: username
+        - name: DB_PASS
+          valueFrom:
+            secretKeyRef:
+              name: my-secret
+              key: password
+```
 ---
 
 ### Q6 — How do you secure a Kubernetes cluster? (Real-time question)
@@ -100,21 +257,122 @@ Key practices:
 ### Q7 — What are the types of Kubernetes probes and what is their use?
 **Answer**
 
-- **Liveness Probe**: Detects if container is alive. If it fails, kubelet kills the container (it will be restarted per the Pod restart policy). Use for detecting deadlocks.  
-- **Readiness Probe**: Detects if container is ready to accept traffic. If it fails, the Pod is removed from Service endpoints. Use to prevent routing traffic to unready Pods.  
-- **Startup Probe**: Used for slow-starting containers; disables liveness/readiness until startup succeeds. Useful for legacy apps with long startup times.
+### **Kubernetes Probes**
+
+**Definition:** 
+Probes are health check mechanisms in Kubernetes used to determine whether a container is running, ready to serve traffic, or has started successfully.
+
+**Use Case:** 
+Ensure application reliability by restarting unhealthy containers, controlling traffic flow, and handling slow-starting applications automatically.
+
+**Types of Probes:** Kubernetes supports three types of probes
+- Liveness Probe
+- Readiness Probe
+- Startup Probe
+
+#### **1. Startup Probe**
+**Definition:** Checks whether a container has started successfully.
+
+**Use Case:**  
+  - Used for slow-starting applications
+  - Prevents liveness/readiness probes from running too early
+**Action on Failure:** Pod is restarted
+
+**YAML:**
+```yaml
+startupProbe:
+  httpGet:
+    path: /startup
+    port: 8080
+  initialDelaySeconds: 10
+  periodSeconds: 5
+```
+#### **2. Liveness Probe**
+
+**Definition:** Checks whether the container is still running and responsive.
+
+**Use Case:** 
+  - Detects deadlocks or hung applications
+  - Restarts the container if it becomes unresponsive
+
+**Action on Failure:** Container is restarted
+
+**YAML**
+```yaml
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: 8080
+  initialDelaySeconds: 3
+  periodSeconds: 5
+```
+
+#### **3. Readiness Probe**
+**Definition:** Checks whether the container is ready to accept incoming traffic.
+
+**Use Case:**  
+  - Prevents traffic until the app is fully ready
+  - Useful when the app depends on databases or external services
+**Action on Failure:** Pod is removed from Service endpoints (no restart)
+
+**YAML:**
+```yaml
+readinessProbe:
+  httpGet:
+    path: /ready
+    port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 3
+```
 
 ---
 
 ### Q8 — What is the difference between requests and limits in a Pod's resources?
 **Answer**
 
-- **requests**: Minimum resources guaranteed for scheduling. The scheduler uses requests to place Pods on nodes.  
-- **limits**: Maximum resources the container may use.
-  - CPU: container is throttled when exceeding limit.
-  - Memory: container exceeding limit will be OOMKilled.
+#### **Resource Requests and Limits**
 
----
+**Definition:** Resource requests define the minimum CPU and memory required by a container, while limits define the maximum resources a container is allowed to consume.
+
+**Use Case:** 
+  - Helps the Kubernetes scheduler place Pods on nodes with sufficient resources
+  - Prevents a single container from over-consuming CPU or memory
+  - Ensures fair resource sharing in a cluster
+
+#### **How Kubernetes Uses Requests and Limits**
+
+**Scheduler Behavior:**
+  - Uses requests to decide which node can run the Pod
+  - Ignores limits during scheduling
+
+**Runtime Behavior:**
+  - CPU limits → Container is throttled
+  - Memory limits → Container is OOMKilled if exceeded
+
+**Resource Configuration YAML**
+```yaml
+spec:
+  containers:
+    - name: app
+      resources:
+        requests:
+          cpu: "500m"
+          memory: "256Mi"
+        limits:
+          cpu: "1"
+          memory: "512Mi"
+```
+**Key Points:**
+
+*1. CPU*
+  - 500m = 0.5 CPU core
+  - Exceeding CPU limit → Throttling
+
+*2. Memory*
+  - Memory is not compressible
+  - Exceeding memory limit → OOMKilled
+
+
 
 ## Category 3: Networking & Services
 
