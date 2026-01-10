@@ -67,7 +67,8 @@ ln file.txt hardlink.txt
 # Create soft link
 ln -s file.txt softlink.txt
 ```
-```sh
+
+```bash
 # ------------------- Create the base setup -------------------
 
 user@568d442825b6: mkdir -p /opt/app/bin /etc/app /var/log/app /backup
@@ -281,7 +282,7 @@ umask 022
 # Files: 666-022=644  (rw-r--r--)
 # Dirs:  777-022=755  (rwxr-xr-x)
 ```
-```sh
+
 ```sh
 # ------------------- User and Group Setup -------------------
 
@@ -372,7 +373,6 @@ logs from app
 user@6cd6e0189f89:/var/www/myapp/logs$ cat app.log 
 logs from app
 ```
-
 ---
 
 ## Category 3: Process Management
