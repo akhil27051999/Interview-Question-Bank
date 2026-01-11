@@ -775,7 +775,6 @@ sleep 200
 ^Z
 [2]+  Stopped                 sleep 200
 ```
-
 ---
 
 ## Category 4: Disk & Filesystem Management
@@ -850,6 +849,337 @@ lvcreate -L 10G -n mylv myvg
 mkfs.ext4 /dev/myvg/mylv
 mount /dev/myvg/mylv /mnt/data
 ```
+---
+### Disk, Partition, Filesystem & Mount
+
+| Concept        | What it is                         | Linux Example                          | Simple Example (Analogy)    | Practical Example                              |
+| -------------- | ---------------------------------- | -------------------------------------- | --------------------------- | ---------------------------------------------- |
+| **Disk**       | Physical or virtual storage device | `/dev/sda`, `/dev/sdb`, `/dev/nvme0n1` |  A warehouse                | A 100GB cloud disk attached to an EC2 instance |
+| **Partition**  | Logical division of a disk         | `/dev/sda1`, `/dev/sdb1`               |  Rooms inside a warehouse   | One partition for OS, one for logs             |
+| **Filesystem** | Structure that organizes data      | `ext4`, `xfs`                          |  Filing system in a room    | ext4 used to store Linux files                 |
+| **Mount**      | Linking filesystem to a directory  | `/mnt/data`, `/var/log`                |  Door to access a room      | Mount disk to `/var/log`                       |
+
+```text
+Real Disk (Docker VM /dev/vda)
+         │
+         ├─ Contains Filesystem (ext4) where we can create files
+         │
+         └─ /tmp/virtualdisk.img  ← This file is just a “container” for practice
+                 │
+                 └─ Loop Device (/dev/loop0)
+                       │
+                       └─ Partition (/dev/loop0p1)
+                             │
+                             └─ Filesystem (ext4)
+                                   │
+                                   └─ Mount (/mnt/virtualdisk) → create files here
+
+```
+
+### Lab Scenario : Disk & Filesystem Management – Practical 
+
+- You are a Linux/System Engineer managing a web server.
+- /var is filling up due to logs
+- A new disk has been attached to the server
+- You must:
+  1. Partition the disk
+  2. Create a filesystem
+  3. Mount it persistently
+  4. Move application data
+  5. Handle disk usage issues
+  6. Simulate and recover from common failures
+
+#### 1. Create a “virtual disk” file
+
+```sh
+
+# We create a file that acts as a disk. Later we can format it and mount it.
+
+ubuntu:~$ sudo dd if=/dev/zero of=/tmp/virtualdisk.img bs=1M count=100
+100+0 records in
+100+0 records out
+104857600 bytes (105 MB, 100 MiB) copied, 0.0402209 s, 2.6 GB/s
+
+# Explaination:
+# dd creates a blank file of 100MB
+# bs=1M count=100 → 100 * 1MB = 100MB
+# /tmp/virtualdisk.img → our “virtual disk”
+
+
+# Create a loop device → Loop device allows Linux to treat a file as a block device.
+
+ubuntu:~$ sudo losetup -fP /tmp/virtualdisk.img
+
+ubuntu:~$ losetup -a
+/dev/loop0: [64769]:1094 (/tmp/virtualdisk.img)
+
+# Explanation:
+# /dev/loop0 now acts like a real disk
+# We can partition, format, and mount it
+
+```
+
+#### 2. Partition the virtual disk
+
+```sh
+
+# Use fdisk to create a single partition.
+
+ubuntu:~$ sudo fdisk /dev/loop0
+
+Welcome to fdisk (util-linux 2.39.3).
+Changes will remain in memory only, until you decide to write them.
+Be careful before using the write command.
+
+Device does not contain a recognized partition table.
+Created a new DOS (MBR) disklabel with disk identifier 0x038f6069.
+
+Command (m for help): m
+
+Help:
+
+  DOS (MBR)
+   a   toggle a bootable flag
+   b   edit nested BSD disklabel
+   c   toggle the dos compatibility flag
+
+  Generic
+   d   delete a partition
+   F   list free unpartitioned space
+   l   list known partition types
+   n   add a new partition
+   p   print the partition table
+   t   change a partition type
+   v   verify the partition table
+   i   print information about a partition
+
+  Misc
+   m   print this menu
+   u   change display/entry units
+   x   extra functionality (experts only)
+
+  Script
+   I   load disk layout from sfdisk script file
+   O   dump disk layout to sfdisk script file
+
+  Save & Exit
+   w   write table to disk and exit
+   q   quit without saving changes
+
+  Create a new label
+   g   create a new empty GPT partition table
+   G   create a new empty SGI (IRIX) partition table
+   o   create a new empty MBR (DOS) partition table
+   s   create a new empty Sun partition table
+
+Command (m for help): n
+Partition type
+   p   primary (0 primary, 0 extended, 4 free)
+   e   extended (container for logical partitions)
+Select (default p): e
+Partition number (1-4, default 1): 1
+First sector (2048-204799, default 2048): 2048
+Last sector, +/-sectors or +/-size{K,M,G,T,P} (2048-204799, default 204799): 204799
+
+Created a new partition 1 of type 'Extended' and of size 99 MiB.
+
+Command (m for help): w
+The partition table has been altered.
+Calling ioctl() to re-read partition table.
+Syncing disks.
+
+
+# Check partition:
+
+ubuntu:~$ lsblk
+NAME      MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+loop0       7:0    0  100M  0 loop 
+`-loop0p1 259:1    0    1K  0 part 
+vda       253:0    0   20G  0 disk 
+|-vda1    253:1    0   19G  0 part /
+|-vda14   253:14   0    4M  0 part 
+|-vda15   253:15   0  106M  0 part /boot/efi
+`-vda16   259:0    0  913M  0 part /boot
+
+ubuntu:~$ sudo mkfs.ext4 /dev/loop0p1
+mke2fs 1.47.0 (5-Feb-2023)
+mkfs.ext4: inode_size (256) * inodes_count (0) too big for a
+        filesystem with 0 blocks, specify higher inode_ratio (-i)
+        or lower inode count (-N).
+
+# Explanation:
+# We created loop0p1 → partition 1 on the virtual disk
+# Concept is exactly same as /dev/vdb1 on real VM
+```
+
+#### 3. Create a filesystem
+
+```sh
+
+# Format the partition with ext4.
+
+ubuntu:~$ sudo mkfs.ext4 /dev/loop0
+mke2fs 1.47.0 (5-Feb-2023)
+Found a dos partition table in /dev/loop0
+Proceed anyway? (y,N) y
+Discarding device blocks: done                            
+Creating filesystem with 25600 4k blocks and 25600 inodes
+
+Allocating group tables: done                            
+Writing inode tables: done                            
+Creating journal (1024 blocks): done
+Writing superblocks and filesystem accounting information: done
+
+# Explanation:
+# Now /dev/loop0p1 is an ext4 filesystem
+# Can store files like any real disk
+```
+
+#### 4. Mount and unmount the filesystem
+
+```sh
+
+# Mount partition to a directory to use it.
+
+ubuntu:~$ sudo mkdir /mnt/virtualdisk
+ubuntu:~$ sudo mount /dev/loop0 /mnt/virtualdisk
+
+# Check mount:
+
+ubuntu:~$ df -h /mnt/virtualdisk
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/loop0       90M   24K   83M   1% /mnt/virtualdisk
+
+ubuntu:~$ lsblk
+NAME    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+loop0     7:0    0  100M  0 loop /mnt/virtualdisk
+vda     253:0    0   20G  0 disk 
+|-vda1  253:1    0   19G  0 part /
+|-vda14 253:14   0    4M  0 part 
+|-vda15 253:15   0  106M  0 part /boot/efi
+`-vda16 259:0    0  913M  0 part /boot
+
+# Explanation:
+# df -hT shows filesystem type and size
+# /mnt/virtualdisk is now ready for practice
+```
+
+#### 5. Unmount and cleanup
+
+```sh
+
+# After practice, unmount and detach loop device.
+
+ubuntu:~$ umount /mnt/virtualdisk && losetup -d /dev/loop0
+
+ubuntu:~$ lsblk
+NAME    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+vda     253:0    0   20G  0 disk 
+|-vda1  253:1    0   19G  0 part /
+|-vda14 253:14   0    4M  0 part 
+|-vda15 253:15   0  106M  0 part /boot/efi
+`-vda16 259:0    0  913M  0 part /boot
+
+# Explanation:
+# /mnt/virtualdisk is unmounted
+# Loop device is detached
+# File removed — lab is clean
+```
+
+#### 6. Troubleshooting disk usage in Linux
+
+```sh
+
+# Disk space by filesystem
+
+user@b6dcf056802d:~$ df -h
+Filesystem      Size  Used Avail Use% Mounted on
+overlay          29G  7.9G   22G  28% /
+tmpfs            64M     0   64M   0% /dev
+tmpfs            64M  876K   64M   2% /run
+tmpfs           4.0M     0  4.0M   0% /run/lock
+shm              64M     0   64M   0% /dev/shm
+/dev/root        29G  7.9G   22G  28% /var/log/amazon/ssm
+tmpfs           1.9G     0  1.9G   0% /proc/acpi
+tmpfs           1.9G     0  1.9G   0% /proc/scsi
+tmpfs           1.9G     0  1.9G   0% /sys/firmware
+tmpfs           1.9G   20K  1.9G   1% /tmp
+tmpfs            52M  8.0K   52M   1% /run/user/1001
+
+# Disk usage by directory
+
+user@b6dcf056802d:~$ sudo du -sh /var/*
+4.0K    /var/backups
+1.7M    /var/cache
+48M     /var/lib
+4.0K    /var/local
+0       /var/lock
+1.1G    /var/log
+4.0K    /var/mail
+4.0K    /var/opt
+0       /var/run
+4.0K    /var/spool
+12K     /var/tmp
+
+user@b6dcf056802d:~$ sudo du -sh /var/log/*
+0       /var/log/README
+12K     /var/log/alternatives.log
+28K     /var/log/amazon
+80K     /var/log/apt
+1.1G    /var/log/big.log
+60K     /var/log/bootstrap.log
+0       /var/log/btmp
+180K    /var/log/dpkg.log
+8.0K    /var/log/journal
+0       /var/log/lastlog
+4.0K    /var/log/private
+0       /var/log/wtmp
+
+# Detailed per-subdir
+
+user@b6dcf056802d:~$ sudo du -h --max-depth=1 /home
+16K     /home/ubuntu
+2.1G    /home/user
+2.1G    /home
+
+# Find large files than 100M
+
+user@b6dcf056802d:~$ sudo find /var/log -type f -name "*.log" -size +100M -exec ls -lh {} \; 2>/dev/null
+-rw-r--r-- 1 root root 1.0G Jan 11 15:34 /var/log/big.log
+
+# Find files less than 100M
+
+user@b6dcf056802d:~$ sudo find /var/log -type f -name "*.log" -size -100M -exec ls -lh {} \; 2>/dev/null
+-rw-r--r-- 1 root root 20K Jan 11 15:29 /var/log/apt/history.log
+-rw-r----- 1 root adm 43K Jan 11 15:29 /var/log/apt/term.log
+-rw-r--r-- 1 root root 59K Apr 15  2025 /var/log/bootstrap.log
+-rw-r--r-- 1 root root 8.9K Jun  6  2025 /var/log/alternatives.log
+-rw-r--r-- 1 root root 177K Jan 11 15:29 /var/log/dpkg.log
+-rw-r--r-- 1 root root 9.8K Jan 11 15:44 /var/log/amazon/ssm/amazon-ssm-agent.log
+```
+
+### Real-World Troubleshooting Scenarios (Simulated)
+
+| Problem           | Cause              | Resolution                              |
+| ----------------- | ------------------ | --------------------------------------- |
+| Cannot write file | Mounted read-only  | `mount -o remount,rw /mnt/virtualdisk`  |
+| Disk full         | Filled loopback FS | Check `df -h` and delete files          |
+| Cannot mount      | Partition missing  | `lsblk` or recreate partition           |
+| Permission denied | Wrong ownership    | `sudo chown user:user /mnt/virtualdisk` |
+
+### Command Summary
+
+| Command   | Purpose           |
+| --------- | ----------------- |
+| lsblk     | View disks        |
+| df        | Disk usage        |
+| du        | Find space hogs   |
+| fdisk     | Partition disk    |
+| mkfs      | Create filesystem |
+| mount     | Attach filesystem |
+| fstab     | Persistent mount  |
+| fsck      | Repair FS         |
+| resize2fs | Resize FS         |
 
 ---
 
