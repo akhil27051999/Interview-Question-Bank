@@ -18,9 +18,9 @@
 
 ---
 
-## Category 1: Linux Fundamentals
+# Category 1: Linux Fundamentals
 
-### Q1 — What is the Linux boot process?
+## Q1 — What is the Linux boot process?
 **Answer**
 
 The Linux boot process consists of several stages:
@@ -32,9 +32,7 @@ The Linux boot process consists of several stages:
 - **Runlevels/Targets**: System services are started according to targets.  
 - **Login prompt**: User can log into the system.
 
----
-
-### Q2 — Explain Linux filesystem hierarchy.
+## Q2 — Explain Linux filesystem hierarchy.
 **Answer**
 
 Key directories and purpose:
@@ -51,9 +49,7 @@ Key directories and purpose:
 - `/dev` — Device files  
 - `/proc` — Process and kernel information (virtual filesystem)
 
----
-
-### Q3 — What is the difference between hard links and soft links?
+## Q3 — What is the difference between hard links and soft links?
 **Answer**
 
 - **Hard link**: Direct reference to the same inode. Cannot cross filesystems. File remains until all hard links removed.  
@@ -68,7 +64,7 @@ ln file.txt hardlink.txt
 ln -s file.txt softlink.txt
 ```
 
-### Practice Lab : Hard links and Soft links
+## Practice Lab : Hard links and Soft links
 
 ```bash
 # ------------------- Create the base setup -------------------
@@ -185,9 +181,8 @@ cat: /backup/app.conf.moved: Permission denied
 
 user@568d442825b6:~$ 
 ```
----
 
-### Q4 — Explain Linux process states.
+## Q4 — Explain Linux process states.
 **Answer**
 
 Common process states:
@@ -198,11 +193,9 @@ Common process states:
 - **Zombie (Z)**: Terminated but parent has not reaped it.  
 - **Uninterruptible Sleep (D)**: Waiting for I/O; cannot be killed until I/O completes.
 
----
+# Category 2: User & Permission Management
 
-## Category 2: User & Permission Management
-
-### Q5 — Explain Linux file permissions (rwx).
+## Q5 — Explain Linux file permissions (rwx).
 **Answer**
 
 Permissions are specified for three classes: user (u), group (g), others (o).
@@ -218,9 +211,7 @@ chmod 754 file.txt
 # Owner: rwx (7), Group: r-x (5), Others: r-- (4)
 ```
 
----
-
-### Q6 — What is the difference between su and sudo?
+## Q6 — What is the difference between su and sudo?
 **Answer**
 
 - `su`: Switch user; requires the target user's password (common use: `su -` to become root).  
@@ -235,9 +226,7 @@ su -
 sudo apt update
 ```
 
----
-
-### Q7 — How to manage users and groups in Linux?
+## Q7 — How to manage users and groups in Linux?
 **Answer**
 
 User examples:
@@ -267,9 +256,7 @@ usermod -aG developers john
 groups john
 ```
 
----
-
-### Q8 — What is umask and how does it work?
+## Q8 — What is umask and how does it work?
 **Answer**
 
 `umask` sets default permissions for newly created files and directories.
@@ -285,7 +272,8 @@ umask 022
 # Dirs:  777-022=755  (rwxr-xr-x)
 ```
 
-### Practice Lab : User & Permission Management
+
+## Practice Lab : User & Permission Management
 
 ```sh
 # ------------------- User and Group Setup -------------------
@@ -381,11 +369,10 @@ logs from app
 user@6cd6e0189f89:/var/www/myapp/logs$ cat app.log 
 logs from app
 ```
----
 
-## Category 3: Process Management
+# Category 3: Process Management
 
-### Q9 — How to monitor and manage processes?
+## Q9 — How to monitor and manage processes?
 **Answer**
 
 Monitoring:
@@ -403,9 +390,8 @@ pkill nginx       # Kill processes by name
 killall java      # Kill all processes named java
 ```
 
----
 
-### Q10 — Explain signals in Linux with examples.
+## Q10 — Explain signals in Linux with examples.
 **Answer**
 
 Common signals:
@@ -421,9 +407,7 @@ Example:
 kill -HUP 1234   # Send SIGHUP to PID 1234
 ```
 
----
-
-### Q11 — What are foreground and background processes?
+## Q11 — What are foreground and background processes?
 **Answer**
 
 - **Foreground**: Process runs in the current terminal; blocks it until finished.  
@@ -442,9 +426,7 @@ bg
 fg
 ```
 
----
-
-### Q12 — How to find and kill a process using a specific port?
+## Q12 — How to find and kill a process using a specific port?
 **Answer**
 ```bash
 # Find process using port 8080
@@ -457,9 +439,8 @@ ss -tulpn | grep 8080
 # Kill process using port 8080
 fuser -k 8080/tcp
 ```
----
 
-### Lab Scenario: Process Management in Linux
+## Lab Scenario: Process Management in Linux
 
 **Process:** A process is a running instance of a program.
 When a program (like ls, bash, nginx) is executed, the OS loads it into memory and assigns it a Process ID (PID).    
@@ -482,18 +463,18 @@ When a program (like ls, bash, nginx) is executed, the OS loads it into memory a
 | Example        | `bash`                                 | `ls`, `yes`                   |
 
 
-### You manage a Linux server running: Production Server Under High Load
+## You manage a Linux server running: Production Server Under High Load
   - A web application
   - A log-processing script
   - A misbehaving CPU-intensive job
   - A hung process
 
-**Users complain:**
+### Users complain:
   1. Server is slow
   2. CPU usage is high
   3. Some processes don’t terminate normally
 
-     
+---
 #### 1. Identify the Top CPU Consumer and Lower Its Priority
 
 ```sh
@@ -580,6 +561,7 @@ user@28cd0a24aa57:~$ ps -o pid,ni,comm -p 347
 # → Prevents CPU hog from starving other processes
 ```
 
+---
 #### 2. Gracefully Stop a Process, Then Force Kill It
 
 ```sh
@@ -678,6 +660,7 @@ user         660  0.0  0.0   5900  2816 pts/1    R+   18:55   0:00 ps aux
 user@28cd0a24aa57:~$ 
 ```
 
+---
 #### 3. Find a Zombie Process and Fix It
 
 ```sh
@@ -732,6 +715,7 @@ user         802  0.0  0.0   3312  1664 pts/0    S+   19:00   0:00 grep --color=
 
 ```
 
+---
 #### 4. Move a Stopped Job to Background and Foreground
 
 ```sh
@@ -775,11 +759,10 @@ sleep 200
 ^Z
 [2]+  Stopped                 sleep 200
 ```
----
 
-## Category 4: Disk & Filesystem Management
+# Category 4: Disk & Filesystem Management
 
-### Q13 — How to check disk usage in Linux?
+## Q13 — How to check disk usage in Linux?
 **Answer**
 ```bash
 # Disk space by filesystem
@@ -795,9 +778,7 @@ du -h --max-depth=1 /home
 find / -type f -size +100M 2>/dev/null
 ```
 
----
-
-### Q14 — Explain Linux filesystem types.
+## Q14 — Explain Linux filesystem types.
 **Answer**
 
 Common filesystems:
@@ -809,9 +790,8 @@ Common filesystems:
 - `tmpfs` — In-memory filesystem.  
 - `swap` — Virtual memory.
 
----
 
-### Q15 — How to mount and unmount filesystems?
+## Q15 — How to mount and unmount filesystems?
 **Answer**
 ```bash
 # Mount filesystem
@@ -830,9 +810,8 @@ mount -a
 findmnt
 ```
 
----
 
-### Q16 — What is LVM and its components?
+## Q16 — What is LVM and its components?
 **Answer**
 
 Logical Volume Manager (LVM) provides flexible volume management:
@@ -849,8 +828,8 @@ lvcreate -L 10G -n mylv myvg
 mkfs.ext4 /dev/myvg/mylv
 mount /dev/myvg/mylv /mnt/data
 ```
----
-### Disk, Partition, Filesystem & Mount
+
+## Disk, Partition, Filesystem & Mount
 
 | Concept        | What it is                         | Linux Example                          | Simple Example (Analogy)    | Practical Example                              |
 | -------------- | ---------------------------------- | -------------------------------------- | --------------------------- | ---------------------------------------------- |
@@ -876,7 +855,7 @@ Real Disk (Docker VM /dev/vda)
 
 ```
 
-### Lab Scenario : Disk & Filesystem Management – Practical 
+## Lab Scenario : Disk & Filesystem Management – Practical 
 
 - You are a Linux/System Engineer managing a web server.
 - /var is filling up due to logs
@@ -888,7 +867,8 @@ Real Disk (Docker VM /dev/vda)
   4. Move application data
   5. Handle disk usage issues
   6. Simulate and recover from common failures
-
+     
+---
 #### 1. Create a “virtual disk” file
 
 ```sh
@@ -918,7 +898,7 @@ ubuntu:~$ losetup -a
 # We can partition, format, and mount it
 
 ```
-
+---
 #### 2. Partition the virtual disk
 
 ```sh
@@ -1011,7 +991,7 @@ mkfs.ext4: inode_size (256) * inodes_count (0) too big for a
 # We created loop0p1 → partition 1 on the virtual disk
 # Concept is exactly same as /dev/vdb1 on real VM
 ```
-
+---
 #### 3. Create a filesystem
 
 ```sh
@@ -1034,7 +1014,7 @@ Writing superblocks and filesystem accounting information: done
 # Now /dev/loop0p1 is an ext4 filesystem
 # Can store files like any real disk
 ```
-
+---
 #### 4. Mount and unmount the filesystem
 
 ```sh
@@ -1063,7 +1043,7 @@ vda     253:0    0   20G  0 disk
 # df -hT shows filesystem type and size
 # /mnt/virtualdisk is now ready for practice
 ```
-
+---
 #### 5. Unmount and cleanup
 
 ```sh
@@ -1085,7 +1065,7 @@ vda     253:0    0   20G  0 disk
 # Loop device is detached
 # File removed — lab is clean
 ```
-
+---
 #### 6. Troubleshooting disk usage in Linux
 
 ```sh
@@ -1181,11 +1161,10 @@ user@b6dcf056802d:~$ sudo find /var/log -type f -name "*.log" -size -100M -exec 
 | fsck      | Repair FS         |
 | resize2fs | Resize FS         |
 
----
 
-## Category 5: Networking
+# Category 5: Networking
 
-### Q17 — How to check network configuration?
+## Q17 — How to check network configuration?
 **Answer**
 ```bash
 # Interfaces and IPs
@@ -1202,9 +1181,7 @@ nslookup google.com
 dig google.com
 ```
 
----
-
-### Q18 — How to troubleshoot network connectivity?
+## Q18 — How to troubleshoot network connectivity?
 **Answer**
 ```bash
 # Basic connectivity
@@ -1225,9 +1202,7 @@ nc -v google.com 80
 iptables -L
 ```
 
----
-
-### Q19 — Explain common network configuration files.
+## Q19 — Explain common network configuration files.
 **Answer**
 
 - `/etc/hosts` — Static hostname resolution.  
@@ -1236,9 +1211,8 @@ iptables -L
 - `/etc/sysconfig/network-scripts/` — RHEL/CentOS network scripts.  
 - `/etc/netplan/` — Ubuntu (netplan) configuration.
 
----
 
-### Q20 — How to use tcpdump for network analysis?
+## Q20 — How to use tcpdump for network analysis?
 **Answer**
 ```bash
 # Capture all traffic on eth0 (requires sudo)
@@ -1257,11 +1231,9 @@ tcpdump -i eth0 -w capture.pcap
 tcpdump -r capture.pcap
 ```
 
----
+# Category 6: Package Management
 
-## Category 6: Package Management
-
-### Q21 — Compare apt, yum, and dpkg.
+## Q21 — Compare apt, yum, and dpkg.
 **Answer**
 
 - `apt` (Debian/Ubuntu) — High-level package management (`apt install`, `apt update`).  
@@ -1282,9 +1254,7 @@ yum install nginx
 rpm -i package.rpm
 ```
 
----
-
-### Q22 — How to find which package provides a specific file?
+## Q22 — How to find which package provides a specific file?
 **Answer**
 ```bash
 # Debian/Ubuntu
@@ -1298,9 +1268,7 @@ apt-file search filename
 yum provides filename
 ```
 
----
-
-### Q23 — How to create a simple Debian package?
+## Q23 — How to create a simple Debian package?
 **Answer**
 ```bash
 # Directory structure
@@ -1323,11 +1291,9 @@ EOF
 dpkg-deb --build myapp
 ```
 
----
+# Category 7: Shell Scripting Fundamentals
 
-## Category 7: Shell Scripting Fundamentals
-
-### Q24 — What is a shebang line and why is it important?
+## Q24 — What is a shebang line and why is it important?
 **Answer**
 
 The shebang (`#!`) specifies the interpreter to execute the script.
@@ -1348,9 +1314,8 @@ chmod +x script.sh
 bash script.sh
 ```
 
----
 
-### Q25 — Explain different types of variables in shell scripting.
+## Q25 — Explain different types of variables in shell scripting.
 **Answer**
 
 - **Local variables**:
@@ -1372,9 +1337,7 @@ $$  # PID of script
 $?  # exit status of last command
 ```
 
----
-
-### Q26 — How to handle command-line arguments?
+## Q26 — How to handle command-line arguments?
 **Answer**
 ```bash
 # Access positional args
@@ -1395,9 +1358,7 @@ while getopts "u:p:" opt; do
 done
 ```
 
----
-
-### Q27 — Explain different types of quotes in shell.
+## Q27 — Explain different types of quotes in shell.
 **Answer**
 
 - **Single quotes `'...'`**: Preserve literal value of enclosed characters.  
@@ -1412,11 +1373,9 @@ echo "Hello $name"       # prints: Hello John
 echo "Today is $(date)"  # prints current date
 ```
 
----
+# Category 8: Advanced Shell Scripting
 
-## Category 8: Advanced Shell Scripting
-
-### Q28 — How to use arrays in shell scripting?
+## Q28 — How to use arrays in shell scripting?
 **Answer**
 ```bash
 # Indexed array
@@ -1436,9 +1395,7 @@ colors["red"]="#FF0000"
 echo "${colors[red]}"
 ```
 
----
-
-### Q29 — Explain process substitution.
+## Q29 — Explain process substitution.
 **Answer**
 
 Process substitution uses `<(...)` or `>(...)` to treat command output as a file.
@@ -1454,9 +1411,7 @@ while read line; do
 done < <(grep "error" /var/log/syslog)
 ```
 
----
-
-### Q30 — How to create functions in shell scripts?
+## Q30 — How to create functions in shell scripts?
 **Answer**
 ```bash
 # Function definition
@@ -1478,11 +1433,9 @@ greet "Alice"
 if is_even 10; then echo "even"; fi
 ```
 
----
+# Category 9: Text Processing
 
-## Category 9: Text Processing
-
-### Q31 — How to use grep, sed, and awk effectively?
+## Q31 — How to use grep, sed, and awk effectively?
 **Answer**
 
 `grep` examples:
@@ -1509,9 +1462,7 @@ awk -F',' '{print $2}' file.csv
 awk '{print "Line:", NR, "Cols:", NF}' file.txt
 ```
 
----
-
-### Q32 — How to parse CSV files in shell?
+## Q32 — How to parse CSV files in shell?
 **Answer**
 ```bash
 # Using awk
@@ -1526,9 +1477,7 @@ done < data.csv
 { read header; while IFS=',' read -r name age email; do ...; done } < data.csv
 ```
 
----
-
-### Q33 — How to validate and sanitize input in scripts?
+## Q33 — How to validate and sanitize input in scripts?
 **Answer**
 ```bash
 # Check argument provided
@@ -1555,11 +1504,9 @@ fi
 username=$(echo "$1" | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')
 ```
 
----
+# Category 10: Error Handling & Debugging
 
-## Category 10: Error Handling & Debugging
-
-### Q34 — How to handle errors in shell scripts?
+## Q34 — How to handle errors in shell scripts?
 **Answer**
 ```bash
 #!/bin/bash
@@ -1582,9 +1529,7 @@ error() { echo "[$(date)] ERROR: $*" >&2; }
 error "Something went wrong"
 ```
 
----
-
-### Q35 — How to debug shell scripts?
+## Q35 — How to debug shell scripts?
 **Answer**
 ```bash
 # Enable verbose mode
@@ -1601,9 +1546,7 @@ debug() { [ "${DEBUG:-false}" = "true" ] && echo "DEBUG: $*" >&2; }
 DEBUG=true; debug "variable=$var"
 ```
 
----
-
-### Q36 — How to create log files from scripts?
+## Q36 — How to create log files from scripts?
 **Answer**
 ```bash
 LOG_FILE="/var/log/myscript.log"
@@ -1622,11 +1565,9 @@ log "Script started"
 } >> "$LOG_FILE" 2>&1
 ```
 
----
+# Category 11: Performance Monitoring
 
-## Category 11: Performance Monitoring
-
-### Q37 — How to monitor system performance?
+## Q37 — How to monitor system performance?
 **Answer**
 - CPU: `top`, `htop`, `mpstat`  
 - Memory: `free -h`, `vmstat`  
@@ -1634,9 +1575,8 @@ log "Script started"
 - Network: `iftop`, `nethogs`  
 - Overall: `sar`, `dstat`
 
----
 
-### Q38 — How to find and resolve high CPU usage?
+## Q38 — How to find and resolve high CPU usage?
 **Answer**
 ```bash
 ps aux --sort=-%cpu | head -10
@@ -1647,9 +1587,8 @@ perf top   # advanced profiling
 ```
 Investigate runaway processes, optimize code, or limit resources (cgroups).
 
----
 
-### Q39 — How to troubleshoot memory issues?
+## Q39 — How to troubleshoot memory issues?
 **Answer**
 ```bash
 free -h
@@ -1662,11 +1601,10 @@ echo 3 > /proc/sys/vm/drop_caches
 ```
 For leaks, use tools like `valgrind` for native binaries.
 
----
 
-## Category 12: Automation & Cron Jobs
+# Category 12: Automation & Cron Jobs
 
-### Q40 — How to schedule tasks with cron?
+## Q40 — How to schedule tasks with cron?
 **Answer**
 
 Edit crontab with `crontab -e`.
@@ -1690,9 +1628,8 @@ Examples:
 0 0 * * 0 /path/to/weekly.sh       # weekly on Sunday
 ```
 
----
 
-### Q41 — How to create systemd services?
+## Q41 — How to create systemd services?
 **Answer**
 Create `/etc/systemd/system/myservice.service`:
 ```ini
@@ -1718,11 +1655,10 @@ sudo systemctl start myservice
 sudo systemctl status myservice
 ```
 
----
 
-## Category 13: Security & Hardening
+# Category 13: Security & Hardening
 
-### Q42 — How to secure a Linux server?
+## Q42 — How to secure a Linux server?
 **Answer**
 
 Key steps:
@@ -1747,9 +1683,8 @@ PermitRootLogin no
 apt install fail2ban unattended-upgrades
 ```
 
----
 
-### Q43 — How to audit file permissions and security?
+## Q43 — How to audit file permissions and security?
 **Answer**
 ```bash
 # World-writable files
@@ -1768,11 +1703,9 @@ ls -la ~/.ssh/
 sudo -l
 ```
 
----
+# Category 14: Real-world Scripting Scenarios
 
-## Category 14: Real-world Scripting Scenarios
-
-### Q44 — How to create a backup script?
+## Q44 — How to create a backup script?
 **Answer**
 ```bash
 #!/bin/bash
@@ -1793,9 +1726,7 @@ else
 fi
 ```
 
----
-
-### Q45 — How to create a log analysis script?
+## Q45 — How to create a log analysis script?
 **Answer**
 ```bash
 #!/bin/bash
@@ -1818,9 +1749,7 @@ REPORT="/tmp/access_report_$(date +%Y%m%d).txt"
 echo "Report generated: $REPORT"
 ```
 
----
-
-### Q46 — How to create a system monitoring script?
+## Q46 — How to create a system monitoring script?
 **Answer**
 ```bash
 #!/bin/bash
@@ -1843,9 +1772,7 @@ if [ -n "$ALERT" ]; then
 fi
 ```
 
----
-
-### Q47 — How to create a user management script?
+## Q47 — How to create a user management script?
 **Answer**
 ```bash
 #!/bin/bash
@@ -1873,9 +1800,7 @@ while IFS=',' read -r user groups; do
 done < "$USER_FILE"
 ```
 
----
-
-### Q48 — How to create a Docker container management script?
+## Q48 — How to create a Docker container management script?
 **Answer**
 ```bash
 #!/bin/bash
@@ -1900,9 +1825,7 @@ docker info &>/dev/null || { echo "Docker not running"; exit 1; }
 manage "$1"
 ```
 
----
-
-### Q49 — How to create an SSL certificate monitoring script?
+## Q49 — How to create an SSL certificate monitoring script?
 **Answer**
 ```bash
 #!/bin/bash
@@ -1922,9 +1845,7 @@ for d in "${DOMAINS[@]}"; do
 done
 ```
 
----
-
-### Q50 — How to create a database maintenance script?
+## Q50 — How to create a database maintenance script?
 **Answer**
 ```bash
 #!/bin/bash
