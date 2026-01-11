@@ -1516,31 +1516,8 @@ Original-Maintainer: Jonathan Nieder <jrnieder@gmail.com>
 Bugs: https://bugs.launchpad.net/ubuntu/+filebug
 Installed-Size: 22.2 MB
 Provides: git-completion, git-core
-Depends: libc6 (>= 2.38), libcurl3t64-gnutls (>= 7.56.1), libexpat1 (>= 2.0.1), libpcre2-8-0 (>= 10.34), zlib1g (>= 1:1.2.2), perl, liberror-perl, git-man (>> 1:2.43.0), git-man (<< 1:2.43.0-.)
-Recommends: ca-certificates, patch, less, ssh-client
-Suggests: gettext-base, git-daemon-run | git-daemon-sysvinit, git-doc, git-email, git-gui, gitk, gitweb, git-cvs, git-mediawiki, git-svn
-Breaks: bash-completion (<< 1:1.90-1), cogito (<= 0.18.2+), dgit (<< 5.1~), git-buildpackage (<< 0.6.5), git-el (<< 1:2.32.0~rc2-1~), gitosis (<< 0.2+20090917-7), gitpkg (<< 0.15), guilt (<< 0.33), openssh-client (<< 1:6.8), stgit (<< 0.15), stgit-contrib (<< 0.15)
-Homepage: https://git-scm.com/
-Task: cloud-image, cloud-image, ubuntu-wsl, server, ubuntu-server-raspi, kubuntu-desktop, lubuntu-desktop, ubuntustudio-desktop-core, ubuntustudio-desktop
-Download-Size: 3680 kB
-APT-Manual-Installed: no
-APT-Sources: http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages
-Description: fast, scalable, distributed revision control system
- Git is popular version control system designed to handle very large
- projects with speed and efficiency; it is used for many high profile
- open source projects, most notably the Linux kernel.
- .
- Git falls in the category of distributed source code management tools.
- Every Git working directory is a full-fledged repository with full
- revision tracking capabilities, not dependent on network access or a
- central server.
- .
- This package provides the git main components with minimal dependencies.
- Additional functionality, e.g. a graphical user interface and revision
- tree visualizer, tools for interoperating with other VCSs, or a web
- interface, is provided as separate git* packages.
-
-N: There is 1 additional record. Please use the '-a' switch to see it
+Depends: libc6 (>= 2.38), libcurl3t64-gnutls (>= 7.56.1),
+...
 
 ubuntu:~$ apt depends git
 git
@@ -1549,37 +1526,8 @@ git
   Depends: libexpat1 (>= 2.0.1)
   Depends: libpcre2-8-0 (>= 10.34)
   Depends: zlib1g (>= 1:1.2.2)
-  Depends: perl
-  Depends: liberror-perl
-  Depends: git-man (>> 1:2.43.0)
-  Depends: git-man (<< 1:2.43.0-.)
-  Breaks: bash-completion (<< 1:1.90-1)
-  Breaks: <cogito> (<= 0.18.2+)
-  Breaks: dgit (<< 5.1~)
-  Breaks: git-buildpackage (<< 0.6.5)
-  Breaks: <git-el> (<< 1:2.32.0~rc2-1~)
-  Breaks: <gitosis> (<< 0.2+20090917-7)
-  Breaks: gitpkg (<< 0.15)
-  Breaks: guilt (<< 0.33)
-  Breaks: openssh-client (<< 1:6.8)
-  Breaks: stgit (<< 0.15)
-  Breaks: stgit-contrib (<< 0.15)
-  Recommends: ca-certificates
-  Recommends: patch
-  Recommends: less
-  Recommends: <ssh-client>
-    openssh-client
-  Suggests: gettext-base
- |Suggests: git-daemon-run
-  Suggests: git-daemon-sysvinit
-  Suggests: git-doc
-  Suggests: git-email
-  Suggests: git-gui
-  Suggests: gitk
-  Suggests: gitweb
-  Suggests: git-cvs
-  Suggests: git-mediawiki
-  Suggests: git-svn
+  Depends: perl...
+ 
 
 ubuntu:~$ sudo apt update && sudo apt install git -y 2>/dev/null
 Hit:1 http://archive.ubuntu.com/ubuntu noble InRelease
