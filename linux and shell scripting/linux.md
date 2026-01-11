@@ -1238,6 +1238,467 @@ tcpdump -i eth0 -w capture.pcap
 tcpdump -r capture.pcap
 ```
 
+```sh
+ubuntu:~$ ip link show
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2: enp1s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP mode DEFAULT group default qlen 1000
+    link/ether 62:c6:a2:36:3b:cd brd ff:ff:ff:ff:ff:ff
+3: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1454 qdisc noqueue state DOWN mode DEFAULT group default 
+    link/ether 62:1a:be:19:8a:99 brd ff:ff:ff:ff:ff:ff
+
+
+ubuntu:~$ ifconfig -a
+docker0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1454
+        inet 172.17.0.1  netmask 255.255.0.0  broadcast 172.17.255.255
+        ether 62:1a:be:19:8a:99  txqueuelen 0  (Ethernet)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+enp1s0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 172.30.1.2  netmask 255.255.255.0  broadcast 172.30.1.255
+        inet6 fe80::1995:6751:3ede:c0c5  prefixlen 64  scopeid 0x20<link>
+        ether 62:c6:a2:36:3b:cd  txqueuelen 1000  (Ethernet)
+        RX packets 22129  bytes 30685386 (30.6 MB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 6006  bytes 9663311 (9.6 MB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+
+ubuntu:~$ ethtool eth0
+netlink error: no device matches name (offset 24)
+netlink error: No such device
+netlink error: no device matches name (offset 24)
+netlink error: No such device
+netlink error: no device matches name (offset 24)
+netlink error: No such device
+netlink error: no device matches name (offset 24)
+netlink error: No such device
+netlink error: no device matches name (offset 24)
+netlink error: No such device
+netlink error: no device matches name (offset 24)
+netlink error: No such device
+netlink error: no device matches name (offset 24)
+netlink error: No such device
+No data available
+
+
+ubuntu:~$ arp -n
+Address                  HWtype  HWaddress           Flags Mask            Iface
+172.30.1.1               ether   02:00:00:00:00:00   C                     enp1s0
+
+
+ubuntu:~$ ip neigh show
+172.30.1.1 dev enp1s0 lladdr 02:00:00:00:00:00 REACHABLE 
+
+
+ubuntu:~$ ip addr show
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host noprefixroute 
+       valid_lft forever preferred_lft forever
+2: enp1s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 62:c6:a2:36:3b:cd brd ff:ff:ff:ff:ff:ff
+    inet 172.30.1.2/24 brd 172.30.1.255 scope global dynamic noprefixroute enp1s0
+       valid_lft 86313325sec preferred_lft 75524125sec
+    inet6 fe80::1995:6751:3ede:c0c5/64 scope link 
+       valid_lft forever preferred_lft forever
+3: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1454 qdisc noqueue state DOWN group default 
+    link/ether 62:1a:be:19:8a:99 brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
+       valid_lft forever preferred_lft forever
+
+
+ubuntu:~$ ip route show
+default via 172.30.1.1 dev enp1s0 proto dhcp src 172.30.1.2 metric 1002 mtu 1500 
+172.17.0.0/16 dev docker0 proto kernel scope link src 172.17.0.1 linkdown 
+172.30.1.0/24 dev enp1s0 proto dhcp scope link src 172.30.1.2 metric 1002 mtu 1500 
+
+
+ubuntu:~$ route -n
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+0.0.0.0         172.30.1.1      0.0.0.0         UG    1002   0        0 enp1s0
+172.17.0.0      0.0.0.0         255.255.0.0     U     0      0        0 docker0
+172.30.1.0      0.0.0.0         255.255.255.0   U     1002   0        0 enp1s0
+
+
+ubuntu:~$ ping -c 4 google.com
+PING google.com (142.250.185.206) 56(84) bytes of data.
+64 bytes from fra16s52-in-f14.1e100.net (142.250.185.206): icmp_seq=1 ttl=117 time=4.64 ms
+64 bytes from fra16s52-in-f14.1e100.net (142.250.185.206): icmp_seq=2 ttl=117 time=3.91 ms
+64 bytes from fra16s52-in-f14.1e100.net (142.250.185.206): icmp_seq=3 ttl=117 time=4.10 ms
+64 bytes from fra16s52-in-f14.1e100.net (142.250.185.206): icmp_seq=4 ttl=117 time=3.95 ms
+
+--- google.com ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 3004ms
+rtt min/avg/max/mdev = 3.906/4.148/4.642/0.293 ms
+
+
+ubuntu:~$ traceroute google.com
+Command 'traceroute' not found, but can be installed with:
+apt install inetutils-traceroute  # version 2:2.4-3ubuntu1, or
+apt install traceroute            # version 1:2.1.5-1
+ubuntu:~$ apt install traceroute
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+The following package was automatically installed and is no longer required:
+  squashfs-tools
+Use 'apt autoremove' to remove it.
+The following NEW packages will be installed:
+  traceroute
+0 upgraded, 1 newly installed, 0 to remove and 20 not upgraded.
+Need to get 60.5 kB of archives.
+After this operation, 162 kB of additional disk space will be used.
+Get:1 http://archive.ubuntu.com/ubuntu noble/universe amd64 traceroute amd64 1:2.1.5-1 [60.5 kB]
+Fetched 60.5 kB in 0s (628 kB/s)
+Selecting previously unselected package traceroute.
+(Reading database ... 113825 files and directories currently installed.)
+Preparing to unpack .../traceroute_1%3a2.1.5-1_amd64.deb ...
+Unpacking traceroute (1:2.1.5-1) ...
+Setting up traceroute (1:2.1.5-1) ...
+update-alternatives: using /usr/bin/traceroute.db to provide /usr/bin/traceroute (traceroute) in auto mode
+update-alternatives: using /usr/bin/traceroute6.db to provide /usr/bin/traceroute6 (traceroute6) in auto mode
+update-alternatives: using /usr/bin/lft.db to provide /usr/bin/lft (lft) in auto mode
+update-alternatives: using /usr/bin/traceproto.db to provide /usr/bin/traceproto (traceproto) in auto mode
+update-alternatives: using /usr/sbin/tcptraceroute.db to provide /usr/sbin/tcptraceroute (tcptraceroute) in auto mode
+Processing triggers for man-db (2.12.0-4build2) ...
+Scanning processes...                                                                                                                                                                        
+Scanning linux images...                                                                                                                                                                     
+
+Running kernel seems to be up-to-date.
+
+No services need to be restarted.
+
+No containers need to be restarted.
+
+No user sessions are running outdated binaries.
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
+
+
+ubuntu:~$ traceroute google.com
+traceroute to google.com (142.250.185.206), 30 hops max, 60 byte packets
+ 1  172.30.1.1 (172.30.1.1)  0.080 ms  0.044 ms  0.040 ms
+ 2  10.8.0.1 (10.8.0.1)  6.024 ms  6.010 ms  5.992 ms
+ 3  192.168.1.1 (192.168.1.1)  5.974 ms  6.022 ms  6.005 ms
+ 4  irb-2.router-02.fra1.civo.io (74.220.24.3)  6.029 ms  6.015 ms  6.229 ms
+ 5  lag-111.ear5.Frankfurt1.Level3.net (62.67.68.101)  6.360 ms  6.343 ms  6.468 ms
+ 6  * * *
+ 7  72.14.213.242 (72.14.213.242)  5.134 ms  7.403 ms  7.311 ms
+ 8  192.178.109.157 (192.178.109.157)  7.350 ms 192.178.109.241 (192.178.109.241)  7.247 ms 192.178.109.157 (192.178.109.157)  7.289 ms
+ 9  142.250.213.213 (142.250.213.213)  7.200 ms 142.250.225.77 (142.250.225.77)  7.358 ms 142.250.213.213 (142.250.213.213)  7.333 ms
+10  fra16s52-in-f14.1e100.net (142.250.185.206)  7.314 ms  7.371 ms  7.893 ms
+
+
+ubuntu:~$ tracepath google.com
+ 1?: [LOCALHOST]                      pmtu 1500
+ 1:  172.30.1.1                                            0.098ms 
+ 1:  172.30.1.1                                            0.093ms 
+ 2:  172.30.1.1                                            0.160ms pmtu 1400
+ 2:  10.8.0.1                                              2.366ms 
+ 3:  192.168.1.1                                           3.085ms 
+ 4:  irb-2.router-02.fra1.civo.io                          3.354ms 
+ 5:  no reply
+ 6:  no reply
+ 7:  72.14.213.242                                         5.892ms 
+ 8:  no reply
+ 9:  no reply
+
+
+ubuntu:~$ ping -M do -s 1472 google.com
+PING google.com (142.250.185.206) 1472(1500) bytes of data.
+ping: local error: message too long, mtu=1400
+ping: local error: message too long, mtu=1400
+ping: local error: message too long, mtu=1400
+ping: local error: message too long, mtu=1400
+ping: local error: message too long, mtu=1400
+ping: local error: message too long, mtu=1400
+^C
+--- google.com ping statistics ---
+6 packets transmitted, 0 received, +6 errors, 100% packet loss, time 5102ms
+
+
+ubuntu:~$ nslookup google.com 
+Server:         8.8.8.8
+Address:        8.8.8.8#53
+
+Non-authoritative answer:
+Name:   google.com
+Address: 142.250.185.206
+Name:   google.com
+Address: 2a00:1450:4001:812::200e
+
+
+ubuntu:~$ dig google.com
+
+; <<>> DiG 9.18.39-0ubuntu0.24.04.2-Ubuntu <<>> google.com
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 31708
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 512
+;; QUESTION SECTION:
+;google.com.                    IN      A
+
+;; ANSWER SECTION:
+google.com.             194     IN      A       142.250.185.206
+
+;; Query time: 6 msec
+;; SERVER: 8.8.8.8#53(8.8.8.8) (UDP)
+;; WHEN: Sun Jan 11 18:16:47 UTC 2026
+;; MSG SIZE  rcvd: 55
+
+
+ubuntu:~$ netstat -tulnp
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      1/init              
+tcp        0      0 0.0.0.0:40205           0.0.0.0:*               LISTEN      1222/node           
+tcp        0      0 0.0.0.0:40200           0.0.0.0:*               LISTEN      1271/kc-terminal    
+tcp        0      0 127.0.0.54:53           0.0.0.0:*               LISTEN      1185/systemd-resolv 
+tcp        0      0 127.0.0.53:53           0.0.0.0:*               LISTEN      1185/systemd-resolv 
+tcp        0      0 127.0.0.1:39845         0.0.0.0:*               LISTEN      715/containerd      
+tcp6       0      0 :::22                   :::*                    LISTEN      1/init              
+tcp6       0      0 :::40305                :::*                    LISTEN      1259/runtime-info-s 
+tcp6       0      0 :::40300                :::*                    LISTEN      1212/runtime-scenar 
+udp        0      0 127.0.0.54:53           0.0.0.0:*                           1185/systemd-resolv 
+udp        0      0 127.0.0.53:53           0.0.0.0:*                           1185/systemd-resolv 
+udp        0      0 172.30.1.2:68           0.0.0.0:*                           1132/dhcpcd: [BOOTP 
+udp        0      0 172.30.1.2:68           0.0.0.0:*                           455/systemd-network 
+udp6       0      0 fe80::1995:6751:3ed:546 :::*                                829/dhcpcd: [DHCP6  
+
+
+ubuntu:~$ ss -tulnp
+Netid      State       Recv-Q      Send-Q                                Local Address:Port              Peer Address:Port      Process                                                      
+udp        UNCONN      0           0                                        127.0.0.54:53                     0.0.0.0:*          users:(("systemd-resolve",pid=1185,fd=16))                  
+udp        UNCONN      0           0                                     127.0.0.53%lo:53                     0.0.0.0:*          users:(("systemd-resolve",pid=1185,fd=14))                  
+udp        UNCONN      0           0                                        172.30.1.2:68                     0.0.0.0:*          users:(("dhcpcd",pid=1132,fd=7))                            
+udp        UNCONN      0           0                                 172.30.1.2%enp1s0:68                     0.0.0.0:*          users:(("systemd-network",pid=455,fd=21))                   
+udp        UNCONN      0           0                [fe80::1995:6751:3ede:c0c5]%enp1s0:546                       [::]:*          users:(("dhcpcd",pid=829,fd=7))                             
+tcp        LISTEN      0           4096                                        0.0.0.0:22                     0.0.0.0:*          users:(("sshd",pid=1189,fd=3),("systemd",pid=1,fd=90))      
+tcp        LISTEN      0           511                                         0.0.0.0:40205                  0.0.0.0:*          users:(("node",pid=1222,fd=18))                             
+tcp        LISTEN      0           128                                         0.0.0.0:40200                  0.0.0.0:*          users:(("kc-terminal",pid=1271,fd=12))                      
+tcp        LISTEN      0           4096                                     127.0.0.54:53                     0.0.0.0:*          users:(("systemd-resolve",pid=1185,fd=17))                  
+tcp        LISTEN      0           4096                                  127.0.0.53%lo:53                     0.0.0.0:*          users:(("systemd-resolve",pid=1185,fd=15))                  
+tcp        LISTEN      0           4096                                      127.0.0.1:39845                  0.0.0.0:*          users:(("containerd",pid=715,fd=9))                         
+tcp        LISTEN      0           4096                                           [::]:22                        [::]:*          users:(("sshd",pid=1189,fd=4),("systemd",pid=1,fd=91))      
+tcp        LISTEN      0           4096                                              *:40305                        *:*          users:(("runtime-info-se",pid=1259,fd=3))                   
+tcp        LISTEN      0           4096                                              *:40300                        *:*          users:(("runtime-scenari",pid=1212,fd=3))                   
+
+
+ubuntu:~$ nc -zv 192.168.1.20 80
+^C
+
+
+ubuntu:~$ ss -s
+Total: 187
+TCP:   10 (estab 1, closed 0, orphaned 0, timewait 0)
+
+Transport Total     IP        IPv6
+RAW       5         1         4        
+UDP       5         4         1        
+TCP       10        7         3        
+INET      20        12        8        
+FRAG      0         0         0        
+
+
+ubuntu:~$ ss -antp
+State           Recv-Q          Send-Q                   Local Address:Port                     Peer Address:Port           Process                                                          
+LISTEN          0               4096                           0.0.0.0:22                            0.0.0.0:*               users:(("sshd",pid=1189,fd=3),("systemd",pid=1,fd=90))          
+LISTEN          0               511                            0.0.0.0:40205                         0.0.0.0:*               users:(("node",pid=1222,fd=18))                                 
+LISTEN          0               128                            0.0.0.0:40200                         0.0.0.0:*               users:(("kc-terminal",pid=1271,fd=12))                          
+LISTEN          0               4096                        127.0.0.54:53                            0.0.0.0:*               users:(("systemd-resolve",pid=1185,fd=17))                      
+LISTEN          0               4096                     127.0.0.53%lo:53                            0.0.0.0:*               users:(("systemd-resolve",pid=1185,fd=15))                      
+LISTEN          0               4096                         127.0.0.1:39845                         0.0.0.0:*               users:(("containerd",pid=715,fd=9))                             
+ESTAB           0               0                           172.30.1.2:40200                    10.244.12.22:48752           users:(("kc-terminal",pid=1271,fd=13))                          
+LISTEN          0               4096                              [::]:22                               [::]:*               users:(("sshd",pid=1189,fd=4),("systemd",pid=1,fd=91))          
+LISTEN          0               4096                                 *:40305                               *:*               users:(("runtime-info-se",pid=1259,fd=3))                       
+LISTEN          0               4096                                 *:40300                               *:*               users:(("runtime-scenari",pid=1212,fd=3))                       
+
+
+ubuntu:~$ sudo iptables -L -n -v
+Chain INPUT (policy ACCEPT 0 packets, 0 bytes)
+ pkts bytes target     prot opt in     out     source               destination         
+
+Chain FORWARD (policy ACCEPT 0 packets, 0 bytes)
+ pkts bytes target     prot opt in     out     source               destination         
+    0     0 DOCKER-USER  0    --  *      *       0.0.0.0/0            0.0.0.0/0           
+    0     0 DOCKER-FORWARD  0    --  *      *       0.0.0.0/0            0.0.0.0/0           
+
+Chain OUTPUT (policy ACCEPT 0 packets, 0 bytes)
+ pkts bytes target     prot opt in     out     source               destination         
+
+Chain DOCKER (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+    0     0 DROP       0    --  !docker0 docker0  0.0.0.0/0            0.0.0.0/0           
+
+Chain DOCKER-BRIDGE (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+    0     0 DOCKER     0    --  *      docker0  0.0.0.0/0            0.0.0.0/0           
+
+Chain DOCKER-CT (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+    0     0 ACCEPT     0    --  *      docker0  0.0.0.0/0            0.0.0.0/0            ctstate RELATED,ESTABLISHED
+
+Chain DOCKER-FORWARD (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+    0     0 DOCKER-CT  0    --  *      *       0.0.0.0/0            0.0.0.0/0           
+    0     0 DOCKER-ISOLATION-STAGE-1  0    --  *      *       0.0.0.0/0            0.0.0.0/0           
+    0     0 DOCKER-BRIDGE  0    --  *      *       0.0.0.0/0            0.0.0.0/0           
+    0     0 ACCEPT     0    --  docker0 *       0.0.0.0/0            0.0.0.0/0           
+
+Chain DOCKER-ISOLATION-STAGE-1 (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+    0     0 DOCKER-ISOLATION-STAGE-2  0    --  docker0 !docker0  0.0.0.0/0            0.0.0.0/0           
+
+Chain DOCKER-ISOLATION-STAGE-2 (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+    0     0 DROP       0    --  *      docker0  0.0.0.0/0            0.0.0.0/0           
+
+Chain DOCKER-USER (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+
+
+ubuntu:~$ sudo nft list ruleset
+# Warning: table ip nat is managed by iptables-nft, do not touch!
+table ip nat {
+        chain DOCKER {
+                iifname "docker0" counter packets 0 bytes 0 return
+        }
+
+        chain PREROUTING {
+                type nat hook prerouting priority dstnat; policy accept;
+                fib daddr type local counter packets 20 bytes 1200 jump DOCKER
+        }
+
+        chain OUTPUT {
+                type nat hook output priority dstnat; policy accept;
+                ip daddr != 127.0.0.0/8 fib daddr type local counter packets 0 bytes 0 jump DOCKER
+        }
+
+        chain POSTROUTING {
+                type nat hook postrouting priority srcnat; policy accept;
+                ip saddr 172.17.0.0/16 oifname != "docker0" counter packets 0 bytes 0 masquerade
+        }
+}
+# Warning: table ip filter is managed by iptables-nft, do not touch!
+table ip filter {
+        chain DOCKER {
+                iifname != "docker0" oifname "docker0" counter packets 0 bytes 0 drop
+        }
+
+        chain DOCKER-FORWARD {
+                counter packets 0 bytes 0 jump DOCKER-CT
+                counter packets 0 bytes 0 jump DOCKER-ISOLATION-STAGE-1
+                counter packets 0 bytes 0 jump DOCKER-BRIDGE
+                iifname "docker0" counter packets 0 bytes 0 accept
+        }
+
+        chain DOCKER-BRIDGE {
+                oifname "docker0" counter packets 0 bytes 0 jump DOCKER
+        }
+
+        chain DOCKER-CT {
+                oifname "docker0" ct state related,established counter packets 0 bytes 0 accept
+        }
+
+        chain DOCKER-ISOLATION-STAGE-1 {
+                iifname "docker0" oifname != "docker0" counter packets 0 bytes 0 jump DOCKER-ISOLATION-STAGE-2
+        }
+
+        chain DOCKER-ISOLATION-STAGE-2 {
+                oifname "docker0" counter packets 0 bytes 0 drop
+        }
+
+        chain FORWARD {
+                type filter hook forward priority filter; policy accept;
+                counter packets 0 bytes 0 jump DOCKER-USER
+                counter packets 0 bytes 0 jump DOCKER-FORWARD
+        }
+
+        chain DOCKER-USER {
+        }
+}
+# Warning: table ip6 nat is managed by iptables-nft, do not touch!
+table ip6 nat {
+        chain DOCKER {
+        }
+
+        chain PREROUTING {
+                type nat hook prerouting priority dstnat; policy accept;
+                fib daddr type local counter packets 0 bytes 0 jump DOCKER
+        }
+
+        chain OUTPUT {
+                type nat hook output priority dstnat; policy accept;
+                ip6 daddr != ::1 fib daddr type local counter packets 0 bytes 0 jump DOCKER
+        }
+}
+table ip6 filter {
+        chain DOCKER {
+        }
+
+        chain DOCKER-FORWARD {
+                counter packets 0 bytes 0 jump DOCKER-CT
+                counter packets 0 bytes 0 jump DOCKER-ISOLATION-STAGE-1
+                counter packets 0 bytes 0 jump DOCKER-BRIDGE
+        }
+
+        chain DOCKER-BRIDGE {
+        }
+
+        chain DOCKER-CT {
+        }
+
+        chain DOCKER-ISOLATION-STAGE-1 {
+        }
+
+        chain DOCKER-ISOLATION-STAGE-2 {
+        }
+
+        chain FORWARD {
+                type filter hook forward priority filter; policy accept;
+                counter packets 0 bytes 0 jump DOCKER-USER
+                counter packets 0 bytes 0 jump DOCKER-FORWARD
+        }
+
+        chain DOCKER-USER {
+        }
+}
+
+
+ubuntu:~$ sudo tcpdump -i eth0 -c 10
+tcpdump: eth0: No such device exists
+(No such device exists)
+
+
+ubuntu:~$ ip -6 neigh show
+ubuntu:~$ ip addr show eth0
+Device "eth0" does not exist.
+
+
+ubuntu:~$ ping -I eth0 8.8.8.8
+ping: SO_BINDTODEVICE eth0: No such device
+ubuntu:~$ 
+```
+
 # Category 6: Package Management
 
 ## Q21 — Compare apt, yum, and dpkg.
