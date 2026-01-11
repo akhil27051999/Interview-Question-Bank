@@ -1446,7 +1446,7 @@ Address: 2a00:1450:4001:812::200e
 
 ubuntu:~$ dig google.com
 
-;; <<>> DiG 9.18.39-0ubuntu0.24.04.2-Ubuntu <<>> google.com
+;; DiG 9.18.39-0ubuntu0.24.04.2-Ubuntu <<>> google.com
 ;; global options: +cmd
 ;; Got answer:
 ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 31708
