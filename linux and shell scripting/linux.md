@@ -1188,6 +1188,90 @@ nslookup google.com
 dig google.com
 ```
 
+### 1. Checking Network configurations
+
+```sh
+
+# Interfaces and IPs
+
+ubuntu:~$ ip addr show
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host noprefixroute 
+       valid_lft forever preferred_lft forever
+2: enp1s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 62:c6:a2:36:3b:cd brd ff:ff:ff:ff:ff:ff
+    inet 172.30.1.2/24 brd 172.30.1.255 scope global dynamic noprefixroute enp1s0
+       valid_lft 86310789sec preferred_lft 75521589sec
+    inet6 fe80::1995:6751:3ede:c0c5/64 scope link 
+       valid_lft forever preferred_lft forever
+3: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1454 qdisc noqueue state DOWN group default 
+    link/ether 62:1a:be:19:8a:99 brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
+       valid_lft forever preferred_lft forever
+
+# Routing table
+
+ubuntu:~$ ip route show
+default via 172.30.1.1 dev enp1s0 proto dhcp src 172.30.1.2 metric 1002 mtu 1500 
+172.17.0.0/16 dev docker0 proto kernel scope link src 172.17.0.1 linkdown 
+172.30.1.0/24 dev enp1s0 proto dhcp scope link src 172.30.1.2 metric 1002 mtu 1500
+
+# Listening ports and sockets
+
+ubuntu:~$ ss -tulnp
+Netid      State       Recv-Q      Send-Q                                Local Address:Port              Peer Address:Port      Process                                                      
+udp        UNCONN      0           0                                        127.0.0.54:53                     0.0.0.0:*          users:(("systemd-resolve",pid=1185,fd=16))                  
+udp        UNCONN      0           0                                     127.0.0.53%lo:53                     0.0.0.0:*          users:(("systemd-resolve",pid=1185,fd=14))                  
+udp        UNCONN      0           0                                        172.30.1.2:68                     0.0.0.0:*          users:(("dhcpcd",pid=1132,fd=7))                            
+udp        UNCONN      0           0                                 172.30.1.2%enp1s0:68                     0.0.0.0:*          users:(("systemd-network",pid=455,fd=21))                   
+udp        UNCONN      0           0                [fe80::1995:6751:3ede:c0c5]%enp1s0:546                       [::]:*          users:(("dhcpcd",pid=829,fd=7))                             
+tcp        LISTEN      0           4096                                        0.0.0.0:22                     0.0.0.0:*          users:(("sshd",pid=1189,fd=3),("systemd",pid=1,fd=90))      
+tcp        LISTEN      0           511                                         0.0.0.0:40205                  0.0.0.0:*          users:(("node",pid=1222,fd=18))                             
+tcp        LISTEN      0           128                                         0.0.0.0:40200                  0.0.0.0:*          users:(("kc-terminal",pid=1271,fd=12))                      
+tcp        LISTEN      0           4096                                     127.0.0.54:53                     0.0.0.0:*          users:(("systemd-resolve",pid=1185,fd=17))                  
+tcp        LISTEN      0           4096                                  127.0.0.53%lo:53                     0.0.0.0:*          users:(("systemd-resolve",pid=1185,fd=15))                  
+tcp        LISTEN      0           4096                                      127.0.0.1:39845                  0.0.0.0:*          users:(("containerd",pid=715,fd=9))                         
+tcp        LISTEN      0           4096                                           [::]:22                        [::]:*          users:(("sshd",pid=1189,fd=4),("systemd",pid=1,fd=91))      
+tcp        LISTEN      0           4096                                              *:40305                        *:*          users:(("runtime-info-se",pid=1259,fd=3))                   
+tcp        LISTEN      0           4096                                              *:40300                        *:*          users:(("runtime-scenari",pid=1212,fd=3))                   
+
+# DNS resolution
+
+ubuntu:~$ nslookup google.com
+Server:         8.8.8.8
+Address:        8.8.8.8#53
+
+Non-authoritative answer:
+Name:   google.com
+Address: 142.250.185.206
+Name:   google.com
+Address: 2a00:1450:4001:812::200e
+
+ubuntu:~$ dig google.com
+
+# ; <<>> DiG 9.18.39-0ubuntu0.24.04.2-Ubuntu <<>> google.com
+# ;; global options: +cmd
+# ;; Got answer:
+# ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 11992
+# ;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+# ;; OPT PSEUDOSECTION:
+# ; EDNS: version: 0, flags:; udp: 512
+# ;; QUESTION SECTION:
+# ;google.com.                    IN      A
+
+# ;; ANSWER SECTION:
+# google.com.             156     IN      A       142.250.185.206
+
+# ;; Query time: 5 msec
+# ;; SERVER: 8.8.8.8#53(8.8.8.8) (UDP)
+# ;; WHEN: Sun Jan 11 18:55:39 UTC 2026
+# ;; MSG SIZE  rcvd: 55
+```
+
 ## Q18 — How to troubleshoot network connectivity?
 **Answer**
 ```bash
@@ -1207,6 +1291,107 @@ nc -v google.com 80
 
 # Check firewall rules
 iptables -L
+```
+
+```sh
+
+# Basic connectivity
+
+ubuntu:~$ ping -c 4 google.com
+PING google.com (142.250.185.206) 56(84) bytes of data.
+64 bytes from fra16s52-in-f14.1e100.net (142.250.185.206): icmp_seq=1 ttl=117 time=3.96 ms
+64 bytes from fra16s52-in-f14.1e100.net (142.250.185.206): icmp_seq=2 ttl=117 time=4.16 ms
+64 bytes from fra16s52-in-f14.1e100.net (142.250.185.206): icmp_seq=3 ttl=117 time=3.88 ms
+64 bytes from fra16s52-in-f14.1e100.net (142.250.185.206): icmp_seq=4 ttl=117 time=4.56 ms
+
+--- google.com ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 3004ms
+rtt min/avg/max/mdev = 3.881/4.140/4.559/0.262 ms
+
+traceroute google.com
+
+ubuntu:~$ traceroute google.com
+traceroute to google.com (142.250.185.206), 30 hops max, 60 byte packets
+ 1  172.30.1.1 (172.30.1.1)  0.100 ms  0.074 ms  0.063 ms
+ 2  10.8.0.1 (10.8.0.1)  5.990 ms  5.969 ms  5.989 ms
+ 3  192.168.1.1 (192.168.1.1)  5.950 ms  5.936 ms  5.931 ms
+ 4  irb-2.router-02.fra1.civo.io (74.220.24.3)  5.923 ms  5.892 ms  5.882 ms
+ 5  lag-111.ear5.Frankfurt1.Level3.net (62.67.68.101)  7.218 ms  7.064 ms  8.096 ms
+ 6  * * *
+ 7  72.14.213.242 (72.14.213.242)  4.171 ms  8.588 ms  8.557 ms
+ 8  192.178.109.241 (192.178.109.241)  8.525 ms 192.178.109.157 (192.178.109.157)  8.604 ms 192.178.109.241 (192.178.109.241)  12.359 ms
+ 9  142.250.213.213 (142.250.213.213)  8.460 ms  8.489 ms  8.414 ms
+10  fra16s52-in-f14.1e100.net (142.250.185.206)  8.482 ms  8.438 ms  12.053 ms
+
+# DNS
+
+ubuntu:~$ nslookup google.com
+Server:         8.8.8.8
+Address:        8.8.8.8#53
+
+Non-authoritative answer:
+Name:   google.com
+Address: 142.250.185.206
+Name:   google.com
+Address: 2a00:1450:4001:812::200e
+
+# Check TCP port reachability
+
+ubuntu:~$ telnet google.com 80
+Trying 142.250.185.206...
+Connected to google.com.
+Escape character is '^]'.
+^]
+Connection closed by foreign host.
+
+ubuntu:~$ nc -v google.com 80
+Connection to google.com (142.250.185.206) 80 port [tcp/http] succeeded!
+^C
+
+# Check firewall rules
+
+ubuntu:~$ iptables -L
+Chain INPUT (policy ACCEPT)
+target     prot opt source               destination         
+
+Chain FORWARD (policy ACCEPT)
+target     prot opt source               destination         
+DOCKER-USER  all  --  anywhere             anywhere            
+DOCKER-FORWARD  all  --  anywhere             anywhere            
+
+Chain OUTPUT (policy ACCEPT)
+target     prot opt source               destination         
+
+Chain DOCKER (1 references)
+target     prot opt source               destination         
+DROP       all  --  anywhere             anywhere            
+
+Chain DOCKER-BRIDGE (1 references)
+target     prot opt source               destination         
+DOCKER     all  --  anywhere             anywhere            
+
+Chain DOCKER-CT (1 references)
+target     prot opt source               destination         
+ACCEPT     all  --  anywhere             anywhere             ctstate RELATED,ESTABLISHED
+
+Chain DOCKER-FORWARD (1 references)
+target     prot opt source               destination         
+DOCKER-CT  all  --  anywhere             anywhere            
+DOCKER-ISOLATION-STAGE-1  all  --  anywhere             anywhere            
+DOCKER-BRIDGE  all  --  anywhere             anywhere            
+ACCEPT     all  --  anywhere             anywhere            
+
+Chain DOCKER-ISOLATION-STAGE-1 (1 references)
+target     prot opt source               destination         
+DOCKER-ISOLATION-STAGE-2  all  --  anywhere             anywhere            
+
+Chain DOCKER-ISOLATION-STAGE-2 (1 references)
+target     prot opt source               destination         
+DROP       all  --  anywhere             anywhere            
+
+Chain DOCKER-USER (1 references)
+target     prot opt source               destination         
+ubuntu:~$
 ```
 
 ## Q19 — Explain common network configuration files.
