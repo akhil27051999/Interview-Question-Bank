@@ -67,6 +67,7 @@ ln -s file.txt softlink.txt
 ## Practice Lab : Hard links and Soft links
 
 ```bash
+
 # ------------------- Create the base setup -------------------
 
 user@568d442825b6: mkdir -p /opt/app/bin /etc/app /var/log/app /backup
@@ -179,7 +180,6 @@ cat: /backup/app.conf.moved: Permission denied
 
 # ✕ Soft link permissions don’t matter — target file permissions apply 
 
-user@568d442825b6:~$ 
 ```
 
 ## Q4 — Explain Linux process states.
@@ -272,10 +272,10 @@ umask 022
 # Dirs:  777-022=755  (rwxr-xr-x)
 ```
 
-
 ## Practice Lab : User & Permission Management
 
 ```sh
+
 # ------------------- User and Group Setup -------------------
 
 user@6cd6e0189f89:~$ whoami
@@ -298,6 +298,7 @@ user@6cd6e0189f89:~$ sudo usermod -aG webgroup appuser
 # → Adds appuser to the webgroup.
 # → -aG = append to supplementary groups.
 
+
 #  ------------------- Verify User and Group existance -------------------
 
 user@6cd6e0189f89:~$ cat /etc/passwd | grep appuser
@@ -313,6 +314,7 @@ webgroup:x:1002:appuser
 user@6cd6e0189f89:~$ sudo mkdir -p /var/www/myapp/logs
 user@6cd6e0189f89:~$ cd /var/www/myapp/logs
 user@6cd6e0189f89:/var/www/myapp/logs$
+
 
 # ------------------- Create Log File and Set incorrect permissions (simulate issue) -------------------
 
@@ -332,11 +334,13 @@ bash: app.log: Permission denied
 # → File owned by root
 # → Others only have read → no write permission
 
+
 # ------------------- Changes owner to appuser, group = webgroup -------------------
 
 user@6cd6e0189f89:/var/www/myapp/logs$ sudo chown appuser:webgroup /var/www/myapp/logs/app.log
 user@6cd6e0189f89:/var/www/myapp/logs$ ls -l /var/www/myapp/logs/app.log
 -rw-r--r-- 1 appuser webgroup 0 Jan 10 13:12 /var/www/myapp/logs/app.log
+
 
 # ------------------- Changes file permissions → (664 = rw-rw-r--) -------------------
 
@@ -361,6 +365,7 @@ appuser L 01/10/2026 0 99999 7 -1
 
 user@6cd6e0189f89:/var/www/myapp/logs$ sudo -u appuser echo "logs from app" >> app.log
 bash: app.log: Permission denied
+
 
 # ------------------- tee runs as root, appends to the file -------------------
 
@@ -478,6 +483,7 @@ When a program (like ls, bash, nginx) is executed, the OS loads it into memory a
 #### 1. Identify the Top CPU Consumer and Lower Its Priority
 
 ```sh
+
 # Start a CPU-hog (if not already running)
 
 user@28cd0a24aa57:~$ yes > /dev/null &
@@ -635,7 +641,7 @@ user@28cd0a24aa57:~$ ps -p 347
 user@28cd0a24aa57:~$ kill -9 588
 bash: kill: (588) - No such process
 
-# Reffernece for how to force kill a existing process
+# Refernece for how to force kill a existing process
 
 user@28cd0a24aa57:~$ kill -9 422
 
@@ -745,7 +751,8 @@ sleep 300
 ^Z
 [1]+  Stopped                 sleep 300
 
-# Job : 2 
+# Job : 2
+
 user@28cd0a24aa57:~$ sleep 200 &
 [2] 898
 
@@ -793,6 +800,7 @@ Common filesystems:
 
 ## Q15 — How to mount and unmount filesystems?
 **Answer**
+
 ```bash
 # Mount filesystem
 mount /dev/sdb1 /mnt/data
@@ -809,7 +817,6 @@ mount -a
 # Check mounted filesystems
 findmnt
 ```
-
 
 ## Q16 — What is LVM and its components?
 **Answer**
