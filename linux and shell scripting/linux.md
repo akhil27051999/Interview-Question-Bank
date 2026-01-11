@@ -484,12 +484,12 @@ When a program (like ls, bash, nginx) is executed, the OS loads it into memory a
 
 ```sh
 
-# Start a CPU-hog (if not already running)
+# ------------------- Start a CPU-hog (if not already running) -------------------
 
 user@28cd0a24aa57:~$ yes > /dev/null &
 [1] 347
 
-# To display a detailed, comprehensive overview of all running processes on the system
+# ------------------- To display a detailed, comprehensive overview of all running processes on the system -------------------
 
 user@28cd0a24aa57:~$ ps -aux
 bad data in /proc/uptime
@@ -510,7 +510,7 @@ user         143  0.0  0.0   4248  3328 pts/1    S    18:32   0:00 bash
 user         347  0.0  0.0   2516  1024 pts/1    R    18:44   1:33 yes
 user         423  0.0  0.0   5900  2816 pts/1    R+   18:46   0:00 ps -aux
 
-# Identify the top CPU process
+# ------------------- Identify the top CPU process -------------------
 
 user@28cd0a24aa57:~$ top
 top - 18:45:03 up 0 min,  0 users,  load average: 0.49, 0.13, 0.04
@@ -552,7 +552,7 @@ user@28cd0a24aa57:~$ ps -o pid,ni,comm -p 347
     PID  NI COMMAND
     347   0 yes
 
-# Lower its priority (increase nice value)
+# ------------------- Lower its priority (increase nice value) -------------------
 
 user@28cd0a24aa57:~$ renice 15 -p 347
 347 (process ID) old priority 0, new priority 15
@@ -572,19 +572,19 @@ user@28cd0a24aa57:~$ ps -o pid,ni,comm -p 347
 
 ```sh
 
-# Start a test process
+# ------------------- Start a test process -------------------
 
 user@28cd0a24aa57:~$ sleep 600 &
 [3] 588
 
-# List out running jobs
+# ------------------- List out running jobs -------------------
 
 user@28cd0a24aa57:~$ jobs -l
 [1]    347 Running                 yes > /dev/null &
 [2]-   422 Running                 yes > /dev/null &
 [3]+   588 Running                 sleep 600 &
 
-# To display a detailed, comprehensive overview of all running processes on the system
+# ------------------- To display a detailed, comprehensive overview of all running processes on the system -------------------
 user@28cd0a24aa57:~$ ps aux
 USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
 root           1  0.0  0.0   1136   640 ?        Ss   18:32   0:00 /sbin/docker-init -- /usr/bin/tini -- /usr/local/bin/judge/setup.sh
@@ -605,7 +605,7 @@ user         422  0.0  0.0   2516  1152 pts/1    R    18:45   8:13 yes
 user         588  0.0  0.0   2516  1280 pts/1    S    18:53   0:00 sleep 600
 user         589  0.0  0.0   5900  2816 pts/1    R+   18:54   0:00 ps aux
 
-# Graceful stop (SIGTERM – signal 15)
+# ------------------- Graceful stop (SIGTERM – signal 15) -------------------
 
 user@28cd0a24aa57:~$ kill 588
 user@28cd0a24aa57:~$ ps aux
@@ -628,7 +628,7 @@ user         422  0.0  0.0   2516  1152 pts/1    R    18:45   8:36 yes
 user         612  0.0  0.0   5900  2816 pts/1    R+   18:54   0:00 ps aux
 [3]+  Terminated              sleep 600
 
-# Check the process after kill
+# ------------------- Check the process after kill -------------------
 
 user@28cd0a24aa57:~$ ps -p 588
     PID TTY          TIME CMD
@@ -636,12 +636,12 @@ user@28cd0a24aa57:~$ ps -p 347
     PID TTY          TIME CMD
     347 pts/1    00:10:32 yes
 
-# Force kill (SIGKILL – signal 9)
+# ------------------- Force kill (SIGKILL – signal 9) -------------------
 
 user@28cd0a24aa57:~$ kill -9 588
 bash: kill: (588) - No such process
 
-# Refernece for how to force kill a existing process
+# ------------------- Refernece for how to force kill a existing process -------------------
 
 user@28cd0a24aa57:~$ kill -9 422
 
@@ -670,7 +670,7 @@ user@28cd0a24aa57:~$
 #### 3. Find a Zombie Process and Fix It
 
 ```sh
-# Create a zombie process
+# ------------------- Create a zombie process -------------------
 user@28cd0a24aa57:~$ bash -c 'sleep 1 & exit'
 
 user@28cd0a24aa57:~$ ps aux
@@ -691,7 +691,7 @@ user         143  0.0  0.0   4248  3328 pts/1    S    18:32   0:00 bash
 user         347  0.0  0.0   2516  1024 pts/1    RN   18:44  12:30 yes
 user         691  0.0  0.0   5900  2560 pts/1    R+   18:57   0:00 ps aux
 
-# Identify zombie
+# ------------------- Identify zombie -------------------
 user@28cd0a24aa57:~$ ps aux | awk '$8 ~ /Z/ { print }'
 user@28cd0a24aa57:~$ ps -eo pid,ppid,state,cmd | grep Z
     733     143 S grep --color=auto Z
@@ -700,7 +700,7 @@ user@28cd0a24aa57:~$ kill -9 733
 bash: kill: (733) - No such process
 # ✕ Zombies cannot be killed directly 
 
-# We must kill the parent process.
+# ------------------- We must kill the parent process. -------------------
 user@28cd0a24aa57:~$ kill -9 143
 
 bad data in /proc/uptime
@@ -726,7 +726,7 @@ user         802  0.0  0.0   3312  1664 pts/0    S+   19:00   0:00 grep --color=
 
 ```sh
 
-# Move a Stopped Job to Background and Foreground
+# ------------------- Move a Stopped Job to Background and Foreground -------------------
 
 user@28cd0a24aa57:~$ sleep 300
 
@@ -734,24 +734,24 @@ user@28cd0a24aa57:~$ sleep 300
 ^Z                                       
 [1]+  Stopped                 sleep 300  
 
-# Move to background
+# ------------------- Move to background -------------------
 
 user@28cd0a24aa57:~$ bg %1
 [1]+ sleep 300 &
 
-# List the jobs running
+# ------------------- List the jobs running -------------------
 
 user@28cd0a24aa57:~$ jobs -l
 [1]+   884 Running                 sleep 300 &
 
-# Move to foreground
+# ------------------- Move to foreground -------------------
 
 user@28cd0a24aa57:~$ fg %1
 sleep 300
 ^Z
 [1]+  Stopped                 sleep 300
 
-# Job : 2
+# ------------------- Job : 2 -------------------
 
 user@28cd0a24aa57:~$ sleep 200 &
 [2] 898
@@ -880,7 +880,7 @@ Real Disk (Docker VM /dev/vda)
 
 ```sh
 
-# We create a file that acts as a disk. Later we can format it and mount it.
+# ------------------- We create a file that acts as a disk. Later we can format it and mount it. -------------------
 
 ubuntu:~$ sudo dd if=/dev/zero of=/tmp/virtualdisk.img bs=1M count=100
 100+0 records in
@@ -893,7 +893,7 @@ ubuntu:~$ sudo dd if=/dev/zero of=/tmp/virtualdisk.img bs=1M count=100
 # /tmp/virtualdisk.img → our “virtual disk”
 
 
-# Create a loop device → Loop device allows Linux to treat a file as a block device.
+# ------------------- Create a loop device → Loop device allows Linux to treat a file as a block device. -------------------
 
 ubuntu:~$ sudo losetup -fP /tmp/virtualdisk.img
 
@@ -910,7 +910,7 @@ ubuntu:~$ losetup -a
 
 ```sh
 
-# Use fdisk to create a single partition.
+# ------------------- Use fdisk to create a single partition. -------------------
 
 ubuntu:~$ sudo fdisk /dev/loop0
 
@@ -976,7 +976,7 @@ Calling ioctl() to re-read partition table.
 Syncing disks.
 
 
-# Check partition:
+# ------------------- Check partition -------------------
 
 ubuntu:~$ lsblk
 NAME      MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
@@ -1003,7 +1003,7 @@ mkfs.ext4: inode_size (256) * inodes_count (0) too big for a
 
 ```sh
 
-# Format the partition with ext4.
+# ------------------- Format the partition with ext4. -------------------
 
 ubuntu:~$ sudo mkfs.ext4 /dev/loop0
 mke2fs 1.47.0 (5-Feb-2023)
@@ -1026,12 +1026,12 @@ Writing superblocks and filesystem accounting information: done
 
 ```sh
 
-# Mount partition to a directory to use it.
+# ------------------- Mount partition to a directory to use it. -------------------
 
 ubuntu:~$ sudo mkdir /mnt/virtualdisk
 ubuntu:~$ sudo mount /dev/loop0 /mnt/virtualdisk
 
-# Check mount:
+# ------------------- Check mount: -------------------
 
 ubuntu:~$ df -h /mnt/virtualdisk
 Filesystem      Size  Used Avail Use% Mounted on
@@ -1055,7 +1055,7 @@ vda     253:0    0   20G  0 disk
 
 ```sh
 
-# After practice, unmount and detach loop device.
+# ------------------- After practice, unmount and detach loop device. -------------------
 
 ubuntu:~$ umount /mnt/virtualdisk && losetup -d /dev/loop0
 
@@ -1077,7 +1077,7 @@ vda     253:0    0   20G  0 disk
 
 ```sh
 
-# Disk space by filesystem
+# ------------------- Disk space by filesystem -------------------
 
 user@b6dcf056802d:~$ df -h
 Filesystem      Size  Used Avail Use% Mounted on
@@ -1093,7 +1093,7 @@ tmpfs           1.9G     0  1.9G   0% /sys/firmware
 tmpfs           1.9G   20K  1.9G   1% /tmp
 tmpfs            52M  8.0K   52M   1% /run/user/1001
 
-# Disk usage by directory
+# ------------------- Disk usage by directory -------------------
 
 user@b6dcf056802d:~$ sudo du -sh /var/*
 4.0K    /var/backups
@@ -1122,19 +1122,19 @@ user@b6dcf056802d:~$ sudo du -sh /var/log/*
 4.0K    /var/log/private
 0       /var/log/wtmp
 
-# Detailed per-subdir
+# ------------------- Detailed per-subdir -------------------
 
 user@b6dcf056802d:~$ sudo du -h --max-depth=1 /home
 16K     /home/ubuntu
 2.1G    /home/user
 2.1G    /home
 
-# Find large files than 100M
+# ------------------- Find large files than 100M -------------------
 
 user@b6dcf056802d:~$ sudo find /var/log -type f -name "*.log" -size +100M -exec ls -lh {} \; 2>/dev/null
 -rw-r--r-- 1 root root 1.0G Jan 11 15:34 /var/log/big.log
 
-# Find files less than 100M
+# ------------------- Find files less than 100M -------------------
 
 user@b6dcf056802d:~$ sudo find /var/log -type f -name "*.log" -size -100M -exec ls -lh {} \; 2>/dev/null
 -rw-r--r-- 1 root root 20K Jan 11 15:29 /var/log/apt/history.log
@@ -1192,7 +1192,7 @@ dig google.com
 
 ```sh
 
-# Interfaces and IPs
+# ------------------- Interfaces and IPs -------------------
 
 ubuntu:~$ ip addr show
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
@@ -1212,14 +1212,14 @@ ubuntu:~$ ip addr show
     inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
        valid_lft forever preferred_lft forever
 
-# Routing table
+# ------------------- Routing table -------------------
 
 ubuntu:~$ ip route show
 default via 172.30.1.1 dev enp1s0 proto dhcp src 172.30.1.2 metric 1002 mtu 1500 
 172.17.0.0/16 dev docker0 proto kernel scope link src 172.17.0.1 linkdown 
 172.30.1.0/24 dev enp1s0 proto dhcp scope link src 172.30.1.2 metric 1002 mtu 1500
 
-# Listening ports and sockets
+# ------------------- Listening ports and sockets -------------------
 
 ubuntu:~$ ss -tulnp
 Netid      State       Recv-Q      Send-Q                                Local Address:Port              Peer Address:Port      Process                                                      
@@ -1238,7 +1238,7 @@ tcp        LISTEN      0           4096                                         
 tcp        LISTEN      0           4096                                              *:40305                        *:*          users:(("runtime-info-se",pid=1259,fd=3))                   
 tcp        LISTEN      0           4096                                              *:40300                        *:*          users:(("runtime-scenari",pid=1212,fd=3))                   
 
-# DNS resolution
+# ------------------- DNS resolution -------------------
 
 ubuntu:~$ nslookup google.com
 Server:         8.8.8.8
@@ -1295,7 +1295,7 @@ iptables -L
 
 ```sh
 
-# Basic connectivity
+# ------------------- Basic connectivity -------------------
 
 ubuntu:~$ ping -c 4 google.com
 PING google.com (142.250.185.206) 56(84) bytes of data.
@@ -1308,7 +1308,7 @@ PING google.com (142.250.185.206) 56(84) bytes of data.
 4 packets transmitted, 4 received, 0% packet loss, time 3004ms
 rtt min/avg/max/mdev = 3.881/4.140/4.559/0.262 ms
 
-traceroute google.com
+# ------------------- traceroute google.com -------------------
 
 ubuntu:~$ traceroute google.com
 traceroute to google.com (142.250.185.206), 30 hops max, 60 byte packets
@@ -1323,7 +1323,7 @@ traceroute to google.com (142.250.185.206), 30 hops max, 60 byte packets
  9  142.250.213.213 (142.250.213.213)  8.460 ms  8.489 ms  8.414 ms
 10  fra16s52-in-f14.1e100.net (142.250.185.206)  8.482 ms  8.438 ms  12.053 ms
 
-# DNS
+# ------------------- DNS -------------------
 
 ubuntu:~$ nslookup google.com
 Server:         8.8.8.8
@@ -1335,7 +1335,7 @@ Address: 142.250.185.206
 Name:   google.com
 Address: 2a00:1450:4001:812::200e
 
-# Check TCP port reachability
+# ------------------- Check TCP port reachability -------------------
 
 ubuntu:~$ telnet google.com 80
 Trying 142.250.185.206...
@@ -1348,7 +1348,7 @@ ubuntu:~$ nc -v google.com 80
 Connection to google.com (142.250.185.206) 80 port [tcp/http] succeeded!
 ^C
 
-# Check firewall rules
+# ------------------- Check firewall rules -------------------
 
 ubuntu:~$ iptables -L
 Chain INPUT (policy ACCEPT)
@@ -1481,6 +1481,193 @@ EOF
 
 # Build package
 dpkg-deb --build myapp
+```
+
+### Lab Scenario: Linux Package & Service Management
+
+- Learn package management with apt (Debian/Ubuntu)
+- Learn systemd service management using systemctl
+- Practice troubleshooting package and service issues
+
+```sh
+
+# ------------------- Check installed packages -------------------
+
+ubuntu:~$ dpkg -l | grep curl
+ii  curl                             8.5.0-2ubuntu10.6                       amd64        command line tool for transferring data with URL syntax
+ii  libcurl3t64-gnutls:amd64         8.5.0-2ubuntu10.6                       amd64        easy-to-use client-side URL transfer library (GnuTLS flavour)
+ii  libcurl4t64:amd64                8.5.0-2ubuntu10.6                       amd64        easy-to-use client-side URL transfer library (OpenSSL flavour)
+
+# Search for a package
+
+ubuntu:~$ apt search git
+# Finds available packages matching a keyword.
+
+# ------------------- Check package info and dependencies -------------------
+
+ubuntu:~$ apt show git
+Package: git
+Version: 1:2.43.0-1ubuntu7.3
+Priority: optional
+Section: vcs
+Origin: Ubuntu
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Original-Maintainer: Jonathan Nieder <jrnieder@gmail.com>
+Bugs: https://bugs.launchpad.net/ubuntu/+filebug
+Installed-Size: 22.2 MB
+Provides: git-completion, git-core
+Depends: libc6 (>= 2.38), libcurl3t64-gnutls (>= 7.56.1), libexpat1 (>= 2.0.1), libpcre2-8-0 (>= 10.34), zlib1g (>= 1:1.2.2), perl, liberror-perl, git-man (>> 1:2.43.0), git-man (<< 1:2.43.0-.)
+Recommends: ca-certificates, patch, less, ssh-client
+Suggests: gettext-base, git-daemon-run | git-daemon-sysvinit, git-doc, git-email, git-gui, gitk, gitweb, git-cvs, git-mediawiki, git-svn
+Breaks: bash-completion (<< 1:1.90-1), cogito (<= 0.18.2+), dgit (<< 5.1~), git-buildpackage (<< 0.6.5), git-el (<< 1:2.32.0~rc2-1~), gitosis (<< 0.2+20090917-7), gitpkg (<< 0.15), guilt (<< 0.33), openssh-client (<< 1:6.8), stgit (<< 0.15), stgit-contrib (<< 0.15)
+Homepage: https://git-scm.com/
+Task: cloud-image, cloud-image, ubuntu-wsl, server, ubuntu-server-raspi, kubuntu-desktop, lubuntu-desktop, ubuntustudio-desktop-core, ubuntustudio-desktop
+Download-Size: 3680 kB
+APT-Manual-Installed: no
+APT-Sources: http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages
+Description: fast, scalable, distributed revision control system
+ Git is popular version control system designed to handle very large
+ projects with speed and efficiency; it is used for many high profile
+ open source projects, most notably the Linux kernel.
+ .
+ Git falls in the category of distributed source code management tools.
+ Every Git working directory is a full-fledged repository with full
+ revision tracking capabilities, not dependent on network access or a
+ central server.
+ .
+ This package provides the git main components with minimal dependencies.
+ Additional functionality, e.g. a graphical user interface and revision
+ tree visualizer, tools for interoperating with other VCSs, or a web
+ interface, is provided as separate git* packages.
+
+N: There is 1 additional record. Please use the '-a' switch to see it
+
+ubuntu:~$ apt depends git
+git
+  Depends: libc6 (>= 2.38)
+  Depends: libcurl3t64-gnutls (>= 7.56.1)
+  Depends: libexpat1 (>= 2.0.1)
+  Depends: libpcre2-8-0 (>= 10.34)
+  Depends: zlib1g (>= 1:1.2.2)
+  Depends: perl
+  Depends: liberror-perl
+  Depends: git-man (>> 1:2.43.0)
+  Depends: git-man (<< 1:2.43.0-.)
+  Breaks: bash-completion (<< 1:1.90-1)
+  Breaks: <cogito> (<= 0.18.2+)
+  Breaks: dgit (<< 5.1~)
+  Breaks: git-buildpackage (<< 0.6.5)
+  Breaks: <git-el> (<< 1:2.32.0~rc2-1~)
+  Breaks: <gitosis> (<< 0.2+20090917-7)
+  Breaks: gitpkg (<< 0.15)
+  Breaks: guilt (<< 0.33)
+  Breaks: openssh-client (<< 1:6.8)
+  Breaks: stgit (<< 0.15)
+  Breaks: stgit-contrib (<< 0.15)
+  Recommends: ca-certificates
+  Recommends: patch
+  Recommends: less
+  Recommends: <ssh-client>
+    openssh-client
+  Suggests: gettext-base
+ |Suggests: git-daemon-run
+  Suggests: git-daemon-sysvinit
+  Suggests: git-doc
+  Suggests: git-email
+  Suggests: git-gui
+  Suggests: gitk
+  Suggests: gitweb
+  Suggests: git-cvs
+  Suggests: git-mediawiki
+  Suggests: git-svn
+
+ubuntu:~$ sudo apt update && sudo apt install git -y 2>/dev/null
+Hit:1 http://archive.ubuntu.com/ubuntu noble InRelease
+Get:2 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]    
+Get:3 http://archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]             
+Hit:4 http://security.ubuntu.com/ubuntu noble-security InRelease
+Get:5 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Components [175 kB]
+Get:6 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Components [378 kB]
+Get:7 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Components [212 B]
+Get:8 http://archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Components [940 B]
+Get:9 http://archive.ubuntu.com/ubuntu noble-backports/main amd64 Components [7280 B]
+Get:10 http://archive.ubuntu.com/ubuntu noble-backports/universe amd64 Components [10.5 kB]
+Get:11 http://archive.ubuntu.com/ubuntu noble-backports/restricted amd64 Components [212 B]
+Get:12 http://archive.ubuntu.com/ubuntu noble-backports/multiverse amd64 Components [212 B]
+Fetched 824 kB in 1s (819 kB/s)                                           
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+20 packages can be upgraded. Run 'apt list --upgradable' to see them.
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+git is already the newest version (1:2.43.0-1ubuntu7.3).
+git set to manually installed.
+The following package was automatically installed and is no longer required:
+  squashfs-tools
+Use 'sudo apt autoremove' to remove it.
+0 upgraded, 0 newly installed, 0 to remove and 20 not upgraded.
+
+# ------------------- Remove a package -------------------
+
+ubuntu:~$ sudo apt remove git -y
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+The following packages were automatically installed and are no longer required:
+  git-man liberror-perl squashfs-tools
+Use 'sudo apt autoremove' to remove them.
+The following packages will be REMOVED:
+  git ubuntu-server
+0 upgraded, 0 newly installed, 2 to remove and 20 not upgraded.
+After this operation, 22.2 MB disk space will be freed.
+(Reading database ... 113845 files and directories currently installed.)
+Removing ubuntu-server (1.539.2) ...
+Removing git (1:2.43.0-1ubuntu7.3) ...
+
+# ------------------- Update system -------------------
+ubuntu:~$ sudo apt update && sudo apt upgrade -y 2>dev/null
+Hit:1 http://archive.ubuntu.com/ubuntu noble InRelease
+Hit:2 http://archive.ubuntu.com/ubuntu noble-updates InRelease             
+Hit:3 http://archive.ubuntu.com/ubuntu noble-backports InRelease           
+Get:4 http://security.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+Get:5 http://security.ubuntu.com/ubuntu noble-security/main amd64 Components [21.6 kB]
+Get:6 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Components [71.4 kB]
+Get:7 http://security.ubuntu.com/ubuntu noble-security/restricted amd64 Components [212 B]
+Get:8 http://security.ubuntu.com/ubuntu noble-security/multiverse amd64 Components [212 B]
+Fetched 220 kB in 1s (240 kB/s)                                         
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+20 packages can be upgraded. Run 'apt list --upgradable' to see them.
+bash: dev/null: No such file or directory
+ubuntu:~$ sudo systemctl status apache2
+Unit apache2.service could not be found.
+
+# ------------------- systemd/ Service Management with systemctl -------------------
+ubuntu:~$ sudo systemctl start apache2
+ubuntu:~$ sudo systemctl stop apache2
+ubuntu:~$ sudo systemctl restart apache2
+ubuntu:~$ sudo systemctl status apache2
+● apache2.service - The Apache HTTP Server
+     Loaded: loaded (/usr/lib/systemd/system/apache2.service; enabled; preset: enabled)
+     Active: active (running) since Sun 2026-01-11 19:17:01 UTC; 9s ago
+       Docs: https://httpd.apache.org/docs/2.4/
+    Process: 3035 ExecStart=/usr/sbin/apachectl start (code=exited, status=0/SUCCESS)
+   Main PID: 3038 (apache2)
+      Tasks: 55 (limit: 2237)
+     Memory: 5.1M (peak: 5.1M)
+        CPU: 18ms
+     CGroup: /system.slice/apache2.service
+             ├─3038 /usr/sbin/apache2 -k start
+             ├─3040 /usr/sbin/apache2 -k start
+             └─3041 /usr/sbin/apache2 -k start
+
+Jan 11 19:17:01 ubuntu systemd[1]: Starting apache2.service - The Apache HTTP Server...
+Jan 11 19:17:01 ubuntu apachectl[3037]: AH00558: apache2: Could not reliably determine the servers fully qualified domain name, using 127.0.0.1. Set the 'ServerName' directive globally to suppress this message
+Jan 11 19:17:01 ubuntu systemd[1]: Started apache2.service - The Apache HTTP Server.
+ubuntu:~$ 
 ```
 
 # Category 7: Shell Scripting Fundamentals
