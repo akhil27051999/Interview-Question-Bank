@@ -1,4 +1,4 @@
-# DevOps Shell Script Readme: 30 Practical Monitoring & Maintenance Scripts
+# DevOps Shell Scripts: 30 Practical Monitoring & Maintenance Scripts
 
 ## Script Index
 
