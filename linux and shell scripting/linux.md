@@ -1485,7 +1485,7 @@ EOF
 dpkg-deb --build myapp
 ```
 
-### Lab Scenario: Linux Package & Service Management
+### Practice Lab : Package & Service Management
 
 - Learn package management with apt (Debian/Ubuntu)
 - Learn systemd service management using systemctl
@@ -1530,7 +1530,6 @@ git
   Depends: zlib1g (>= 1:1.2.2)
   Depends: perl...
  
-
 ubuntu:~$ sudo apt update && sudo apt install git -y 2>/dev/null
 Hit:1 http://archive.ubuntu.com/ubuntu noble InRelease
 Get:2 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]    
