@@ -1656,14 +1656,18 @@ count=10
 export DATABASE_URL="postgresql://localhost/mydb"
 ```
 - **Special variables**:
-```bash
-$0  # script name
-$1  # first argument
-$@  # all arguments
-$#  # number of arguments
-$$  # PID of script
-$?  # exit status of last command
-```
+  
+| Variable | Meaning                          |
+| -------- | -------------------------------- |
+| `$0`     | Script name                      |
+| `$1`     | First argument                   |
+| `$2`     | Second argument                  |
+| `$#`     | Number of arguments              |
+| `$@`     | All arguments                    |
+| `$*`     | All arguments as a single string |
+| `$?`     | Exit status                      |
+| `$$`     | Script PID                       |
+| `$!`     | Last background PID              |
 
 ## Q26 — How to handle command-line arguments?
 **Answer**
