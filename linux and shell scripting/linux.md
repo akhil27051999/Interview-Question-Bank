@@ -445,7 +445,7 @@ ss -tulpn | grep 8080
 fuser -k 8080/tcp
 ```
 
-## Lab Scenario: Process Management in Linux
+## Process Management
 
 **Process:** A process is a running instance of a program.
 When a program (like ls, bash, nginx) is executed, the OS loads it into memory and assigns it a Process ID (PID).    
@@ -468,7 +468,7 @@ When a program (like ls, bash, nginx) is executed, the OS loads it into memory a
 | Example        | `bash`                                 | `ls`, `yes`                   |
 
 
-## You manage a Linux server running: Production Server Under High Load
+## Practice Lab: Production Linux Server Under High Load, Troubleshoot it.
   - A web application
   - A log-processing script
   - A misbehaving CPU-intensive job
@@ -585,6 +585,7 @@ user@28cd0a24aa57:~$ jobs -l
 [3]+   588 Running                 sleep 600 &
 
 # ------------------- To display a detailed, comprehensive overview of all running processes on the system -------------------
+
 user@28cd0a24aa57:~$ ps aux
 USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
 root           1  0.0  0.0   1136   640 ?        Ss   18:32   0:00 /sbin/docker-init -- /usr/bin/tini -- /usr/local/bin/judge/setup.sh
@@ -663,14 +664,15 @@ user         143  0.0  0.0   4248  3328 pts/1    S    18:32   0:00 bash
 user         347  0.0  0.0   2516  1024 pts/1    RN   18:44  11:08 yes
 user         660  0.0  0.0   5900  2816 pts/1    R+   18:55   0:00 ps aux
 [2]+  Killed                  yes > /dev/null
-user@28cd0a24aa57:~$ 
 ```
 
 ---
 #### 3. Find a Zombie Process and Fix It
 
 ```sh
+
 # ------------------- Create a zombie process -------------------
+
 user@28cd0a24aa57:~$ bash -c 'sleep 1 & exit'
 
 user@28cd0a24aa57:~$ ps aux
@@ -692,6 +694,7 @@ user         347  0.0  0.0   2516  1024 pts/1    RN   18:44  12:30 yes
 user         691  0.0  0.0   5900  2560 pts/1    R+   18:57   0:00 ps aux
 
 # ------------------- Identify zombie -------------------
+
 user@28cd0a24aa57:~$ ps aux | awk '$8 ~ /Z/ { print }'
 user@28cd0a24aa57:~$ ps -eo pid,ppid,state,cmd | grep Z
     733     143 S grep --color=auto Z
@@ -701,6 +704,7 @@ bash: kill: (733) - No such process
 # ✕ Zombies cannot be killed directly 
 
 # ------------------- We must kill the parent process. -------------------
+
 user@28cd0a24aa57:~$ kill -9 143
 
 bad data in /proc/uptime
@@ -862,12 +866,10 @@ Real Disk (Docker VM /dev/vda)
 
 ```
 
-## Lab Scenario : Disk & Filesystem Management – Practical 
+## Practice Lab : Disk & Filesystem Management
 
-- You are a Linux/System Engineer managing a web server.
-- /var is filling up due to logs
-- A new disk has been attached to the server
-- You must:
+**You are a Linux/System Engineer managing a web server. /var is filling up due to logs and a new disk has been attached to the server**
+
   1. Partition the disk
   2. Create a filesystem
   3. Mount it persistently
@@ -1575,6 +1577,7 @@ Removing ubuntu-server (1.539.2) ...
 Removing git (1:2.43.0-1ubuntu7.3) ...
 
 # ------------------- Update system -------------------
+
 ubuntu:~$ sudo apt update && sudo apt upgrade -y 2>dev/null
 Hit:1 http://archive.ubuntu.com/ubuntu noble InRelease
 Hit:2 http://archive.ubuntu.com/ubuntu noble-updates InRelease             
@@ -1594,6 +1597,7 @@ ubuntu:~$ sudo systemctl status apache2
 Unit apache2.service could not be found.
 
 # ------------------- systemd/ Service Management with systemctl -------------------
+
 ubuntu:~$ sudo systemctl start apache2
 ubuntu:~$ sudo systemctl stop apache2
 ubuntu:~$ sudo systemctl restart apache2
@@ -1615,7 +1619,6 @@ ubuntu:~$ sudo systemctl status apache2
 Jan 11 19:17:01 ubuntu systemd[1]: Starting apache2.service - The Apache HTTP Server...
 Jan 11 19:17:01 ubuntu apachectl[3037]: AH00558: apache2: Could not reliably determine the servers fully qualified domain name, using 127.0.0.1. Set the 'ServerName' directive globally to suppress this message
 Jan 11 19:17:01 ubuntu systemd[1]: Started apache2.service - The Apache HTTP Server.
-ubuntu:~$ 
 ```
 
 # Category 7: Shell Scripting Fundamentals
@@ -1640,7 +1643,6 @@ chmod +x script.sh
 # Or run with interpreter
 bash script.sh
 ```
-
 
 ## Q25 — Explain different types of variables in shell scripting.
 **Answer**
