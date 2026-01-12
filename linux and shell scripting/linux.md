@@ -1834,6 +1834,10 @@ username=$(echo "$1" | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')
 
 ### Practice Lab: Text Processing
 
+- Filter logs using grep
+- Clean/transform logs using sed
+- Analyze & generate reports using awk
+
 ```sh
 # ------------------- Create Sample Log File -------------------
 
