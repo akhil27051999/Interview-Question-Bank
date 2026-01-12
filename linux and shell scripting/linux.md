@@ -1484,21 +1484,6 @@ EOF
 # Build package
 dpkg-deb --build myapp
 ```
-### Command Sheet
-
-| Concept                 | Command                                   | Use Case                          |
-| ----------------------- | ----------------------------------------- | --------------------------------- |
-| Check installed package | `dpkg -l`, `rpm -q`                       | Confirm if a package exists       |
-| Search package          | `apt search`, `yum search`                | Find package name before install  |
-| Install package         | `apt install`, `yum install`              | Install software and dependencies |
-| Remove package          | `apt remove/purge`, `yum remove`          | Clean unwanted software           |
-| Update packages         | `apt update && apt upgrade`, `yum update` | Keep system up-to-date            |
-| Service status          | `systemctl status <service>`              | Check if service is running       |
-| Start/Stop/Restart      | `systemctl start/stop/restart`            | Control services                  |
-| Enable/Disable          | `systemctl enable/disable`                | Start services at boot            |
-| Troubleshoot service    | `journalctl -xe`, `configtest`            | Find reason service failed        |
-
-
 ### Practice Lab : Package & Service Management
 
 - Learn package management with apt (Debian/Ubuntu)
@@ -1633,6 +1618,20 @@ Jan 11 19:17:01 ubuntu systemd[1]: Starting apache2.service - The Apache HTTP Se
 Jan 11 19:17:01 ubuntu apachectl[3037]: AH00558: apache2: Could not reliably determine the servers fully qualified domain name, using 127.0.0.1. Set the 'ServerName' directive globally to suppress this message
 Jan 11 19:17:01 ubuntu systemd[1]: Started apache2.service - The Apache HTTP Server.
 ```
+### Commands Summanry
+
+| Concept                 | Command                                   | Use Case                          |
+| ----------------------- | ----------------------------------------- | --------------------------------- |
+| Check installed package | `dpkg -l`, `rpm -q`                       | Confirm if a package exists       |
+| Search package          | `apt search`, `yum search`                | Find package name before install  |
+| Install package         | `apt install`, `yum install`              | Install software and dependencies |
+| Remove package          | `apt remove/purge`, `yum remove`          | Clean unwanted software           |
+| Update packages         | `apt update && apt upgrade`, `yum update` | Keep system up-to-date            |
+| Service status          | `systemctl status <service>`              | Check if service is running       |
+| Start/Stop/Restart      | `systemctl start/stop/restart`            | Control services                  |
+| Enable/Disable          | `systemctl enable/disable`                | Start services at boot            |
+| Troubleshoot service    | `journalctl -xe`, `configtest`            | Find reason service failed        |
+
 
 # Category 7: Shell Scripting Fundamentals
 
