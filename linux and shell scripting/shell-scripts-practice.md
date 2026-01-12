@@ -77,9 +77,9 @@ ubuntu:~$
 2. check is the package of that process is installed or not
 
   **use:**
-  - pgrep : to check whetehr process is running or not, used to look through currently running processes and list their process IDs (PIDs) that match a specified pattern or other criteria
-  - systemctl commands : to check status, start, stop, restart services
-  - debian package : to check whether package is installed or not 
+  - `pgrep` : to check whetehr process is running or not, used to look through currently running processes and list their process IDs (PIDs) that match a specified pattern or other criteria
+  - `systemctl cmds` : to check status, start, stop, restart services
+  - `debian package` : to check whether package is installed or not 
 
 
 ```sh
