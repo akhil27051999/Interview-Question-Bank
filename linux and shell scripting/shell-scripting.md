@@ -1,40 +1,41 @@
-# 🛠️ DevOps Shell Script Readme: 30 Practical Monitoring & Maintenance Scripts
+# DevOps Shell Script Readme: 30 Practical Monitoring & Maintenance Scripts
 
-## 📁 Script Index
+## Script Index
 
-1. Disk usage alert
-2. Process monitor & auto-restart
-3. File stats (lines, words, chars)
-4. Port open check
-5. Archive logs older than 7 days
-6. Ping list of servers
-7. Date-based backup
-8. Decision making from user input
-9. Extract IPs from log
-10. Top memory processes
-11. Check user existence
-12. List active services
-13. Delete old files
-14. Current logged-in users
-15. IP address validation
-16. Print even numbers
-17. Bulk user creation
-18. System info display
-19. Monitor CPU load
-20. Schedule cron job
-21. Process restart if not running
-22. Disk threshold alert
-23. Timestamped backup
-24. Top memory-consuming processes
-25. Extract IPs from access log
-26. Internet connectivity check
-27. Count total files
-28. Archive old logs
-29. Lowercase file names
-30. Monitor open ports
+1. [Disk usage alert](#1-check-disk-usage-and-alert-if--80)
+2. [Process monitor & auto-restart](#2-monitor-process-eg-nginx-and-restart-if-stopped)
+3. [File stats (lines, words, chars)](#3-count-lines-words-and-characters-in-a-file)
+4. [Port open check](#4-check-if-a-port-is-open-on-localhost)
+5. [Archive logs older than 7 days](#5-archive-and-compress-log-files-older-than-7-days)
+6. [Ping list of servers](#6-ping-a-list-of-servers-from-a-file)
+7. [Date-based backup](#7-backup-a-directory-with-date-based-naming)
+8. [Decision making from user input](#8-read-user-input-and-make-a-decision)
+9. [Extract IPs from log](#9-extract-ip-addresses-from-a-file)
+10. [Top memory processes](#10-top-5-memory-consuming-processes)
+11. [Check user existence](#11-check-if-a-user-exists-on-the-system)
+12. [List active services](#12-list-all-active-services)
+13. [Delete old files](#13-delete-files-older-than-30-days)
+14. [Current logged-in users](#14-get-current-logged-in-users)
+15. [IP address validation](#15-validate-ip-address-format)
+16. [Print even numbers](#16-print-even-numbers-from-1-to-20)
+17. [Bulk user creation](#17-create-multiple-user-accounts-from-a-file)
+18. [System info display](#18-display-system-information)
+19. [Monitor CPU load](#19-monitor-cpu-load-average)
+20. [Schedule cron job](#20-schedule-a-job-using-cron)
+21. [Process restart if not running](#21-check-and-restart-process-if-not-running)
+22. [Disk threshold alert](#22-monitor-disk-usage-and-alert-if-above-threshold)
+23. [Timestamped backup](#23-backup-directory-with-timestamp)
+24. [Top memory-consuming processes](#24-display-top-5-memory-consuming-processes)
+25. [Extract IPs from access log](#25-extract-all-ip-addresses-from-a-log-file)
+26. [Internet connectivity check](#26-check-internet-connectivity)
+27. [Count total files](#27-count-total-number-of-files-in-a-directory)
+28. [Archive old logs](#28-archive-logs-older-than-7-days)
+29. [Lowercase file names](#29-convert-all-filenames-in-directory-to-lowercase)
+30. [Monitor open ports](#30-monitor-open-ports-on-the-system)
 
 
-## ✅ Script Documentation
+
+## Script Documentation
 
 ### 1. Check Disk Usage and Alert if > 80%
 
