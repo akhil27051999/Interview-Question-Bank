@@ -1,7 +1,5 @@
 # DevOps Shell Scripts: 30 Practical Monitoring & Maintenance Scripts
 
-## Script Index
-
 1. [Disk usage alert](#1-check-disk-usage-and-alert-if--80)
 2. [Process monitor & auto-restart](#2-monitor-process-eg-nginx-and-restart-if-stopped)
 3. [File stats (lines, words, chars)](#3-count-lines-words-and-characters-in-a-file)
@@ -34,8 +32,7 @@
 30. [Monitor open ports](#30-monitor-open-ports-on-the-system)
 
 
-
-## Script Documentation
+## Scripts Documentation
 
 ### 1. Check Disk Usage and Alert if > 80%
 
