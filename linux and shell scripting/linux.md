@@ -1832,7 +1832,7 @@ fi
 username=$(echo "$1" | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')
 ```
 
-### Practice Lab: Text Processing
+### Practice Lab: Text Processing for Log Analysis & Report Generation
 
 - Filter logs using grep
 - Clean/transform logs using sed
