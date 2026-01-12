@@ -1,7 +1,8 @@
 ## Disk Monitoring script
 
-1. check the total disk consumption of the system
-2. setup threshold and alert if disk exceeds the threshold
+**1. check the total disk consumption of the system**
+
+**2. setup threshold and alert if disk exceeds the threshold**
    
 **use:**
  - `awk` : to find patterns and perform specified actions on matching lines or data fields
@@ -73,8 +74,9 @@ ubuntu:~$
 
 ## process monitoring script 
 
-1. check whether a process is running or not on the system/ server 
-2. check is the package of that process is installed or not
+**1. check whether a process is running or not on the system/ server**
+
+**2. check is the package of that process is installed or not**
 
   **use:**
   - `pgrep` : to check whetehr process is running or not, used to look through currently running processes and list their process IDs (PIDs) that match a specified pattern or other criteria
