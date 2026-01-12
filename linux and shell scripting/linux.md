@@ -792,14 +792,23 @@ find / -type f -size +100M 2>/dev/null
 ## Q14 — Explain Linux filesystem types.
 **Answer**
 
-Common filesystems:
+#### Linux Filesystems:
 
-- `ext4` — Default for many distros.  
-- `XFS` — High performance, good for large files.  
-- `btrfs` — Copy-on-write, snapshots, compression.  
-- `ZFS` — Advanced features, data integrity.  
-- `tmpfs` — In-memory filesystem.  
-- `swap` — Virtual memory.
+| Filesystem    | Type         | Description                                                                             | Common Use Case                   | Example               |
+| ------------- | ------------ | --------------------------------------------------------------------------------------- | --------------------------------- | --------------------- |
+| **ext4**      | Disk FS      | Most widely used Linux filesystem. Supports journaling, large files, and fast recovery. | Root (`/`) filesystem, data disks | Ubuntu root partition |
+| **ext3**      | Disk FS      | Older version of ext4 with journaling support.                                          | Legacy Linux systems              | Older servers         |
+| **ext2**      | Disk FS      | No journaling → faster but unsafe after crash.                                          | Boot partitions, USB drives       | `/boot` partition     |
+| **XFS**       | Disk FS      | High-performance filesystem, excellent for large files.                                 | Databases, media servers          | RHEL default FS       |
+| **Btrfs**     | Disk FS      | Advanced FS with snapshots, compression, and subvolumes.                                | Modern Linux, backups             | SUSE Linux            |
+| **FAT32**     | Disk FS      | Simple, widely supported filesystem.                                                    | USB drives, cameras               | Pen drives            |
+| **NTFS**      | Disk FS      | Windows filesystem. Read/write supported in Linux.                                      | Dual-boot systems                 | Windows C: drive      |
+| **OverlayFS** | Virtual FS   | Combines multiple filesystems into one.                                                 | Containers (Docker)               | Docker image layers   |
+| **tmpfs**     | Memory FS    | Stored in RAM, very fast, cleared on reboot.                                            | Temporary files                   | `/tmp`, `/run`        |
+| **procfs**    | Virtual FS   | Kernel process information.                                                             | Process monitoring                | `/proc/cpuinfo`       |
+| **sysfs**     | Virtual FS   | Kernel and hardware info.                                                               | Device management                 | `/sys/class/net`      |
+| **devtmpfs**  | Virtual FS   | Device files created dynamically.                                                       | Device access                     | `/dev/sda`            |
+| **NFS**       | Network FS   | Access files over network.                                                              | Shared storage                    | `/mnt/nfs`            |
 
 
 ## Q15 — How to mount and unmount filesystems?
