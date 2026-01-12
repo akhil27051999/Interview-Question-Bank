@@ -135,6 +135,7 @@ cat: /opt/app/app.log: No such file or directory
 
 
 # ------------------- Move original file -------------------
+
 user@568d442825b6:~$ mv /backup/app.conf.hard /backup/app.conf.moved
 user@568d442825b6:~$ ls -li /backup/app.conf.moved 
 543386 -rw-rw-r-- 1 user user 18 Jan 10 12:28 /backup/app.conf.moved
