@@ -1832,6 +1832,119 @@ fi
 username=$(echo "$1" | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')
 ```
 
+### Practice Lab: Text Processing
+
+```sh
+# ------------------- Create Sample Log File -------------------
+
+ubuntu:~$ touch access.log
+ubuntu:~$ cat <<EOF > access.log
+192.168.1.10 - - [10/Jan/2026:10:15:20] "GET /index.html HTTP/1.1" 200 1024
+192.168.1.11 - - [10/Jan/2026:10:16:45] "POST /login HTTP/1.1" 401 512
+192.168.1.12 - - [10/Jan/2026:10:17:10] "GET /dashboard HTTP/1.1" 200 2048
+192.168.1.10 - - [10/Jan/2026:10:18:55] "GET /admin HTTP/1.1" 403 256
+192.168.1.13 - - [10/Jan/2026:10:19:30] "GET /index.html HTTP/1.1" 200 1024
+EOF
+
+# ------------------- Use grep (Filtering) -------------------
+
+# ------------------- Find All Failed Requests (401 & 403) -------------------
+
+ubuntu:~$ grep -E "401|403" access.log
+192.168.1.11 - - [10/Jan/2026:10:16:45] "POST /login HTTP/1.1" 401 512
+192.168.1.10 - - [10/Jan/2026:10:18:55] "GET /admin HTTP/1.1" 403 256
+
+# ------------------- Find Requests from a Specific IP -------------------
+
+ubuntu:~$ grep "192.168.1.10" access.log
+192.168.1.10 - - [10/Jan/2026:10:15:20] "GET /index.html HTTP/1.1" 200 1024
+192.168.1.10 - - [10/Jan/2026:10:18:55] "GET /admin HTTP/1.1" 403 256
+
+# ------------------- Use sed (Transformation) -------------------
+
+# ------------------- Mask IP Addresses (Security Practice) -------------------
+
+ubuntu:~$ sed 's/[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+/XXX.XXX.XXX.XXX/' access.log
+XXX.XXX.XXX.XXX - - [10/Jan/2026:10:15:20] "GET /index.html HTTP/1.1" 200 1024
+XXX.XXX.XXX.XXX - - [10/Jan/2026:10:16:45] "POST /login HTTP/1.1" 401 512
+XXX.XXX.XXX.XXX - - [10/Jan/2026:10:17:10] "GET /dashboard HTTP/1.1" 200 2048
+XXX.XXX.XXX.XXX - - [10/Jan/2026:10:18:55] "GET /admin HTTP/1.1" 403 256
+XXX.XXX.XXX.XXX - - [10/Jan/2026:10:19:30] "GET /index.html HTTP/1.1" 200 1024
+
+# ------------------- Replace HTTP with HTTPS -------------------
+
+ubuntu:~$ sed 's/HTTP/HTTPS/g' access.log
+192.168.1.10 - - [10/Jan/2026:10:15:20] "GET /index.html HTTPS/1.1" 200 1024
+192.168.1.11 - - [10/Jan/2026:10:16:45] "POST /login HTTPS/1.1" 401 512
+192.168.1.12 - - [10/Jan/2026:10:17:10] "GET /dashboard HTTPS/1.1" 200 2048
+192.168.1.10 - - [10/Jan/2026:10:18:55] "GET /admin HTTPS/1.1" 403 256
+192.168.1.13 - - [10/Jan/2026:10:19:30] "GET /index.html HTTPS/1.1" 200 1024
+
+# ------------------- Remove Date & Time -------------------
+
+ubuntu:~$ sed 's/\[.*\]//g' access.log
+192.168.1.10 - -  "GET /index.html HTTP/1.1" 200 1024
+192.168.1.11 - -  "POST /login HTTP/1.1" 401 512
+192.168.1.12 - -  "GET /dashboard HTTP/1.1" 200 2048
+192.168.1.10 - -  "GET /admin HTTP/1.1" 403 256
+192.168.1.13 - -  "GET /index.html HTTP/1.1" 200 1024
+
+# ------------------- Use awk (Analysis) -------------------
+
+# ------------------- Extract IP and Status Code -------------------
+
+ubuntu:~$ awk '{print $1, $9}' access.log
+192.168.1.10 1024
+192.168.1.11 512
+192.168.1.12 2048
+192.168.1.10 256
+192.168.1.13 1024
+
+# ------------------- Count Requests Per IP -------------------
+
+ubuntu:~$ awk '{print $1}' access.log | sort | uniq -c
+      2 192.168.1.10
+      1 192.168.1.11
+      1 192.168.1.12
+      1 192.168.1.13
+
+# ------------------- Show Only Successful Requests (200) -------------------
+
+ubuntu:~$ awk '$9 == 200 {print $1, $7}' access.log
+ubuntu:~$ awk '$9 == 1024 {print $1, $7}' access.log
+192.168.1.10 HTTP/1.1"
+192.168.1.13 HTTP/1.1"
+
+# ------------------- Error Report -------------------
+
+ubuntu:~$ grep -E "401|403" access.log | awk '{print $1, $7, $9}'
+192.168.1.11 HTTP/1.1" 512
+192.168.1.10 HTTP/1.1" 256
+
+# ------------------- Top IP by Request Count -------------------
+
+ubuntu:~$ awk '{print $1}' access.log | sort | uniq -c | sort -nr | head -1
+      2 192.168.1.10
+
+
+ubuntu:~$ awk '{print $1}' access.log | sort | uniq -c | sort -nr | head -4
+      2 192.168.1.10
+      1 192.168.1.13
+      1 192.168.1.12
+      1 192.168.1.11
+
+# ------------------- Clean Log Report (Final Output) -------------------
+
+ubuntu:~$ grep "GET" access.log \
+> | sed 's/\[.*\]//g' \
+> | awk '{print "IP:", $1, "| URL:", $7, "| Status:", $9}'
+IP: 192.168.1.10 | URL: 200 | Status: 
+IP: 192.168.1.12 | URL: 200 | Status: 
+IP: 192.168.1.10 | URL: 403 | Status: 
+IP: 192.168.1.13 | URL: 200 | Status: 
+ubuntu:~$ 
+```
+
 # Category 10: Error Handling & Debugging
 
 ## Q34 — How to handle errors in shell scripts?
