@@ -29,38 +29,10 @@ tmpfs           952M   84K  952M   1% /dev/shm
 tmpfs           5.0M     0  5.0M   0% /run/lock
 /dev/vda16      881M  117M  703M  15% /boot
 /dev/vda15      105M  6.2M   99M   6% /boot/efi
-ubuntu:~$ vi monitor-disk-usage.sh
-ubuntu:~$ chmod +x monitor-disk-usage.sh 
-ubuntu:~$ cat monitor-disk-usage.sh 
-#!/bin/bash
-
-threshold=20
-
-usage=$(du -sh /* | awk 'NR==2 {print $5}' | sed 's/%/ /');
-
-if [ "$usage -ge than $threshold" ]; then
-
-  echo "disk usage is higher than $threshold : $usage"
-
-else
-
-  echo "disk usage is normal"
-
-fi
-ubuntu:~$ ./monitor-disk-usage.sh 
-du: cannot access '/proc/2252/task/2252/fd/4': No such file or directory
-du: cannot access '/proc/2252/task/2252/fdinfo/4': No such file or directory
-du: cannot access '/proc/2252/fd/3': No such file or directory
-du: cannot access '/proc/2252/fdinfo/3': No such file or directory
-disk usage is higher than 20 : 
-
-ubuntu:~$ du -sh
-76K     .
-
-# Mistake : used du -sh command instead of df -h 
 
 ubuntu:~$ vi monitor-disk-usage.sh
-ubuntu:~$ cat monitor-disk-usage.sh 
+ubuntu:~$ cat monitor-disk-usage.sh
+
 #!/bin/bash
 
 threshold=20
@@ -76,11 +48,9 @@ else
   echo "disk usage is normal"
 
 fi
-ubuntu:~$ 
+
 ubuntu:~$ ./monitor-disk-usage.sh 
 disk usage is higher than 20 : 29 
-
-ubuntu:~$ 
 ```
 
 ## 2. Process Monitoring Script 
@@ -107,34 +77,6 @@ ubuntu:~$
   - Works with multiple processes at once by passing multiple arguments.
 
 ```sh
-
-ubuntu:~$ vi process-monitor.sh
-ubuntu:~$ chmod +x process-monitor.sh 
-ubuntu:~$ cat process-monitor.sh 
-
-#!/bin/bash
-
-if [ $# -eq 0 ]; then
-  echo "No process provided: $0"
-  exit 1
-fi
-
-for process in "$@"; do
-  if ! pgrep "$process"; then
-    echo "process is not running... Restarting $process"
-    dpkg -l | grep -i "$process"
-    sudo systemctl restart "$process"
-  else
-    echo "process "$process" is running"
-  fi
-done
-
-ubuntu:~$ ./process-monitor.sh     
-No process provided: ./process-monitor.sh
-
-ubuntu:~$ ./process-monitor.sh cron
-787
-process cron is running
 ubuntu:~$ vi process-monitor.sh
 ubuntu:~$ cat process-monitor.sh 
 
@@ -331,21 +273,20 @@ kc-termin 1303            root   12u  IPv4   9741      0t0  TCP *:40200 (LISTEN)
 kc-termin 1303            root   13u  IPv4  11725      0t0  TCP 172.30.1.2:40200->10.244.4.181:39424 (ESTABLISHED)
 
 ubuntu:~$ lsof -i :8080
+ubuntu:~$ lsof -i :443
 ubuntu:~$ lsof -i :53  
 COMMAND    PID            USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
 systemd-r 1218 systemd-resolve   14u  IPv4   8816      0t0  UDP 127.0.0.53:domain 
 systemd-r 1218 systemd-resolve   15u  IPv4   8817      0t0  TCP 127.0.0.53:domain (LISTEN)
 systemd-r 1218 systemd-resolve   16u  IPv4   8818      0t0  UDP 127.0.0.54:domain 
 systemd-r 1218 systemd-resolve   17u  IPv4   8819      0t0  TCP 127.0.0.54:domain (LISTEN)
-
-ubuntu:~$ lsof -i :443
 ubuntu:~$ lsof -i :22  
 COMMAND  PID USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
 systemd    1 root   93u  IPv4   5857      0t0  TCP *:ssh (LISTEN)
 systemd    1 root   94u  IPv6   5861      0t0  TCP *:ssh (LISTEN)
 sshd    1221 root    3u  IPv4   5857      0t0  TCP *:ssh (LISTEN)
 sshd    1221 root    4u  IPv6   5861      0t0  TCP *:ssh (LISTEN)
-ubuntu:~$
+
 ```
 
 ## 4. Archive and Compress Log Files Older Than 7 Days / Size of 1M (or) 1k
@@ -619,40 +560,18 @@ monitor-01 192.168.50.50   ubuntu   prod   prometheus
 
 ubuntu:~$ pwd              
 /root
+
 ubuntu:~$ ls -lh
 total 4.0K
 lrwxrwxrwx 1 root root   1 Dec 18 17:16 filesystem -> /
 -rw-r--r-- 1 root root 548 Jan 14 05:48 servers.txt
+
 ubuntu:~$ realpath servers.txt 
 /root/servers.txt
-ubuntu:~$ vi servers.txt 
-ubuntu:~$ vi ping-server.sh
-ubuntu:~$ cat ping-server.sh 
-#!/bin/bash
-
-read -p "please enter the file name:" file
-
-if [ ! -f "$file" ]; then
-  echo "file not exists"
-  exit 1
-else
-  awk '{print $2}' servers.txt | ping -c 4 {};
-fi 
-
-# Two Mistakes:
-# 1. ping does NOT read IPs from stdin
-#    - {} is not valid here
-#    - {} only works with find -exec
-# 2. You are ignoring the filename variable ($file)
-#    - You hardcoded servers.txt
-
-ubuntu:~$ chmod +x ping-server.sh 
-ubuntu:~$ ./ping-server.sh 
-please enter the file name:servers.txt
-ping: {}: Name or service not known
 
 ubuntu:~$ vi ping-server.sh 
-ubuntu:~$ cat ping-server.sh 
+ubuntu:~$ cat ping-server.sh
+
 #!/bin/bash
 
 read -p "please enter the file name:" file
@@ -667,11 +586,6 @@ awk '{print $2}' servers.txt | while read -r ip; do
   ping -c 4 $ip
   echo
 done
-
-# Why this works:
-# - awk '{print $2}' → extracts IP column
-# - while read ip → loops line by line
-# - ping needs one host at a time
  
 ubuntu:~$ ./ping-server.sh 
 please enter the file name:servers.txt
@@ -986,6 +900,4 @@ tar: Removing leading `/` from member names
 Backup successful for /var/log on 2026-01-14
 tar: Removing leading `/` from member names
 Backup successful for /var/log on 2026-01-14
-
-ubuntu:/backup$ 
 ```
