@@ -40,13 +40,9 @@ threshold=20
 usage=$(df -h /* | awk 'NR==2 {print $5}' | sed 's/%/ /');
 
 if [ "$usage -ge than $threshold" ]; then
-
   echo "disk usage is higher than $threshold : $usage"
-
 else
-
   echo "disk usage is normal"
-
 fi
 
 ubuntu:~$ ./monitor-disk-usage.sh 
