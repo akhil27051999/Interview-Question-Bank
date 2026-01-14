@@ -764,7 +764,7 @@ ping: usage error: Destination address required
 ubuntu:~$ 
 ```
 
-## 7. Backup and Restore /var/log Using tar
+## 7. Backup, Restore & automate /var/log
 
 **Purpose:**
   1. Create a compressed backup of the system log directory (/var/log).
