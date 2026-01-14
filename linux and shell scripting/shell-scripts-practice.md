@@ -1,13 +1,24 @@
-## Disk Monitoring script
+## 1. Disk Monitoring Script
 
-**1. check the total disk consumption of the system**
-
-**2. setup threshold and alert if disk exceeds the threshold**
+**Purpose:**
+  1. check the total disk consumption of the system
+  2. setup threshold and alert if disk exceeds the threshold
    
-**use:**
- - `awk` : to find patterns and perform specified actions on matching lines or data fields
- - `sed` : use for searching, replacing, inserting, and deleting text without opening the file interactively
-     
+**Use:**
+ - `awk` → To find patterns and perform specified actions on matching lines or data fields
+ - `sed` → Use for searching, replacing, inserting, and deleting text without opening the file interactively
+
+**Use Cases:**
+  - Monitor disk usage on servers to prevent full disks and system issues.
+  - Automate alerts for system administrators.
+  - Can be scheduled via cron to run periodically and report disk status.
+
+**Tips / Notes:**
+  - Always use `df -h` (not `du -sh`) for filesystem usage, because du shows folder sizes, not total disk usage.
+  - Ensure numeric comparison uses `[ "$usage" -ge "$threshold" ]` (remove extra than).
+  - Can extend the script to email alerts when usage exceeds the threshold.
+  - For multiple partitions, loop through `df -h` lines instead of just `NR==2`.
+    
 ```sh
 
 ubuntu:~$ df -h
@@ -72,17 +83,28 @@ disk usage is higher than 20 : 29
 ubuntu:~$ 
 ```
 
-## process monitoring script 
+## 2. Process Monitoring Script 
 
-**1. check whether a process is running or not on the system/ server**
+**Purpose:**
+  1. check whether a process is running or not on the system/ server
+  2. check is the package of that process is installed or not
+  3. Optionally, restart or check the status of the service if needed.
 
-**2. check is the package of that process is installed or not**
+**Use:**
+  - `pgrep` → To check whetehr process is running or not, used to look through currently running processes and list their process IDs (PIDs) that match a specified pattern or other criteria
+  - `systemctl cmds` → To check status, start, stop, restart services
+  - `debian package` → To check whether package is installed or not
 
-  **use:**
-  - `pgrep` : to check whetehr process is running or not, used to look through currently running processes and list their process IDs (PIDs) that match a specified pattern or other criteria
-  - `systemctl cmds` : to check status, start, stop, restart services
-  - `debian package` : to check whether package is installed or not 
+**Use Cases:**
+  - Ensure critical services like cron, nginx, mysql, nodejs are always running.
+  - Automate restart of failed processes.
+  - Check package installation before troubleshooting process failures.
+  - Can be scheduled in cron for periodic monitoring.
 
+**Tips / Notes:**
+  - Always run the script with sudo if restarting system services.
+  - Can extend to log failures or send alerts via email/Slack when processes are down.
+  - Works with multiple processes at once by passing multiple arguments.
 
 ```sh
 
@@ -170,7 +192,21 @@ Jan 12 16:35:01 ubuntu CRON[1639]: pam_unix(cron:session): session closed for us
 ubuntu:~$ 
 ```
 
-## Check Open Ports of a Linux server
+## 3. Check Open Ports of a Linux server
+
+**Purpose:**
+  1. Check whether a specific port is open (listening) or not on a Linux system/server.
+  2. Identify which process is using that port if it’s open.
+
+**Use:**
+  - `netstat` → Lists network connections, listening ports, and associated processes.
+  - `ss`→ Is a modern replacement for netstat.
+  - `lsof` → List open files. In Linux, network sockets are treated as files, so lsof can list ports.
+
+**Use Cases**
+  - Check if services like SSH (22), HTTP (80), HTTPS (443), custom apps are running.
+  - Troubleshoot network connectivity issues.
+  - Identify which process is using a port that might conflict with your application.
 
 ```sh
 ubuntu:~$ ss -tuln | grep 127.0.0.1
@@ -312,7 +348,28 @@ sshd    1221 root    4u  IPv6   5861      0t0  TCP *:ssh (LISTEN)
 ubuntu:~$
 ```
 
-### Archive and Compress Log Files Older Than 7 Days / Size of 1M (or) 1k
+## 4. Archive and Compress Log Files Older Than 7 Days / Size of 1M (or) 1k
+
+**Purpose:**
+  1. Archive and compress log files on a Linux system to save disk space.
+  2. Move the compressed logs to a dedicated archive folder for easier management.
+
+**Use:**
+  - `find` → To filter files by size or age.
+  - `gzip` → To compress files.
+  - `mv` → To move compressed files into a dedicated archive folder.
+  - `mkdir -p` → To ensure the archive folder exists before moving files.
+
+**Use Cases:**
+  - Reduce disk space used by large log files.
+  - Keep a backup/archive of logs for auditing or troubleshooting.
+  - Organize logs by moving old/compressed logs to a separate folder.
+  - Can be scheduled as a cron job to automate log archiving.
+
+**Tips:**
+  - Change -size +1k → -size +1M for larger logs.
+  - Change -mtime +7 → -mtime +30 to archive logs older than 30 days.
+  - Always check the archive folder to ensure important logs are not accidentally deleted.
 
 ```sh
 ubuntu:~$ vi archive-logs.sh
@@ -438,8 +495,30 @@ sulSI6?[jTbۺ7ם[iY^kjnZU                                                       
 
 ```
 
-### Count servers by role using sort and uniq
+## 5. Count servers by role using sort and uniq
 
+**Purpose:**
+  1. Count the number of servers grouped by their role/application (like nginx, nodejs, mysql).
+  2. Identify which roles are most common in your environment.
+
+**Use:**
+  - `awk` → To extract the column with the server role/application.
+  - `grep -v '^$'` → Remove empty lines for accurate counting.
+  - `sort` → Alphabetically sort before using uniq.
+  - `uniq -c` → Count occurrences of each unique role.
+  - `sort -nr` → Sort by frequency, most common first.
+
+**Use Cases:**
+  - Quickly see how many servers run each application/service.
+  - Generate inventory or reporting for Ops/DevOps teams.
+  - Identify over-provisioned or under-utilized services.
+  - Can be extended to group by environment (prod/dev) or region by changing the awk column.
+
+**Tips:**
+  - Always sort alphabetically before uniq -c so counts are correct.
+  - Use sort -nr to see most frequent roles first.
+  - Can combine with awk '{print $4, $5}' to count by environment + role.
+    
 ```sh
 ubuntu:~$ cat servers.txt   
 web-01     192.168.10.11   ubuntu   prod   nginx
