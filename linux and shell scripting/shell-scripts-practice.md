@@ -437,3 +437,46 @@ sulSI6?[jTbۺ7ם[iY^kjnZU                                                       
 <?i
 
 ```
+
+### Count servers by role using sort and uniq
+
+```sh
+ubuntu:~$ vi count-servers.sh
+ubuntu:~$ chmod +x count-servers.sh   
+ubuntu:~$ cat count-servers.sh 
+#!/bin/bash
+
+awk '{print $5}' servers.txt | grep -v '^$' | sort | uniq -c
+
+ubuntu:~$ ./count-servers.sh 
+      2 mysql
+      3 nginx
+      3 nodejs
+      1 prometheus
+      1 redis
+      1 ssh
+
+ubuntu:~$ 
+# Always sort alphabetically first before uniq -c
+# Use sort -nr after counting to sort by frequency
+# Don’t use -n on strings
+
+ubuntu:~$ vi count-servers.sh 
+ubuntu:~$ cat count-servers.sh 
+#!/bin/bash
+
+awk '{print $5}' servers.txt | grep -v '^$' | sort | uniq -c | sort -nr
+
+ubuntu:~$ ./count-servers.sh 
+      3 nodejs
+      3 nginx
+      2 mysql
+      1 ssh
+      1 redis
+      1 prometheus
+
+# grep -v '^$'→ remove empty spaces
+# sort → alphabetically
+# uniq -c → count occurrences
+# sort -nr → sort numerically descending by count
+```
