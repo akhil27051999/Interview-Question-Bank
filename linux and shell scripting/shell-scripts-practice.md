@@ -441,6 +441,21 @@ sulSI6?[jTbۺ7ם[iY^kjnZU                                                       
 ### Count servers by role using sort and uniq
 
 ```sh
+ubuntu:~$ cat servers.txt   
+web-01     192.168.10.11   ubuntu   prod   nginx
+web-02     192.168.10.12   ubuntu   prod   nginx
+app-01     192.168.20.21   ubuntu   prod   nodejs
+app-02     192.168.20.22   ubuntu   prod   nodejs
+db-01      192.168.30.31   ubuntu   prod   mysql
+cache-01   192.168.40.41   ubuntu   prod   redis
+
+web-dev-01 10.0.10.11      ubuntu   dev    nginx
+app-dev-01 10.0.20.21      ubuntu   dev    nodejs
+db-dev-01  10.0.30.31      ubuntu   dev    mysql
+
+bastion-01 192.168.1.10    ubuntu   prod   ssh
+monitor-01 192.168.50.50   ubuntu   prod   prometheus
+
 ubuntu:~$ vi count-servers.sh
 ubuntu:~$ chmod +x count-servers.sh   
 ubuntu:~$ cat count-servers.sh 
