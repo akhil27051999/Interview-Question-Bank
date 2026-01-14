@@ -362,33 +362,7 @@ drwxrwxr-x  12 root      syslog          4.0K Jan 14 05:22 .
 ubuntu:/var/log$ cd arc-logs/
 ubuntu:/var/log/arc-logs$ ls
 auth.log.gz
-ubuntu:/var/log/arc-logs$ cat auth.log.gz
-"\ٮ"
-    j:N¯يt|
-           `c}5=QaF_MԽ4,DTk8+5ؘ'rXd׭uC7M(cL
-ʰQ:d,VG;r,֫0VɔiP_
-                <3f!Y\YijBڹXENc -Ù{qE`̗5fiцk֒Z"Q bYVhFjI;Ó2,8+iA~ƜBU\t,攈M>csA@Wy\֛
-o6&^A)r;?0(σv,-i`[T0ٟN6&xWzY(&^tU"]y8i\dyupӘȋ56kʒ|۔VU Y-1
-                                                        Qj*,V۔bx<r[fe%mV\jq&$r!`njR2(""#4AR Ya2ebkm+$ڙ/to|}*y\yyZd>[Ia` j\=,s<!
-$-Yҍ.S"lD_ֶ"ݶH9-2NDМ#-0̚iI⿈~p#                                                                                                  ˂0K>gn[h0+F<sS!
-                             [(A%\Gd2;EvloJgt%i11wO:=J֣W) $s'n'4^qQFU.[|t0Y/;`"D*?Tzj^PU4eOiڝQ8G?(9]ͥU]wCl~Tw0MDX7j']$oX0Iܽqz
-u
- "y8J~g66B*?$]O%x1E-\;/ G).'{7(%vϒy1yTQK.
-                                         k_h#JT
-z ss2ls3rxR!z~AY~>'?#!d4} Y 1/E(N       qo
-                                          8zG2/yOtsQojϊ8%~ˡ>-}cTu*N݂l0tf뢕Erfa4x[,{\ `Kѱ<OHy4qZۃ/S~5@5E
-                                                                                                      =$F<5g-'@.vxnw
-(屪<`+pXr]Pkp 8b%` cZj
-wy@
-   2yoh-[fKiJ;Dme86TYd  -YE/ecSoQBoF"6Y`
 
-[-jR>tC]$SėAuaSkַUj9Մ
-                    PkZ+?CcUuJc53ϙ2G    \kH|6XDT{g
-C
- 3l?
-    vg?L;pb4ظr]Tco1%    Kk%ah~n|X7FF6ǢrhjuߧMG
-                                             9<H#l~餎UEdDXӂ7e0/R_e5-Ҥ \]or1E
-                                            
 ubuntu:~$ vi archive-logs.sh 
 ubuntu:~$ cat archive-logs.sh 
 #!/bin/bash
