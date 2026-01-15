@@ -238,10 +238,20 @@ Security Risk:
 ### Multiple DNS Tests
 
 ```bash
+ubuntu:~$ vi script.sh
+ubuntu:~$ cat script.sh 
+#!/bin/bash
+
 echo "Testing DNS:"
 for domain in google.com github.com; do
   host "$domain" 2>/dev/null | head -1 || nslookup "$domain" | head -1
 done
+
+ubuntu:~$ chmod +x script.sh 
+ubuntu:~$ ./script.sh 
+Testing DNS:
+google.com has address 74.125.200.139
+github.com has address 20.205.243.166
 ```
 
 ### Query Specific DNS Server
