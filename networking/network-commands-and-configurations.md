@@ -370,3 +370,158 @@ You now know how to:
 * Monitor connections
 
 ➡️ These commands are core skills for networking, cloud, and security engineers.
+
+
+# Scripts
+
+## 1. Network Information Script
+```sh
+ubuntu:~$ vi network-info.sh 
+ubuntu:~$ cat network-info.sh 
+#!/bin/bash
+echo "=== Network Information ==="
+echo ""
+echo "1. IP Addresses:"
+ip -br addr show
+echo ""
+echo "2. Default Route:"
+ip route | grep default
+echo ""
+echo "3. DNS Servers:"
+cat /etc/resolv.conf | grep nameserver
+echo ""
+echo "4. ARP Table (first 5 entries):"
+ip neigh show | head -5
+
+ubuntu:~$ chmod +x network-info.sh
+ubuntu:~$ ./network-info.sh
+=== Network Information ===
+
+1. IP Addresses:
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+enp1s0           UP             172.30.1.2/24 fe80::70aa:8e2a:ea46:e544/64 
+docker0          DOWN           172.17.0.1/16 
+
+2. Default Route:
+default via 172.30.1.1 dev enp1s0 proto dhcp src 172.30.1.2 metric 1002 mtu 1500 
+
+3. DNS Servers:
+nameserver 8.8.8.8
+nameserver 1.1.1.1
+
+4. ARP Table (first 5 entries):
+172.30.1.1 dev enp1s0 lladdr 02:00:00:00:00:00 REACHABLE
+```
+
+## 2. Test Connectivity Script
+
+```sh
+ubuntu:~$ vi test-connectivity.sh 
+ubuntu:~$ cat test-connectivity.sh 
+#!/bin/bash
+echo "=== Network Connectivity Test ==="
+echo ""
+echo "1. Localhost:"
+ping -c 1 127.0.0.1 > /dev/null 2>&1 && echo "✓ Localhost reachable" || echo "✗ Localhost failed"
+echo ""
+echo "2. Default Gateway:"
+GATEWAY=$(ip route | grep default | awk '{print $3}' | head -1)
+if [ -n "$GATEWAY" ]; then
+    ping -c 1 $GATEWAY > /dev/null 2>&1 && echo "✓ Gateway $GATEWAY reachable" || echo "✗ Gateway unreachable"
+else
+    echo "No default gateway found"
+fi
+echo ""
+echo "3. Internet (8.8.8.8):"
+ping -c 1 8.8.8.8 > /dev/null 2>&1 && echo "✓ Internet reachable" || echo "✗ Internet unreachable"
+echo ""
+echo "4. DNS Resolution:"
+host google.com > /dev/null 2>&1 && echo "✓ DNS working" || echo "✗ DNS failed"
+
+ubuntu:~$ chmod +x test-connectivity.sh
+ubuntu:~$ ./test-connectivity.sh
+=== Network Connectivity Test ===
+
+1. Localhost:
+✓ Localhost reachable
+
+2. Default Gateway:
+✓ Gateway 172.30.1.1 reachable
+
+3. Internet (8.8.8.8):
+✓ Internet reachable
+
+4. DNS Resolution:
+✓ DNS working
+```
+
+## 3. Network Audit Script
+
+```sh
+ubuntu:~$ vi network-audit.sh 
+ubuntu:~$ cat network-audit.sh 
+#!/bin/bash
+echo "=== Network Security Audit ==="
+echo ""
+echo "1. Network Interfaces:"
+ip -br addr show
+echo ""
+echo "2. Active Connections:"
+ss -tunp 2>/dev/null | head -5 || echo "ss not available"
+echo ""
+echo "3. ARP Table:"
+ip neigh show | head -5
+echo ""
+echo "4. DNS Configuration:"
+cat /etc/resolv.conf
+echo ""
+echo "5. Routing Table:"
+ip route show | head -5
+ubuntu:~$ 
+
+
+ubuntu:~$ chmod +x network-audit.sh
+ubuntu:~$ ./network-audit.sh
+
+=== Network Security Audit ===
+
+1. Network Interfaces:
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+enp1s0           UP             172.30.1.2/24 fe80::70aa:8e2a:ea46:e544/64 
+docker0          DOWN           172.17.0.1/16 
+
+2. Active Connections:
+Netid State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                         
+tcp   ESTAB 0      0         172.30.1.2:40205 10.244.4.181:42778 users:(("node",pid=1232,fd=19))
+tcp   ESTAB 0      0         172.30.1.2:40200 10.244.3.183:39122 users:(("kc-terminal",pid=1281,fd=13))
+
+3. ARP Table:
+172.30.1.1 dev enp1s0 lladdr 02:00:00:00:00:00 REACHABLE 
+
+4. DNS Configuration:
+# This is /run/systemd/resolve/resolv.conf managed by man:systemd-resolved(8).
+# Do not edit.
+#
+# This file might be symlinked as /etc/resolv.conf. If you're looking at
+# /etc/resolv.conf and seeing this text, you have followed the symlink.
+#
+# This is a dynamic resolv.conf file for connecting local clients directly to
+# all known uplink DNS servers. This file lists all configured search domains.
+#
+# Third party programs should typically not access this file directly, but only
+# through the symlink at /etc/resolv.conf. To manage man:resolv.conf(5) in a
+# different way, replace this symlink by a static file or a different symlink.
+#
+# See man:systemd-resolved.service(8) for details about the supported modes of
+# operation for /etc/resolv.conf.
+
+nameserver 8.8.8.8
+nameserver 1.1.1.1
+search .
+
+5. Routing Table:
+default via 172.30.1.1 dev enp1s0 proto dhcp src 172.30.1.2 metric 1002 mtu 1500 
+172.17.0.0/16 dev docker0 proto kernel scope link src 172.17.0.1 linkdown 
+172.30.1.0/24 dev enp1s0 proto dhcp scope link src 172.30.1.2 metric 1002 mtu 1500 
+ubuntu:~$
+```
