@@ -1,4 +1,4 @@
-# Step 1: Network Fundamentals
+# 1. Network Fundamentals
 
 ## Introduction
 
