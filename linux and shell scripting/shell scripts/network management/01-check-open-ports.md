@@ -1,4 +1,4 @@
-## 3. Check Open Ports of a Linux server
+## Check Open Ports of a Linux server
 
 **Purpose:**
   1. Check whether a specific port is open (listening) or not on a Linux system/server.
