@@ -332,3 +332,40 @@ You now know how to:
 * Analyze traffic from a security perspective
 
 This is **core SOC, Cloud Security, and IR skillset**.
+
+# Script
+
+## Network Security Assessment 
+
+```sh
+ubuntu:~$ cat security-scan.sh 
+#!/bin/bash
+echo "=== Network Security Assessment ==="
+echo ""
+echo "1. Listening Ports:"
+ss -tlnp 2>/dev/null | head -5
+echo ""
+echo "2. Active Connections:"
+ss -tn | head -5
+echo ""
+echo "3. SSL/TLS Test (google.com):"
+sslscan google.com 2>/dev/null | grep -E "(Protocols|Preferred)" | head -3
+
+ubuntu:~$ chmod +x security-scan.sh
+ubuntu:~$ ./security-scan.sh
+=== Network Security Assessment ===
+
+1. Listening Ports:
+State  Recv-Q Send-Q Local Address:Port  Peer Address:PortProcess                                                
+LISTEN 0      128          0.0.0.0:40200      0.0.0.0:*    users:(("kc-terminal",pid=1281,fd=12))                
+LISTEN 0      511          0.0.0.0:40205      0.0.0.0:*    users:(("node",pid=1232,fd=18))                       
+LISTEN 0      4096         0.0.0.0:22         0.0.0.0:*    users:(("sshd",pid=1199,fd=3),("systemd",pid=1,fd=93))
+LISTEN 0      4096       127.0.0.1:33677      0.0.0.0:*    users:(("containerd",pid=625,fd=7))                   
+
+2. Active Connections:
+State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process
+ESTAB 0      0         172.30.1.2:40205 10.244.4.181:42778       
+ESTAB 0      0         172.30.1.2:40200 10.244.3.183:39122       
+
+3. SSL/TLS Test (google.com):
+```
