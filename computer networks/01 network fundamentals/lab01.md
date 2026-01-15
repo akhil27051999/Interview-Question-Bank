@@ -8,7 +8,7 @@
 
 * Network models (OSI & TCP/IP)
 * Network types 
-* Core networking concepts required for security engineers
+* Core networking concepts required for security engineers 
 
 **Expected Outcomes:**
 
