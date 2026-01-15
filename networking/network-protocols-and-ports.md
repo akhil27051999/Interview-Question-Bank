@@ -405,3 +405,48 @@ You’ve learned:
 * Protocol security best practices
 
 These skills are **critical for SOC analysis, cloud security, and real-world incident investigation**.
+
+# Script
+
+## Check Protocol Script
+```sh
+ubuntu:~$ vi protocol-check.sh 
+ubuntu:~$ cat protocol-check.sh 
+#!/bin/bash
+echo "=== Protocol and Port Analysis ==="
+echo ""
+echo "1. Listening TCP Ports:"
+ss -tlnp 2>/dev/null | head -5 || echo "ss not available"
+echo ""
+echo "2. Active TCP Connections:"
+ss -tn | head -5
+echo ""
+echo "3. DNS Test:"
+host google.com > /dev/null 2>&1 && echo "✓ DNS working" || echo "✗ DNS failed"
+echo ""
+echo "4. HTTPS Test:"
+curl -I https://www.google.com > /dev/null 2>&1 && echo "✓ HTTPS working" || echo "✗ HTTPS failed"
+
+ubuntu:~$ chmod +x protocol-check.sh
+ubuntu:~$ ./protocol-check.sh
+=== Protocol and Port Analysis ===
+
+1. Listening TCP Ports:
+State  Recv-Q Send-Q Local Address:Port  Peer Address:PortProcess                                                
+LISTEN 0      128          0.0.0.0:40200      0.0.0.0:*    users:(("kc-terminal",pid=1281,fd=12))                
+LISTEN 0      511          0.0.0.0:40205      0.0.0.0:*    users:(("node",pid=1232,fd=18))                       
+LISTEN 0      4096         0.0.0.0:22         0.0.0.0:*    users:(("sshd",pid=1199,fd=3),("systemd",pid=1,fd=93))
+LISTEN 0      4096       127.0.0.1:33677      0.0.0.0:*    users:(("containerd",pid=625,fd=7))                   
+
+2. Active TCP Connections:
+State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process
+ESTAB 0      0         172.30.1.2:40205 10.244.4.181:42778       
+ESTAB 0      0         172.30.1.2:40200 10.244.3.183:39122       
+
+3. DNS Test:
+✓ DNS working
+
+4. HTTPS Test:
+✓ HTTPS working
+ubuntu:~$ 
+```
