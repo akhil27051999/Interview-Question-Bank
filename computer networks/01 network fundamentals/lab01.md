@@ -7,7 +7,7 @@
 **What we're learning:**
 
 * Network models (OSI & TCP/IP)
-* Network types
+* Network types 
 * Core networking concepts required for security engineers
 
 **Expected Outcomes:**
