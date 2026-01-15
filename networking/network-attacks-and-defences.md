@@ -281,3 +281,42 @@ chmod +x detect-attacks.sh
 - Defense: Encryption, monitoring, segmentation, access control
 - Detection: Monitor ARP table, connection patterns, DNS queries
 - Best Practices: Use encrypted protocols, verify certificates, limit open ports
+
+# Script
+
+## Network Attack Detection Checks 
+
+```sh
+ubuntu:~$ cat detect-attacks.sh 
+#!/bin/bash
+echo "=== Attack Detection Checks ==="
+echo ""
+echo "1. ARP Table Duplicates:"
+DUPLICATES=$(ip neigh show | awk '{print $1}' | sort | uniq -d)
+if [ -z "$DUPLICATES" ]; then
+    echo "✓ No duplicate IPs in ARP table"
+else
+    echo "⚠ Potential ARP spoofing: $DUPLICATES"
+fi
+echo ""
+echo "2. Suspicious Connections:"
+ss -tn | awk '{print $5}' | cut -d: -f1 | sort | uniq -c | sort -rn | head -3
+echo ""
+echo "3. DNS Verification:"
+host google.com | grep "has address" | head -1
+
+ubuntu:~$ chmod +x detect-attacks.sh
+ubuntu:~$ ./detect-attacks.sh
+=== Attack Detection Checks ===
+
+1. ARP Table Duplicates:
+✓ No duplicate IPs in ARP table
+
+2. Suspicious Connections:
+      1 Address
+      1 10.244.4.181
+      1 10.244.3.183
+
+3. DNS Verification:
+google.com has address 74.125.130.100
+```
