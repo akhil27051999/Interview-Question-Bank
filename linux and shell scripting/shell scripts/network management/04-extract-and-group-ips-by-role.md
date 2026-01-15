@@ -1,4 +1,4 @@
-## 9. Extract & Group IPs by Role
+## Extract & Group IPs by Role
 
 **Purpose:**
   - Extract IP addresses from a structured inventory file (servers.txt)
