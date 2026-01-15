@@ -342,3 +342,68 @@ You now understand:
 * Devices and topologies
 
 ➡️ These fundamentals are critical for networking, security, and cloud engineering.
+
+## Practical Scenario
+
+```sh
+
+# --------------- Check network connectivity ---------------
+# ping tests network connectivity - if this works, your device is connected to a network.
+
+ubuntu:~$ ping -c 2 8.8.8.8
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+64 bytes from 8.8.8.8: icmp_seq=1 ttl=111 time=0.921 ms
+64 bytes from 8.8.8.8: icmp_seq=2 ttl=111 time=0.882 ms
+
+--- 8.8.8.8 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1001ms
+rtt min/avg/max/mdev = 0.882/0.901/0.921/0.019 ms
+
+# --------------- View network interfaces ---------------
+# Shows network interfaces - physical or virtual connections to networks.
+
+ubuntu:~$ ip addr show | head -20 || ifconfig | head -15
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host noprefixroute 
+       valid_lft forever preferred_lft forever
+2: enp1s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 56:61:ab:c6:10:29 brd ff:ff:ff:ff:ff:ff
+    inet 172.30.1.2/24 brd 172.30.1.255 scope global dynamic noprefixroute enp1s0
+       valid_lft 86313078sec preferred_lft 75523878sec
+    inet6 fe80::70aa:8e2a:ea46:e544/64 scope link 
+       valid_lft forever preferred_lft forever
+3: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1454 qdisc noqueue state DOWN group default 
+    link/ether e6:dd:d0:94:44:c6 brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
+       valid_lft forever preferred_lft forever
+
+# --------------- Check your network type ---------------
+# Shows routing table - helps understand network topology
+
+ubuntu:~$ ip route show | head -5 || route -n | head -5
+default via 172.30.1.1 dev enp1s0 proto dhcp src 172.30.1.2 metric 1002 mtu 1500 
+172.17.0.0/16 dev docker0 proto kernel scope link src 172.17.0.1 linkdown 
+172.30.1.0/24 dev enp1s0 proto dhcp scope link src 172.30.1.2 metric 1002 mtu 1500 
+
+# --------------- Understand MAC addresses ---------------
+# Shows MAC address of network interfaces
+
+ubuntu:~$ ip link show | grep -i "ether" | head -3 || ifconfig | grep -i "ether" | head -3
+    link/ether 56:61:ab:c6:10:29 brd ff:ff:ff:ff:ff:ff
+    link/ether e6:dd:d0:94:44:c6 brd ff:ff:ff:ff:ff:ff
+
+# --------------- View your IP address ---------------
+# Shows IP address(es) of your system
+
+ubuntu:~$ hostname -I 2>/dev/null || ip addr show | grep "inet " | head -3
+172.30.1.2 172.17.0.1
+
+# --------------- Check default gateway (router) ---------------
+# Shows default gateway - the router that connects you to other networks
+
+ubuntu:~$ ip route | grep default || route -n | grep "^0.0.0.0"
+default via 172.30.1.1 dev enp1s0 proto dhcp src 172.30.1.2 metric 1002 mtu 1500 
+```
