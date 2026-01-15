@@ -898,7 +898,7 @@ tar: Removing leading `/` from member names
 Backup successful for /var/log on 2026-01-14
 ```
 
-## 9. Validate USER input 
+## 8. Validate USER input 
 
 **Purpose:**
   1. Accept user input at runtime using the terminal.
@@ -946,7 +946,7 @@ enter the value:0
 Its a zero
 ```
 
-## 10. Extract & Group IPs by Role
+## 9. Extract & Group IPs by Role
 
 **Purpose:**
   - Extract IP addresses from a structured inventory file (servers.txt)
