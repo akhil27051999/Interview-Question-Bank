@@ -1,4 +1,4 @@
-## 1. Disk Monitoring Script
+## Disk Monitoring Script
 
 **Purpose:**
   1. check the total disk consumption of the system
