@@ -1,4 +1,4 @@
-## 2. Process Monitoring Script 
+## Process Monitoring Script 
 
 **Purpose:**
   1. check whether a process is running or not on the system/ server
