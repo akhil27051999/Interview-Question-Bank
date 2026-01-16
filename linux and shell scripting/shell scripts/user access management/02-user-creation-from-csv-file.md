@@ -1,5 +1,17 @@
 ## User creation and password change from a CSV file 
 
+**Purpose:**
+  1. Read a CSV-style file (users.txt) containing username:password pairs.
+  2. Create Linux users with the specified usernames and passwords.
+  3. Demonstrate file handling, loops, conditional checks, and password setting in shell scripting.
+  4. Ensure idempotency: does not create users if they already exist.
+
+**Use Cases:**
+  - Batch user creation on Linux servers from a CSV file.
+  - Useful in DevOps / SysAdmin automation, e.g., provisioning accounts for teams.
+  - Can be integrated into cloud instance setup scripts or CI/CD pipelines.
+  - Prevents errors by checking for existing users before creation.
+
 ```sh
 
 # CSV file for creating users
