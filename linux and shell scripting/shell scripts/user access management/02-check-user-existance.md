@@ -1,5 +1,13 @@
 ## Check whether a username exist or not in the system
 
+**Purpose:**
+  1. Accept a username input from the user at runtime using the terminal.
+  2. Check whether the entered username exists on the system.
+
+**Use Cases:**
+  - Validating user input in shell scripts.
+  - Checking before creating or deleting users to avoid errors.
+
 ```sh
 
 ubuntu:~$ id
