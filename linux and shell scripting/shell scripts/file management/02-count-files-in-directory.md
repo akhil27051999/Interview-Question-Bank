@@ -26,11 +26,12 @@ ubuntu:~$ cat count-files.md
 dir=$1
 file_count=$(find $1 -type f | wc -l )
 
-echo "Total file in $dir: $file_count"
+echo "Total files in $dir: $file_count"
 
 ubuntu:~$ chmod +x count-files.md 
 
 ubuntu:~$ ./count-files.md /var/log
-Total file in /var/log: 37
+Total files in /var/log: 37
+
 ubuntu:~$ 
 ```
