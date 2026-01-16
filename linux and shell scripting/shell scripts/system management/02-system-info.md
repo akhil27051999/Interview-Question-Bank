@@ -1,5 +1,16 @@
 ## System Information Script
 
+**Purpose:**
+  - Generate a comprehensive system information report on a Linux machine.
+  - Collect hardware, OS, memory, disk, network, and process details in a readable format.
+  - Useful for system audits, troubleshooting, and monitoring.
+
+**Use Cases:**
+  - `System auditing`: Quick overview of hardware, software, and network.
+  - `Troubleshooting`: Identify high memory/cpu usage processes.
+  - `Server monitoring`: Check uptime, logged-in users, and running services.
+  - `Documentation`: Generate automated reports for multiple servers.
+    
 ```sh
 ubuntu:~$ vi system-info.sh
 ubuntu:~$ cat system-info.sh
