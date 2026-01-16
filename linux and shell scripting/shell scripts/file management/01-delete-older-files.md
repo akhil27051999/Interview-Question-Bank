@@ -1,5 +1,5 @@
 
-## Delete Files older then 30 days
+## Delete Files older then 20 days
 
 **Purpose:**
   1. Identify and delete files older than a specified number of days.
@@ -7,7 +7,7 @@
   3. Useful for cleaning up logs, temporary files, or old backups in automation scripts.
 
 **Notes:**
-  - `-mtime +30` → Matches files older than 30 days.
+  - `-mtime +20` → Matches files older than 20 days.
   - `-exec rm -f {} \;` → Deletes each matched file.
   - Using `ls -lh` before deletion is useful for logging and verification.
   - The script does not touch directories, only files.
@@ -20,35 +20,72 @@
 
 ```sh
 
-ubuntu:~$ mkdir /tmp/oldfiles
-ubuntu:~$ touch /tmp/oldfiles/file{1..5}
-ubuntu:~$ touch -d "40 days ago" /tmp/oldfiles/file1
-ubuntu:~$ find /tmp/oldfiles -type f -mtime +30 -print
-/tmp/oldfiles/file1
+ubuntu:~$ touch -d "30 days ago" file{1..3}.txt
+ubuntu:~$ ls
+backup_status.txt  file1.txt  file2.txt  file3.txt  filesystem
 
-ubuntu:~$ cd /tmp/oldfiles/
-ubuntu:/tmp/oldfiles$ ls -ltra
-total 8
--rw-r--r--  1 root root    0 Dec  6 17:42 file1
-drwxrwxrwt 16 root root 4096 Jan 15 17:42 ..
--rw-r--r--  1 root root    0 Jan 15 17:42 file5
--rw-r--r--  1 root root    0 Jan 15 17:42 file4
--rw-r--r--  1 root root    0 Jan 15 17:42 file3
--rw-r--r--  1 root root    0 Jan 15 17:42 file2
-drwxr-xr-x  2 root root 4096 Jan 15 17:42 .
+ubuntu:~$ ls -ltrah
+total 40K
+-rw-r--r--  1 root root  161 Apr 22  2024 .profile
+-rw-------  1 root root   10 Feb 10  2025 .bash_history
+-rw-r--r--  1 root root    0 Dec 17 18:04 file3.txt
+-rw-r--r--  1 root root    0 Dec 17 18:04 file2.txt
+-rw-r--r--  1 root root    0 Dec 17 18:04 file1.txt
+drwx------  2 root root 4.0K Dec 18 17:15 .ssh
+drwxr-xr-x 22 root root 4.0K Dec 18 17:16 ..
+lrwxrwxrwx  1 root root    1 Dec 18 17:16 filesystem -> /
+-rw-r--r--  1 root root  109 Dec 18 17:16 .vimrc
+-rw-r--r--  1 root root 3.2K Dec 18 17:16 .bashrc
+-rw-r--r--  1 root root  165 Dec 18 17:16 .wget-hsts
+drwxr-xr-x  4 root root 4.0K Jan 16 18:03 .theia
+-rw-r--r--  1 root root   48 Jan 16 18:04 backup_status.txt
+drwx------  4 root root 4.0K Jan 16 18:04 .
 
-ubuntu:/tmp/oldfiles$ cd
-ubuntu:~$ ./delete-old-files.sh /tmp/oldfiles/
--rw-r--r-- 1 root root 0 Dec  6 17:42 /tmp/oldfiles/file1
+ubuntu:~$ find /* -name "*.txt" -type f -mtime 20 -print
+/root/file1.txt
+/root/file3.txt
+/root/file2.txt
 
-ubuntu:~$ cd /tmp/oldfiles/
-ubuntu:/tmp/oldfiles$ ls -ltra
-total 8
-drwxrwxrwt 16 root root 4096 Jan 15 17:42 ..
--rw-r--r--  1 root root    0 Jan 15 17:42 file5
--rw-r--r--  1 root root    0 Jan 15 17:42 file4
--rw-r--r--  1 root root    0 Jan 15 17:42 file3
--rw-r--r--  1 root root    0 Jan 15 17:42 file2
-drwxr-xr-x  2 root root 4096 Jan 15 17:49 .
-ubuntu:/tmp/oldfiles$
+ubuntu:~$ vi remove-older-files.sh
+ubuntu:~$ cat remove-older-files.sh 
+
+#!/bin/bash
+
+set -eou pipefail
+
+dir=/root
+
+echo "List out all the 20 days older files"
+echo "------------------------------------"
+
+find "$dir" -name "*.txt" -type f -mtime +20 -exec ls -lh {} \;
+
+echo "Delete the files listed"
+echo "-----------------------"
+
+find "$dir" -name "*.txt" -type f -mtime +20 -exec rm -f {} \;
+
+echo "Verify the filesystem post deletion"
+echo "-----------------------------------"
+
+find "$dir" -name "*.txt" -type f -mtime +20 -exec ls -lh {} \;
+
+ubuntu:~$ chmod +x remove-older-files.sh 
+ubuntu:~$ ./remove-older-files.sh
+
+List out all the 30 days older files
+------------------------------------
+-rw-r--r-- 1 root root 0 Dec 17 18:04 /root/file1.txt
+-rw-r--r-- 1 root root 0 Dec 17 18:04 /root/file3.txt
+-rw-r--r-- 1 root root 0 Dec 17 18:04 /root/file2.txt
+
+Delete the files listed
+-----------------------
+
+Verify the filesystem post deletion
+-----------------------------------
+
+ubuntu:~$ find /* -name "*.txt" -type f -mtime 20 -print 
+ubuntu:~$
+
 ```
