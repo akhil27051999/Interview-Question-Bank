@@ -1,4 +1,4 @@
-## User creation and password change from a CSV file 
+## User Creation and Password Change from a CSV File 
 
 **Purpose:**
   1. Read a CSV-style file (users.txt) containing username:password pairs.
