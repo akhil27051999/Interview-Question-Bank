@@ -30,7 +30,7 @@ free -h
 
 echo ""
 echo "Disk Usage:"
-df -h --total | grep -E 'Filesystem|total'
+df -h --total | grep -E 'Filesystem|total'  # only gives the above two lines from df -h command
 
 echo ""
 echo "Top 5 Memory Consuming Processes:"
@@ -38,7 +38,7 @@ ps -eo pid,ppid,cmd,%mem,%cpu --sort=-%mem | head -6
 
 echo ""
 echo "Network Information:"
-ip -br addr show
+ip -br addr show                           # -br : breif output
 
 echo ""
 echo "DNS Servers:"
