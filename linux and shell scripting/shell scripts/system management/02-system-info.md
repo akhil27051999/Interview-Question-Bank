@@ -1,3 +1,5 @@
+## System Information Script
+
 ```sh
 ubuntu:~$ vi system-info.sh
 ubuntu:~$ cat system-info.sh
