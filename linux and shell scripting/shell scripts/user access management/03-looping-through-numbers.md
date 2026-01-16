@@ -1,4 +1,4 @@
-## Looping through numbers 1 → 20
+## Looping Through Numbers 1 → 20
 
 **Purpose:**
   1. Iterate through numbers 1 to 20 using a for loop.
