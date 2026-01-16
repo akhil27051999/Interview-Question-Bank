@@ -1,5 +1,16 @@
 ## Check the Integer classification from range 1 → 20
 
+**Purpose:**
+  1. Iterate through numbers 1 to 20 using a for loop.
+  2. Demonstrate conditional logic (if / else) in shell scripting.
+  3. Classify each number as “positive” or “negative” (based on even/odd in this script).
+  4. Practice arithmetic operations in Bash (% modulo operator).
+
+**Use Cases:**
+  - Learning loops and conditional statements in shell scripting.
+  - Classifying numbers or performing batch arithmetic operations.
+  - Can be extended for menu-driven scripts or data validation.
+    
 ```sh
 ubuntu:~$ vi integer-classification.sh
 ubuntu:~$ cat integer-classification.sh 
