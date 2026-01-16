@@ -1,5 +1,27 @@
 ## Top Five Memory consuming processes
 
+**Purpose:**
+  - Display the top 5 memory-consuming processes on a Linux system.
+  - Demonstrate process monitoring, sorting, and text filtering in Bash scripting.
+  - Useful for performance analysis, troubleshooting, and resource management.
+
+**Use Cases:**
+  - `Performance monitoring`: Quickly identify processes using high memory.
+  - `Troubleshooting`: Investigate memory leaks or overloaded services.
+  - `Automation`: Can be used in scripts that alert admins when memory usage exceeds thresholds.
+  - `DevOps & SysAdmin tasks`: Monitor containers, Node.js processes, or critical daemons.
+
+**Notes:**
+  - `%MEM` → Indicates memory percentage used by the process relative to total system memory.
+  - `STAT` → Shows process state:
+     - `S` → Sleeping,
+     - `R` → Running,
+     - `l` → Multithreaded,
+     - `s` → Session leader,
+     - `+` → In foreground process group.
+  - Shows live snapshot; can be integrated into monitoring scripts for alerts.
+
+
 ```sh
 ubuntu:~$ vi process-monitor.sh
 ubuntu:~$ cat process-monitor.sh
