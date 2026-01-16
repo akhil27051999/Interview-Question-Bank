@@ -6,10 +6,10 @@
   3. Useful for system monitoring, troubleshooting, and auditing active services.
 
 **Use Cases:**
-  - `System administration:` Check which services are running on production or development servers.
-  - `Troubleshooting:` Quickly identify if critical services (SSH, Docker, network services) are active.
-  - `Monitoring & audits:` Can be scheduled in cron jobs or monitoring scripts to log service status.
-  - `DevOps:` Use as part of automated health checks or CI/CD pipelines.
+  - `System administration`: Check which services are running on production or development servers.
+  - `Troubleshooting`: Quickly identify if critical services (SSH, Docker, network services) are active.
+  - `Monitoring & audits`: Can be scheduled in cron jobs or monitoring scripts to log service status.
+  - `DevOps`: Use as part of automated health checks or CI/CD pipelines.
     
 ```sh
 
