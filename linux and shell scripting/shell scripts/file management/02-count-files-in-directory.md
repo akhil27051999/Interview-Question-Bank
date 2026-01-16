@@ -1,4 +1,15 @@
 ## Count total files in a directory
+
+**Purpose:**
+  1. Count the total number of files in a specified directory.
+  2. Demonstrates command-line arguments, find, piping, and variable usage in Bash.
+  3. Useful for directory analysis, system audits, and automation scripts.
+
+**Notes:**
+  - `-type f` → Ensures only regular files are counted, not directories.
+  - Works recursively, so files inside subdirectories of /var/log are included.
+  - Can be used on any directory to quickly get a file count.
+    
 ```sh
 ubuntu:~$ cd /var/log
 ubuntu:/var/log$ ls
