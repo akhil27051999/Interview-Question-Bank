@@ -41,7 +41,7 @@ drwxr-xr-x  4 root root 4.0K Jan 16 18:03 .theia
 -rw-r--r--  1 root root   48 Jan 16 18:04 backup_status.txt
 drwx------  4 root root 4.0K Jan 16 18:04 .
 
-ubuntu:~$ find /* -name "*.txt" -type f -mtime 20 -print
+ubuntu:~$ find /* -name "*.txt" -type f -mtime +20 -print
 /root/file1.txt
 /root/file3.txt
 /root/file2.txt
@@ -85,7 +85,7 @@ Delete the files listed
 Verify the filesystem post deletion
 -----------------------------------
 
-ubuntu:~$ find /* -name "*.txt" -type f -mtime 20 -print 
+ubuntu:~$ find /* -name "*.txt" -type f -mtime +20 -print 
 ubuntu:~$
 
 ```
