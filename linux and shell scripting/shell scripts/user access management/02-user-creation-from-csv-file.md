@@ -35,7 +35,9 @@ fi
 
 while IFS=: read -r username password
 do
+
   # Skip empty lines
+
   [[ -z "$username" || -z "$password" ]] && continue
 
   # Check if user already exists
