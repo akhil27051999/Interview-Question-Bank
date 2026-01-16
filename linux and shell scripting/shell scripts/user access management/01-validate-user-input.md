@@ -1,4 +1,4 @@
-## Validate USER input 
+## Validate User Input 
 
 **Purpose:**
   1. Accept user input at runtime using the terminal.
