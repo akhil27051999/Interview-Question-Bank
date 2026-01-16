@@ -27,7 +27,9 @@ ubuntu:~$
   ```text 
   load average
   ```
-- awk splits the line into two parts:
+  
+**awk splits the line into two parts:**
+  
 | Field | Content                               |
 | ----- | ------------------------------------- |
 | `$1`  | Everything **before** `load average:` |
