@@ -1,5 +1,15 @@
 ## Validate IP address Format
 
+**Purpose:**
+  1. Validate whether a given IPv4 address is in a correct format.
+  2. Demonstrates user input handling, regex matching, and conditional statements in Bash.
+  3. Useful for network configuration validation or input checks in scripts.
+
+**Use Cases:**
+  - `Network scripts`: Verify user-provided IPs before assigning to interfaces.
+  - `Automation tools`: Check IP inputs in server provisioning scripts.
+  - `Validation in DevOps pipelines`: Ensure correct configuration before deployment.
+    
 ```sh
 ubuntu:~$ vi validate-ip.sh
 ubuntu:~$ cat validate-ip.sh 
