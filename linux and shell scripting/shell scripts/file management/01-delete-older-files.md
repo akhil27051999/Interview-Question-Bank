@@ -1,6 +1,23 @@
 
 ## Delete Files older then 30 days
 
+**Purpose:**
+  1. Identify and delete files older than a specified number of days.
+  2. Demonstrates file timestamp checks, shell loops, and find command usage.
+  3. Useful for cleaning up logs, temporary files, or old backups in automation scripts.
+
+**Notes:**
+  - `-mtime +30` → Matches files older than 30 days.
+  - `-exec rm -f {} \;` → Deletes each matched file.
+  - Using `ls -lh` before deletion is useful for logging and verification.
+  - The script does not touch directories, only files.
+
+**Use Cases:**
+  - `Log rotation`: Remove old logs automatically.
+  - `Temporary directories`: Clean up /tmp or cache directories.
+  - `Backup maintenance`: Delete outdated backup files to save disk space.
+  - `Cron automation`: Run the script daily/weekly to keep directories clean.
+
 ```sh
 
 ubuntu:~$ mkdir /tmp/oldfiles
