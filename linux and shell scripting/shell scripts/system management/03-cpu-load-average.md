@@ -1,5 +1,15 @@
 ## CPU Load Average
 
+**Purpose:**
+  - Display the CPU load averages of the system.
+  - Demonstrate command piping and text extraction using awk.
+  - Useful for monitoring system load over different time intervals.
+
+**Use Cases:**
+  - Quick check for system performance.
+  - Can be integrated into monitoring scripts to trigger alerts when load is high.
+  - Useful in DevOps or SysAdmin automation for analyzing server health.
+
 ```sh
 ubuntu:~$ vi cpu-load-average.sh
 ubuntu:~$ cat cpu-load-average.sh 
