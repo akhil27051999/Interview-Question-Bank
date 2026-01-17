@@ -1,14 +1,14 @@
 ## 
 
 ### Step 1: Seeing the "True" Configuration
-**The /etc/ssh/sshd_config file only shows changes. To see the effective configuration (including all the hidden defaults), we use sshd -T .**
+- The /etc/ssh/sshd_config file only shows changes. To see the effective configuration (including all the hidden defaults), we use sshd -T .
 
-1. Dump the active configuration:
+**1. Dump the active configuration:**
 ```sh
 sshd -T | grep -E "port|permitrootlogin|passwordauthentication"
 ```
 
-2. Analyze the output:
+**2. Analyze the output:**
   - port 22 : The standard entry point for attackers.
   - permitrootlogin yes : This means an attacker can try to brute-force the 'root' password directly.
   - passwordauthentication yes : This means the server accepts passwords, which are weaker than keys.
@@ -31,7 +31,7 @@ sshd -T | grep -E "port|permitrootlogin|passwordauthentication"
 ### Step 3: The Listening Surface
 **Security isn't just about files; it's about what is happening on the network.**
 
-1. Check the socket:
+**1. Check the socket:**
 ```sh
 ss -tlpn | grep ssh
 ```
@@ -43,13 +43,13 @@ ss -tlpn | grep ssh
 ### Step 4: Testing without Breaking
 - You can test a new configuration file without restarting the service. This is how pros avoid getting locked out.
 
-1. Create a "dummy" config:
+**1. Create a "dummy" config:**
 ```sh
 cp /etc/ssh/sshd_config /tmp/test_sshd_config
 echo "Port 9999" >> /tmp/test_sshd_config
 ```
 
-2. Run a test pass:
+**2. Run a test pass:**
 ```sh
 sshd -t -f /tmp/test_sshd_config
 ```
