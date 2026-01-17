@@ -14,7 +14,7 @@
 ### 1. What is Docker and how does it differ from traditional virtualization?
 **Answer**
 
-> Docker is a platform for developing, shipping, and running applications in containers.
+Docker is a platform for developing, shipping, and running applications in containers.
 
 Key Differences:
 - **Virtualization:** Runs a complete OS on a hypervisor; higher resource overhead.  
