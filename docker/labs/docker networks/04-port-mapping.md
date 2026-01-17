@@ -11,9 +11,10 @@ bash-5.1$ docker run -d \
 
 bash-5.1$ docker ps | grep web-pub
 2948619f3302   nginx     "/docker-entrypoint.…"   15 seconds ago   Up 14 seconds   0.0.0.0:8080->80/tcp, :::8080->80/tcp   web-pub
+```
 
-# Step 9: Test from host
-
+### Step 2: Test from host
+```sh
 bash-5.1$ curl http://localhost:8080
 <!DOCTYPE html>
 <html>
