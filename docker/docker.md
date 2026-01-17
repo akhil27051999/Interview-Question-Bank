@@ -9,8 +9,6 @@
 - [Category 6: Troubleshooting & Real-time Scenarios](#category-6-troubleshooting--real-time-scenarios)
 - [Category 7: Advanced Concepts](#category-7-advanced-concepts)
 
----
-
 ## Category 1: Docker Fundamentals & Architecture
 
 ### 1. What is Docker and how does it differ from traditional virtualization?
