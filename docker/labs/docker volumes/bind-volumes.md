@@ -1,4 +1,8 @@
+# Lab Scenario: Using Docker Volumes with MySQL 
 
+**Goal:**
+- Run a MySQL container with persistent data using a Docker volume. Practice creating, inspecting, sharing, and removing volumes.
+  
 ## Bind Mounts
 
 ### Step 1: Create a Host Directory
