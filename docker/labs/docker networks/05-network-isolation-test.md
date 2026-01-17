@@ -41,7 +41,7 @@ ping: bad address 'web'
   3. Docker DNS only works within the same network
 
 #### ❌ Containers on different Docker networks cannot: 
-  1. Resolve each other’s names
-  2. Reach each other’s IPs
-  3. Communicate at all
-  4. This is intentional network isolation, not an error.
+  - Resolve each other’s names
+  - Reach each other’s IPs
+  - Communicate at all
+  - This is intentional network isolation, not an error.
