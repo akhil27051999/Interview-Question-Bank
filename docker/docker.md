@@ -58,7 +58,7 @@ Key Differences:
 #### DOCKER LIFE-CYCLE STAGES EXPLAINATION
 
 ```bash
-# CONTAINER CREATED
+# --------------- CONTAINER CREATED ---------------
 
 bash-5.1$ docker ps -a
 CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
@@ -83,7 +83,7 @@ bash-5.1$ docker ps -a
 CONTAINER ID   IMAGE     COMMAND                  CREATED         STATUS    PORTS     NAMES
 32f3cdffb2a0   nginx     "/docker-entrypoint.…"   3 seconds ago   Created             nginx-cont
 
-# CONTAINER RUNNING 
+# --------------- CONTAINER RUNNING ---------------
 # COMMAND: docker start <cont_id/cont_name>
 
 bash-5.1$ docker start nginx-cont
@@ -94,7 +94,7 @@ CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS       
 
 # NOTE : Also use command 'docker run -d --name <cont_name> nginx' to start/run new container which is not created before
 
-# CONTAINER PAUSE/UNPAUSE
+# --------------- CONTAINER PAUSE/UNPAUSE ---------------
 
 bash-5.1$ docker pause nginx-cont
 nginx-cont
@@ -107,7 +107,7 @@ bash-5.1$ docker ps -a
 CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS          PORTS     NAMES
 32f3cdffb2a0   nginx     "/docker-entrypoint.…"   57 seconds ago   Up 39 seconds   80/tcp    nginx-cont
 
-# CONTAINER STOP
+# --------------- CONTAINER STOP ---------------
 # COMMAND: docker stop <cont-name> / docker kill <cont-name>
 
 bash-5.1$ docker stop nginx-cont
@@ -116,7 +116,7 @@ bash-5.1$ docker ps -a
 CONTAINER ID   IMAGE     COMMAND                  CREATED              STATUS                     PORTS     NAMES
 32f3cdffb2a0   nginx     "/docker-entrypoint.…"   About a minute ago   Exited (0) 2 seconds ago             nginx-cont
 
-# CONTAINER RESTARTING
+# --------------- CONTAINER RESTARTING ---------------
 
 bash-5.1$ docker run -d --restart=on-failure --name nginx-cont nginx
 docker: Error response from daemon: Conflict. The container name "/nginx-cont" is already in use by container "32f3cdffb2a0a866f91761750792449e5ef4c3bfcec7f095517c5d93fcddd7ad". You have to remove (or rename) that container to be able to reuse that name.
@@ -127,7 +127,7 @@ bash-5.1$ docker ps -a
 CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 
 
-# > RESTART POLICY: ON FAILURE
+# --------------- RESTART POLICY: ON FAILURE ---------------
 
 bash-5.1$ docker run -d --restart=on-failure --name nginx-cont nginx
 0a6daef2f3f68d2713b84aa6d914e269864687b9716c2a2461413eccda05d2b2
@@ -140,7 +140,7 @@ bash-5.1$ docker ps -a
 CONTAINER ID   IMAGE     COMMAND                  CREATED              STATUS                       PORTS     NAMES
 0a6daef2f3f6   nginx     "/docker-entrypoint.…"   About a minute ago   Exited (137) 4 seconds ago             nginx-cont
 
-# > RESTART POLICY: ALWAYS
+# --------------- RESTART POLICY: ALWAYS ---------------
 
 bash-5.1$ docker run -d --restart=always --name nginx-cont nginx
 dbf03e67021e8b38cabd9b78e78fd469dfbd00ee2ac914769c4e86fc7c9ac4ed
@@ -355,7 +355,7 @@ Common Use Cases:
 bash-5.1$ docker volume ls
 DRIVER    VOLUME NAME
 
-# Step 1: Create a Docker Volume
+# --------------- Step 1: Create a Docker Volume ---------------
 
 bash-5.1$ docker volume create mydbdata
 mydbdata
@@ -364,7 +364,7 @@ bash-5.1$ docker volume ls
 DRIVER    VOLUME NAME
 local     mydbdata
 
-# Step 2: Run MySQL Container Using the Volume
+# --------------- Step 2: Run MySQL Container Using the Volume ---------------
 
 bash-5.1$ docker run -d \
 > --name mysql-db \
@@ -400,7 +400,7 @@ f6a82162c6f4   mysql:8   "docker-entrypoint.s…"   9 seconds ago   Up 9 seconds
 bash-5.1$ docker inspect -f '{{.Path}} {{.Args}}' mysql-db
 docker-entrypoint.sh [mysqld]
 
-# Step 3: Connect to MySQL and Add Data
+# --------------- Step 3: Connect to MySQL and Add Data ---------------
 
 bash-5.1$ docker exec -it mysql-db /bin/sh
 
@@ -457,14 +457,14 @@ Bye
 
 sh-5.1 # ctrl+x
 
-# Step 4: Stop and Remove the Container
+# --------------- Step 4: Stop and Remove the Container ---------------
 
 bash-5.1$ docker stop mysql-db
 mysql-db
 bash-5.1$ docker rm mysql-db
 mysql-db
 
-# Step 5: Recreate Container Using the Same Volume
+# --------------- Step 5: Recreate Container Using the Same Volume ---------------
 
 bash-5.1$ docker run -d \
 > --name mysql-db2 \
@@ -525,14 +525,14 @@ mysql> SELECT * FROM users;
 
 mysql>
 
-# Step 6: Share the same volume between 2 containers
+# --------------- Step 6: Share the same volume between 2 containers ---------------
 
 bash-5.1$ docker run -d --name mysql-lab3 -v mydbdata:/var/lib/mysql mysql:8
 1a8707e864e9a1648a6d3d1786104dc630111cb590b43b8425e70979ae38ca1f
 
 # Both containers see the same data.
 
-# Step 7: Test backup & restore
+# --------------- Step 7: Test backup & restore ---------------
 bash-5.1$ docker run --rm -v mydbdata:/data busybox tar cvf /backup.tar /data
 ```
 ---
@@ -540,7 +540,7 @@ bash-5.1$ docker run --rm -v mydbdata:/data busybox tar cvf /backup.tar /data
 #### Bind Mounts 
 
 ```sh
-# Step 1: Create a Host Directory
+# --------------- Step 1: Create a Host Directory ---------------
 
 bash-5.1$ mkdir -p ~/mysql-data
 bash-5.1$ ls
@@ -568,7 +568,7 @@ Status: Downloaded newer image for mysql:8
 docker: Error response from daemon: invalid volume specification: '/home/user/mysql-data:var/lib/mysql': invalid mount config for type "bind": invalid mount path: 'var/lib/mysql' mount path must be absolute.
 See 'docker run --help'.
 
-# Step 2: Run MySQL Using Bind Mount
+# --------------- Step 2: Run MySQL Using Bind Mount ---------------
 
 bash-5.1$ docker run -d --name mysql-db -e MYSQL_ROOT_PASSWORD=mypasswd -e MYSQL_DATABASE=testdb -v ~/mysql-data:/var/lib/mysql mysql:8
 6b016784f88acabaae09f27eb9c3473368f1a87cb83b69c487f06938cab9574c
@@ -576,7 +576,7 @@ bash-5.1$ docker ps -a
 CONTAINER ID   IMAGE     COMMAND                  CREATED              STATUS          PORTS                 NAMES
 6b016784f88a   mysql:8   "docker-entrypoint.s…"   About a minute ago   Up 59 seconds   3306/tcp, 33060/tcp   mysql-db
 
-# Step 3: Add Sample Data
+# --------------- Step 3: Add Sample Data ---------------
 
 bash-5.1$ docker exec -it mysql-db /bin/sh
 
@@ -638,7 +638,7 @@ bash-5.1$ ls ~/mysql-data
 #innodb_redo           binlog.000002          client-cert.pem        ibtmp1                 mysql_upgrade_history  server-cert.pem        undo_001
 #innodb_temp           binlog.index           client-key.pem         mysql                  performance_schema     server-key.pem         undo_002
 
-# Step 4: Stop and Remove Container
+# --------------- Step 4: Stop and Remove Container ---------------
 
 bash-5.1$ docker stop mysql-db
 mysql-db
@@ -707,7 +707,7 @@ bash-5.1$
 
 ```sh
 
-# Step 1: Run two containers
+# --------------- Step 1: Run two containers ---------------
 
 bash-5.1$ docker run -d --name web1 nginx
 Unable to find image 'nginx:latest' locally
@@ -726,7 +726,7 @@ Status: Downloaded newer image for nginx:latest
 bash-5.1$ docker run -d --name web2 nginx
 d70dc3b59c8981bb51fd4a3c0e50fd7d63fb1ced93224b890ff36fe1cd3f3624
 
-# Step 2: Inspect default bridge
+# --------------- Step 2: Inspect default bridge ---------------
 
 bash-5.1$ docker network inspect bridge
 [
@@ -781,7 +781,7 @@ bash-5.1$ docker network inspect bridge
     }
 ]
 
-# Step 3: Test DNS (will fail)
+# --------------- Step 3: Test DNS (will fail) ---------------
 
 bash-5.1$ docker exec -it web1 bash -c "apt update && apt install -y iputils-ping"
 Get:1 http://deb.debian.org/debian trixie InRelease [140 kB]
@@ -825,8 +825,6 @@ Setting up iputils-ping (3:20240905-3) ...
 bash-5.1$ docker exec web1 ping -c 4 web2
 ping: web2: Name or service not known
 
-bash-5.1$ 
-
 # NOTE: 
 # - Default bridge has no automatic DNS ❌
 # - Containers must use IPs → bad practice
@@ -838,7 +836,7 @@ bash-5.1$
 
 ```sh
 
-# Step 3: Create custom bridge
+# --------------- Step 3: Create custom bridge ---------------
 
 bash-5.1$ docker network create app-net
 3988f947a319bc6830e461fe4485570d2eb95e97914db73c2ae65d93e1a09c55
@@ -850,7 +848,7 @@ NETWORK ID     NAME      DRIVER    SCOPE
 e5203f00748b   host      host      local
 82714d432fcc   none      null      local
 
-# Step 4: Run containers in it
+# --------------- Step 4: Run containers in it ---------------
 
 bash-5.1$ docker run -d --name web --network app-net nginx
 bc359e13bbc3acbfee3eac422d425099fde131374fdea1fd97c16823b533fc4b
@@ -870,7 +868,7 @@ bc359e13bbc3   nginx     "/docker-entrypoint.…"   About a minute ago   Up Abou
 d70dc3b59c89   nginx     "/docker-entrypoint.…"   10 minutes ago       Up 10 minutes       80/tcp    web2
 2dd1fb169f27   nginx     "/docker-entrypoint.…"   10 minutes ago       Up 10 minutes       80/tcp    web1
 
-# Step 5: Test DNS
+# --------------- Step 5: Test DNS ---------------
 
 bash-5.1$ docker exec api ping -c 5 web
 PING web (172.18.0.2): 56 data bytes
@@ -893,7 +891,7 @@ bash-5.1$
 
 ```sh
 
-# Step 6: Run MySQL
+# --------------- Step 6: Run MySQL ---------------
 
 bash-5.1$ docker run -d \
   --name mysql \
@@ -926,7 +924,7 @@ bc359e13bbc3   nginx     "/docker-entrypoint.…"   17 minutes ago   Up 17 minut
 d70dc3b59c89   nginx     "/docker-entrypoint.…"   26 minutes ago   Up 26 minutes   80/tcp                web2
 2dd1fb169f27   nginx     "/docker-entrypoint.…"   26 minutes ago   Up 26 minutes   80/tcp                web1
 
-# Step 7: Access DB from another container
+# --------------- Step 7: Access DB from another container ---------------
 
 bash-5.1$ docker exec -it api sh
 
@@ -954,7 +952,7 @@ round-trip min/avg/max = 0.091/0.104/0.147 ms
 #### Port Mapping (Host ↔ Container)
 
 ```sh
-# Step 8: Expose nginx
+# --------------- Step 8: Expose nginx ---------------
 
 bash-5.1$ docker run -d \
   --name web-pub \
@@ -966,7 +964,7 @@ bash-5.1$ docker run -d \
 bash-5.1$ docker ps | grep web-pub
 2948619f3302   nginx     "/docker-entrypoint.…"   15 seconds ago   Up 14 seconds   0.0.0.0:8080->80/tcp, :::8080->80/tcp   web-pub
 
-# Step 9: Test from host
+# --------------- Step 9: Test from host ---------------
 
 bash-5.1$ curl http://localhost:8080
 <!DOCTYPE html>
@@ -1049,11 +1047,11 @@ ping: bad address 'web'
 
 ```sh
 
-# Step 13: Run none network
+# --------------- Step 13: Run none network ---------------
 
 bash-5.1$ docker run -it --network none busybox
 
-# Step 14: Test networking
+# --------------- Step 14: Test networking ---------------
 
 / # ip a
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue qlen 1000
@@ -1072,7 +1070,7 @@ ping: bad address 'google.com'
 
 ```sh
 
-# Step 15: Run nginx on host network
+# --------------- Step 15: Run nginx on host network ---------------
 
 bash-5.1$ docker run -d --network host nginx
 98708b650334c6e792fbf755b9ef52724003fe5433691358a0d706dd02461d74
@@ -1085,7 +1083,7 @@ e5203f00748b   host           host      local
 df26996a588f   isolated-net   bridge    local
 82714d432fcc   none           null      local
 
-# Step 16: Access directly
+# --------------- Step 16: Access directly ---------------
 
 bash-5.1$ curl http://localhost
 <!DOCTYPE html>
@@ -1125,17 +1123,17 @@ bash-5.1$
 
 ```sh
 
-# Step 1: Create a custom Docker bridge network named my_bridge_network.
+# --------------- Step 1: Create a custom Docker bridge network named my_bridge_network. ---------------
 
 bash-5.1$ docker network create --driver bridge my_bridge_network
 dc75b836fc70f758979ce580c02f5574d442594bbf863f85dcfd9fc0a0b9d422
 
-# Step 2: Run a new container called web_container using the nginx image and connect it to the my_bridge_network.
+# --------------- Step 2: Run a new container called web_container using the nginx image and connect it to the my_bridge_network. ---------------
 
 bash-5.1$ docker run --name web_container --network my_bridge_network -d nginx
 e87c9e07f8e6eae4feaf2ae9812939edd248b99173aa11704bdcdc6c94579a4f
 
-# Verify that the container is connected to the bridge network by inspecting the network and container.
+# --------------- Verify that the container is connected to the bridge network by inspecting the network and container. ---------------
 
 bash-5.1$ docker ps
 CONTAINER ID   IMAGE     COMMAND                  CREATED         STATUS         PORTS     NAMES
@@ -1409,7 +1407,7 @@ bash-5.1$
 
 ```sh
 
-# Step 1: Initialize a Docker Swarm.
+# --------------- Step 1: Initialize a Docker Swarm. ---------------
 
 bash-5.1$  docker swarm init
 Swarm initialized: current node (qfn8motckmjs5eea9jvx2l7ln) is now a manager.
@@ -1420,7 +1418,7 @@ To add a worker to this swarm, run the following command:
 
 To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
 
-# Step 2: Create an overlay network named my_overlay_network.
+# --------------- Step 2: Create an overlay network named my_overlay_network. ---------------
 
 bash-5.1$ docker network create --driver overlay my_overlay_network
 T4nwm1ofs5ydha6neeg1t3esk
@@ -1434,7 +1432,7 @@ octa8oe8v9er   ingress              overlay   swarm
 t4nwm1ofs5yd   my_overlay_network   overlay   swarm
 022e79526049   none                 null      local
 
-# Step 3: Deploy a new service called overlay_service using the nginx image on the my_overlay_network.
+# --------------- Step 3: Deploy a new service called overlay_service using the nginx image on the my_overlay_network. ---------------
 
 bash-5.1$ docker service create --name overlay_service --network my_overlay_network --replicas 1 nginx
 9nrv4mfrcjeqoe0hdlsorj54a
@@ -1446,7 +1444,7 @@ bash-5.1$ docker service ls
 ID             NAME              MODE         REPLICAS   IMAGE          PORTS
 9nrv4mfrcjeq   overlay_service   replicated   1/1        nginx:latest  
  
-# Step 4: Scale the service to 3 replicas.
+# --------------- Step 4: Scale the service to 3 replicas. ---------------
 
 bash-5.1$ docker service scale overlay_service=3
 overlay_service scaled to 3
@@ -1460,7 +1458,7 @@ bash-5.1$ docker service ls
 ID             NAME              MODE         REPLICAS   IMAGE          PORTS
 9nrv4mfrcjeq   overlay_service   replicated   3/3        nginx:latest   
 
-# Step 5: Verify the deployment and scaling by listing the services and tasks.
+# --------------- Step 5: Verify the deployment and scaling by listing the services and tasks. ---------------
 
 bash-5.1$ docker service ps overlay_service
 
@@ -1519,7 +1517,7 @@ CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS  
 ecfebcf314fc   nginx:1.23.4   "/docker-entrypoint.…"   9 seconds ago    Up 8 seconds    80/tcp    container2
 faec006537d8   nginx          "/docker-entrypoint.…"   46 seconds ago   Up 45 seconds   80/tcp    container1
 
-# Test the network connectivity between two Docker containers by pinging from one container to another.
+# --------------- Test the network connectivity between two Docker containers by pinging from one container to another ---------------
 
 bash-5.1$ docker exec -it container1 bash -c "apt update && apt install -y iputils-ping"
 Get:1 http://deb.debian.org/debian trixie InRelease [140 kB]
@@ -1772,7 +1770,7 @@ Importance: Discover and remediate vulnerabilities before deploying images to pr
 bash-5.1$ docker ps
 CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 
-# Run the container with a hidden mistake
+# --------------- Run the container with a hidden mistake ---------------
 bash-5.1$ docker run -d \
   --name web-app \
   -p 8080:3000 \
@@ -1799,31 +1797,31 @@ bash-5.1$ docker ps
 CONTAINER ID   IMAGE                 COMMAND                  CREATED         STATUS         PORTS                                                 NAMES
 765fb25776f3   hashicorp/http-echo   "/http-echo -listen=…"   4 seconds ago   Up 3 seconds   5678/tcp, 0.0.0.0:8080->3000/tcp, :::8080->3000/tcp   web-app
 
-# Curl the app and check the reachability
+# --------------- Curl the app and check the reachability ---------------
 
 bash-5.1$ curl http://localhost:8080
 curl: (56) Recv failure: Connection reset by peer
 
 # TROUBLESHOOTING STEPS
 
-# Step 1: Check container logs
+# --------------- Step 1: Check container logs ---------------
 
 bash-5.1$ docker ps
 CONTAINER ID   IMAGE                 COMMAND                  CREATED              STATUS              PORTS                                                 NAMES
 765fb25776f3   hashicorp/http-echo   "/http-echo -listen=…"   About a minute ago   Up About a minute   5678/tcp, 0.0.0.0:8080->3000/tcp, :::8080->3000/tcp   web-app
 
-# Step 2: Check container logs
+# --------------- Step 2: Check container logs ---------------
 
 bash-5.1$ docker logs web-app
 2026/01/08 08:40:43 [INFO] server is listening on 127.0.0.1:3000
 
-# Step 3: Verify port mapping
+# --------------- Step 3: Verify port mapping ---------------
 
 bash-5.1$ docker port web-app
 3000/tcp -> 0.0.0.0:8080
 3000/tcp -> :::8080
 
-# Step 4: Enter the container and test internally
+# --------------- Step 4: Enter the container and test internally ---------------
 
 bash-5.1$ docker exec -it web-app sh
 OCI runtime exec failed: exec failed: container_linux.go:380: starting container process caused: exec: "sh": executable file not found in $PATH: unknown
@@ -1840,7 +1838,7 @@ curl: (56) Recv failure: Connection reset by peer
 
 # FIX THE ISSUE
 
-# Step 1: Stop and remove the broken container
+# --------------- Step 1: Stop and remove the broken container ---------------
 
 bash-5.1$ docker rm -f web-app
 web-app
@@ -1852,7 +1850,7 @@ bash-5.1$ docker run -d \
   -text="Hello from Docker"
 ed9c7b0db37b771117cf4b147633b42838769ef743432ee4878951d69b348ab6
 
-# Step 2: Verify Fix
+# --------------- Step 2: Verify Fix ---------------
 
 bash-5.1$ curl http://localhost:8080
 Hello from Docker
@@ -1892,7 +1890,7 @@ bash-5.1$
 ```sh
 bash-5.1$ ls
 
-# Create a sample authentication file 
+# --------------- Create a sample authentication file ---------------
 
 bash-5.1$ touch start.sh
 bash-5.1$ vi start.sh
@@ -1901,7 +1899,7 @@ bash-5.1$ cat start.sh
 echo "Auth service started"
 sleep infinity
 
-# Create a Dockerfile for authentication service
+# --------------- Create a Dockerfile for authentication service ---------------
 
 bash-5.1$ sudo vi Dockerfile.auth
 bash-5.1$ ls
@@ -1912,7 +1910,7 @@ WORKDIR /app
 COPY start.sh /app/start.sh
 ENTRYPOINT ["/app/start.sh"]
 
-# Build a Docker image using the Dockerfile.auth
+# --------------- Build a Docker image using the Dockerfile.auth ---------------
 
 bash-5.1$ docker build -t auth-service -f Dockerfile.auth .
 Sending build context to Docker daemon  3.584kB
@@ -1935,7 +1933,7 @@ REPOSITORY     TAG       IMAGE ID       CREATED         SIZE
 auth-service   latest    4213f3e7f96e   6 seconds ago   8.44MB
 alpine         latest    e7b39c54cdec   3 weeks ago     8.44MB
 
-# Run the container using the auth-service image
+# --------------- Run the container using the auth-service image ---------------
 
 bash-5.1$ docker run --name auth auth-service
 docker: Error response from daemon: failed to create shim: OCI runtime create failed: container_linux.go:380: starting container process caused: exec: "/app/start.sh": permission denied: unknown.
@@ -1965,7 +1963,7 @@ bash-5.1$ docker run --name auth auth-service
 docker: Error response from daemon: failed to create shim: OCI runtime create failed: container_linux.go:380: starting container process caused: exec: "/app/start.sh": permission denied: unknown.
 ERRO[0000] error waiting for container: context canceled 
 
-# Issue: File exists but its not executable
+# --------------- Issue: File exists but its not executable ---------------
 
 # Make the file executable
 
@@ -1973,7 +1971,7 @@ bash-5.1$ chmod +x start.sh
 bash-5.1$ ls -l start.sh
 -rwxr-xr-x    1 user     user            54 Jan  8 09:51 start.sh
 
-# Ensures permissions are correct inside the image, even if someone forgets chmod locally.
+# --------------- Ensures permissions are correct inside the image, even if someone forgets chmod locally. ---------------
 
 bash-5.1$ vi Dockerfile.auth 
 bash-5.1$ sudo vi Dockerfile.auth 
@@ -1984,7 +1982,7 @@ COPY start.sh /app/start.sh
 RUN chmod +x /app/start.sh
 ENTRYPOINT ["/app/start.sh"]
 
-# Rebuild the authentication image
+# --------------- Rebuild the authentication image ---------------
 
 bash-5.1$ docker build -t auth-service -f Dockerfile.auth .
 Sending build context to Docker daemon  4.096kB
@@ -2006,7 +2004,7 @@ Removing intermediate container 8f2c82a3d792
 Successfully built 6398ddf88009
 Successfully tagged auth-service:latest
 
-# Start a container and Verify
+# --------------- Start a container and Verify ---------------
 
 bash-5.1$ docker run -d --name auth auth-service
 b72bfd487d66a4b17490247b0bec7d31006ad739dae2ed62a18be3798fd4fbbc
@@ -2015,7 +2013,7 @@ bash-5.1$ docker ps
 CONTAINER ID   IMAGE          COMMAND           CREATED         STATUS         PORTS     NAMES
 b72bfd487d66   auth-service   "/app/start.sh"   9 seconds ago   Up 8 seconds             auth
 
-# Check the logs whether the app is correctly working or not
+# --------------- Check the logs whether the app is correctly working or not ---------------
 
 bash-5.1$ docker logs auth
 Auth service started
@@ -2032,14 +2030,14 @@ bash-5.1$
   - To keep a container running for services, we should replace short-lived commands with a long-running foreground process, such as the actual application process or a placeholder like sleep infinity.
 
 ```sh
-# Create a Dockerfile named report
+# --------------- Create a Dockerfile named report ---------------
 
 bash-5.1$ sudo vi Dockerfile.report
 bash-5.1$ cat Dockerfile.report 
 FROM alpine
 CMD ["echo", "Report service started"]
 
-# Build the image using that Dockerfile
+# --------------- Build the image using that Dockerfile ---------------
 
 bash-5.1$ docker build -t report-service -f Dockerfile.report .
 Sending build context to Docker daemon   5.12kB
@@ -2052,26 +2050,26 @@ Removing intermediate container fa4f95f57d58
 Successfully built 04476b1f81cf
 Successfully tagged report-service:latest
 
-# Run a container for report service
+# --------------- Run a container for report service ---------------
 
 bash-5.1$ docker run --name report report-service
 Report service started
 
-# Verify container status
+# --------------- Verify container status ---------------
 
 bash-5.1$ docker ps -a
 CONTAINER ID   IMAGE            COMMAND                  CREATED          STATUS                      PORTS     NAMES
 88c991ff55c3   report-service   "echo 'Report servic…"   13 seconds ago   Exited (0) 12 seconds ago             report
 b72bfd487d66   auth-service     "/app/start.sh"          24 minutes ago   Up 24 minutes                         auth
 
-# Container exits with Exit status (0)
+# --------------- Container exits with Exit status (0) ---------------
 
-# Check the container logs
+# --------------- Check the container logs ---------------
 
 bash-5.1$ docker logs report
 Report service started
 
-# Inspect the container for the CMD/ENTRYPOINT instructions
+# --------------- Inspect the container for the CMD/ENTRYPOINT instructions ---------------
 
 bash-5.1$ docker inspect report | grep Cmd
             "Cmd": [
@@ -2081,14 +2079,14 @@ bash-5.1$ docker inspect report | grep Cmd
 # > No foreground process → container exited
 
 
-# Fix: Update the Dockerfile with the Real-process that runs without exits
+# --------------- Fix: Update the Dockerfile with the Real-process that runs without exits ---------------
 
 bash-5.1$ sudo vi Dockerfile.report 
 bash-5.1$ cat Dockerfile.report 
 FROM alpine
 CMD ["sleep", "infinity"]
 
-# Rebuild the image for the report service
+# --------------- Rebuild the image for the report service ---------------
 
 bash-5.1$ docker build -t report-service -f Dockerfile.report .
 Sending build context to Docker daemon   5.12kB
@@ -2104,12 +2102,12 @@ Successfully tagged report-service:latest
 bash-5.1$ docker rm report
 report
 
-# Start a new container for the report service
+# --------------- Start a new container for the report service ---------------
 
 bash-5.1$ docker run -d --name report report-service
 2ab4729d0692e76f55c39371098c79ef2e091a6f03733e4c1cad9a8c880a23b6
 
-# Verify the container status
+# --------------- Verify the container status ---------------
 
 bash-5.1$ docker ps 
 CONTAINER ID   IMAGE            COMMAND            CREATED         STATUS         PORTS     NAMES
@@ -2129,7 +2127,7 @@ bash-5.1$
 
 ```sh
 
-# Run a analytics container with memory=20m
+# --------------- Run a analytics container with memory=20m ---------------
 
 bash-5.1$ docker run \
   --name analytics \
@@ -2148,7 +2146,7 @@ a080cbb336ed: Pull complete
 Digest: sha256:bcc149dce8e0b1bf879ad69c253ef39351f1a4b8ced55a5ce594cec159aad65a
 Status: Downloaded newer image for python:3.10
 
-# Check the container status 
+# --------------- Check the container status ---------------
 
 bash-5.1$ docker ps -a
 CONTAINER ID   IMAGE            COMMAND                  CREATED          STATUS                       PORTS     NAMES
@@ -2156,7 +2154,6 @@ d3ea75efef83   python:3.10      "python -c 'a = ' ' …"   8 seconds ago    Exit
 2ab4729d0692   report-service   "sleep infinity"         14 minutes ago   Up 14 minutes                          report
 
 # observation: the container exits with code 137 which means the container is ran out of memory
-
 # For detailed observation, inspect the container for both OOMKilled status and the Memory
 
 bash-5.1$ docker inspect analytics | grep -i oom
@@ -2172,14 +2169,14 @@ bash-5.1$ docker inspect analytics | grep -i Memory
             "MemorySwap": 41943040,
             "MemorySwappiness": null,
 
-# Run interactively to observe
+# --------------- Run interactively to observe ---------------
 
 bash-5.1$ docker run -it --memory=20m python:3.10 sh
 # python -c "a = ' ' * 200_000_000"
 Killed
 # exit
 
-# Remove the exited/failed container
+# --------------- Remove the exited/failed container ---------------
 
 bash-5.1$ docker run --name analytics --memory=200m python:3.10 python -c "a = ' ' * 200_000_000"
 docker: Error response from daemon: Conflict. The container name "/analytics" is already in use by container "d3ea75efef83456d8072d2309d7dbfffd7b4910dfda015581e2054e574db8357". You have to remove (or rename) that container to be able to reuse that name.
@@ -2187,7 +2184,7 @@ See 'docker run --help'.
 bash-5.1$ docker rm analytics
 analytics
 
-# Fix / Avoid OOM by increasing memory for a new analytics container
+# --------------- Fix / Avoid OOM by increasing memory for a new analytics container ---------------
 
 bash-5.1$ docker run --name analytics --memory=200m python:3.10 python -c "a = ' ' * 200_000_000"
 bash-5.1$ docker ps -a
@@ -2196,7 +2193,7 @@ CONTAINER ID   IMAGE            COMMAND                  CREATED          STATUS
 2ab4729d0692   report-service   "sleep infinity"         16 minutes ago   Up 16 minutes                           report
 bash-5.1$ 
 
-# Now the container is not having OOMKilled issue of Memory
+# --------------- Now the container is not having OOMKilled issue of Memory ---------------
 
 ```
 ---
@@ -2213,7 +2210,7 @@ bash-5.1$
 bash-5.1$ mkdir docker-space-lab
 bash-5.1$ cd docker-space-lab
 
-# Create Dockerfiles that generate large images
+# --------------- Create Dockerfiles that generate large images ---------------
 
 bash-5.1$ sudo vi Dockerfile.large1
 bash-5.1$ sudo vi Dockerfile.large2
@@ -2230,7 +2227,7 @@ FROM alpine
 RUN dd if=/dev/zero of=/largefile2 bs=1M count=50
 CMD ["sleep", "infinity"]
 
-# Build multiple images
+# --------------- Build multiple images ---------------
 
 bash-5.1$ docker build -t large-image1 -f Dockerfile.large1 .
 docker build -t large-image2 -f Dockerfile.large2 .
@@ -2273,14 +2270,14 @@ Removing intermediate container f94983e7da7f
 Successfully built 8e3e4332973b
 Successfully tagged large-image2:latest
 
-# Run containers
+# --------------- Run containers ---------------
 
 bash-5.1$ docker run -d --name container1 large-image1
 docker run -d --name container2 large-image2
 28401a841850a63f62e3d46fb6b44ef563719bf0805ececc59b706ebe34cf64b
 684760a84a58d6956b1573d7d240f6a318359a833210555e985ee10e06f028fa
 
-# Check Docker disk usage
+# --------------- Check Docker disk usage ---------------
 
 bash-5.1$ docker system df
 TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
@@ -2300,11 +2297,11 @@ Step 3/3 : CMD ["sleep", "infinity"]
  ---> Using cache
  ---> 75ad6b8fc252
 Successfully built 75ad6b8fc252
-Successfully tagged another-image:latest
+Successfully tagged another-image:latest`
 
-# Simulate disk full error
+# --------------- Simulate disk full error ---------------
 
-# Cleanup Docker resources
+# --------------- Cleanup Docker resources ---------------
 
 bash-5.1$ docker image prune
 WARNING! This will remove all dangling images.
@@ -2331,7 +2328,7 @@ WARNING! This will remove:
 Are you sure you want to continue? [y/N] y
 Total reclaimed space: 0B
 
-# Verify space freed
+# --------------- Verify space freed ---------------
 
 bash-5.1$ docker system df
 TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
@@ -2418,7 +2415,7 @@ To add a manager to this swarm, run 'docker swarm join-token manager' and follow
 bash-5.1$ docker service ls
 ID        NAME      MODE      REPLICAS   IMAGE     PORTS
 
-# Create a docker service with replicas '1'
+# --------------- Create a docker service with replicas '1' ---------------
 
 bash-5.1$ docker service create --name=nginx-cont --replicas 1 nginx
 htelkqempdxr7yaztpo9gktwl
@@ -2431,7 +2428,7 @@ CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS  
 2a3b5b5a4d07   nginx:latest   "/docker-entrypoint.…"   27 seconds ago   Up 26 seconds   80/tcp                                  nginx-cont.1.98p5ptndwrwbn1b8b80ofhgmg
 84c57098d95b   nginx          "/docker-entrypoint.…"   7 minutes ago    Up 7 minutes    0.0.0.0:8080->80/tcp, :::8080->80/tcp   nginx-cont
 
-# Scaling of docker serive of nginx-cont from '1' replica to '3' replicas
+# --------------- Scaling of docker serive of nginx-cont from '1' replica to '3' replicas ---------------
 
 bash-5.1$ docker service scale nginx-cont=3
 nginx-cont scaled to 3
