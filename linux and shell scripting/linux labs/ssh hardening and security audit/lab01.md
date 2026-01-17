@@ -1,4 +1,4 @@
-## 
+## SSH Security: An Audit Perspective
 
 ### Step 1: Seeing the "True" Configuration
 - The /etc/ssh/sshd_config file only shows changes. To see the effective configuration (including all the hidden defaults), we use sshd -T .
