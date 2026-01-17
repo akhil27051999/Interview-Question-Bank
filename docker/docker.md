@@ -82,6 +82,7 @@ CONTAINER ID   IMAGE     COMMAND                  CREATED         STATUS    PORT
 32f3cdffb2a0   nginx     "/docker-entrypoint.…"   3 seconds ago   Created             nginx-cont
 
 # --------------- CONTAINER RUNNING ---------------
+
 # COMMAND: docker start <cont_id/cont_name>
 
 bash-5.1$ docker start nginx-cont
@@ -106,6 +107,7 @@ CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS       
 32f3cdffb2a0   nginx     "/docker-entrypoint.…"   57 seconds ago   Up 39 seconds   80/tcp    nginx-cont
 
 # --------------- CONTAINER STOP ---------------
+
 # COMMAND: docker stop <cont-name> / docker kill <cont-name>
 
 bash-5.1$ docker stop nginx-cont
@@ -531,6 +533,7 @@ bash-5.1$ docker run -d --name mysql-lab3 -v mydbdata:/var/lib/mysql mysql:8
 # Both containers see the same data.
 
 # --------------- Step 7: Test backup & restore ---------------
+
 bash-5.1$ docker run --rm -v mydbdata:/data busybox tar cvf /backup.tar /data
 ```
 ---
@@ -1763,12 +1766,14 @@ Importance: Discover and remediate vulnerabilities before deploying images to pr
   - After changing the bind address to 0.0.0.0, external access worked.**
 
 ```sh
-# Problem : Container is RUNNING but Application is NOT Accessible
+
+# --------------- Problem : Container is RUNNING but Application is NOT Accessible ---------------
 
 bash-5.1$ docker ps
 CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 
 # --------------- Run the container with a hidden mistake ---------------
+
 bash-5.1$ docker run -d \
   --name web-app \
   -p 8080:3000 \
