@@ -10,6 +10,10 @@
 
 ### Step 1: Check Disk Usage
 
+  - Which filesystem is full?
+  - What percentage of space is used?
+  - Do you see / or /var/log close to 100%?
+
 ```sh
 ubuntu:~$ df -h
 Filesystem      Size  Used Avail Use% Mounted on
@@ -19,7 +23,9 @@ tmpfs           952M   84K  952M   1% /dev/shm
 tmpfs           5.0M     0  5.0M   0% /run/lock
 /dev/vda16      881M  117M  703M  15% /boot
 /dev/vda15      105M  6.2M   99M   6% /boot/efi
-
+```
+### Step 2: Identify Large Log Files
+```
 ubuntu:~$ du -sh /var/log/* | sort -h
 0       /var/log/README
 0       /var/log/alternatives.log
@@ -50,21 +56,33 @@ ubuntu:~$ du -sh /var/log/* | sort -h
 144K    /var/log/syslog
 256K    /var/log/dpkg.log.1
 392K    /var/log/syslog.1
-9.8M    /var/log/biglog.log.1.gz
 18M     /var/log/journal
 11G     /var/log/biglog.log
+```
 
+### Step 3: Free Disk Space
+
+**To free up space by truncating or archiving the big log file.**
+
+1. Option A – truncate (clears content but keeps file):
+
+```sh
+ > /var/log/biglog.log
+ ```
+
+2. Option B – compress old logs (saves space but keeps history):
+```sh
+gzip /var/log/biglog.log.1
+```
+
+3. Verify space is freed:
+```
+df -h
+```
+
+```sh
 ubuntu:~$ gzip /var/log/biglog.log.1 &
 [1] 1750
-
-ubuntu:~$ df -h
-Filesystem      Size  Used Avail Use% Mounted on
-tmpfs           191M  984K  190M   1% /run
-/dev/vda1        19G   16G  3.2G  83% /
-tmpfs           952M   84K  952M   1% /dev/shm
-tmpfs           5.0M     0  5.0M   0% /run/lock
-/dev/vda16      881M  117M  703M  15% /boot
-/dev/vda15      105M  6.2M   99M   6% /boot/efi
 
 ubuntu:~$ du -sh /var/log/* | sort -h
 0       /var/log/README
@@ -108,7 +126,35 @@ tmpfs           952M   84K  952M   1% /dev/shm
 tmpfs           5.0M     0  5.0M   0% /run/lock
 /dev/vda16      881M  117M  703M  15% /boot
 /dev/vda15      105M  6.2M   99M   6% /boot/efi
+```
+### Step 4: Configure Log Rotation
 
+**To prevent logs from filling the disk again, configure logrotate .**
+
+1. Check existing config:
+```sh
+cat /etc/logrotate.conf
+```
+
+2. Now create a new config for biglog.log:
+```sh
+sudo nano /etc/logrotate.d/biglog
+```
+
+3. Add:
+```sh
+/var/log/biglog.log {
+    daily
+    rotate 7
+    copytruncate
+    compress
+    missingok
+    notifempty
+}
+```
+> This should keep logs small and automatically rotated every week.
+
+```sh
 ubuntu:~$ cat /etc/logrotate.conf
 # see "man logrotate" for details
 
