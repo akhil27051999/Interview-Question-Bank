@@ -14,6 +14,8 @@
 ### 1. What is Docker and how does it differ from traditional virtualization?
 **Answer**
 
+<img width="1440" height="820" alt="image" src="https://github.com/user-attachments/assets/5f46af2a-f442-4629-8b9d-12ed372508fd" />
+
 Docker is a platform for developing, shipping, and running applications in containers.
 
 Key Differences:
@@ -26,6 +28,7 @@ Key Differences:
 
 ### 2. Explain Docker architecture and its main components.
 **Answer**
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/e142f46d-1389-4964-bd5c-f5d010293b8e" />
 
 - **Docker Daemon:** Background service that manages containers, images, networks, volumes.  
 - **Docker Client:** CLI (`docker`) used to interact with the daemon (e.g., `docker run`, `docker build`).  
