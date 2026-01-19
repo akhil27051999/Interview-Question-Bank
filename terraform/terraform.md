@@ -13,6 +13,7 @@
 # Category 1: Terraform Fundamentals
 
 ## Q1 — What is Terraform and How Does It Differ from Ansible
+
 **Terraform**
 - Terraform is an Infrastructure as Code (IaC) tool used to provision, manage, and version infrastructure declaratively.
 - It ensures desired state is maintained by tracking infrastructure via a state file.
@@ -194,7 +195,6 @@ resource "aws_instance" "web" {
 ---
 
 ## Q4 — Explain Terraform Core Concepts: Providers, Resources, Data Sources
-Interview Answer
 
 Providers are plugins that allow Terraform to interact with external services like AWS, Azure, or GCP.
 Resources define infrastructure components that Terraform creates and manages.
@@ -245,24 +245,75 @@ Providers connect Terraform to cloud services, resources create and manage infra
 
 # Category 2: Configuration & Modules
 
-### Q5 — What are Terraform variables and how are they used?
-**Answer**
+## Q5 — Terraform Variables and How They Are Used
 
-Variables parameterize Terraform configurations.
+- Terraform variables allow you to parameterize your infrastructure, making it reusable, flexible, and environment-independent.
+- Variables can store values like instance types, AMIs, regions, or tags, instead of hardcoding them in .tf files.
 
-Types:
-- **Input variables**: Accept values from users/environment.  
-- **Output values**: Return information about created infra.  
-- **Local values**: Assign names to expressions for reuse.
+#### Types of Variables
+  1. String – Single value
+  2. Number – Numeric value
+  3. Boolean – True/False
+  4. List / Map – Multiple values for looping or mapping
 
-Example:
+#### How They Are Used
+
+**1. Define a variable (variables.tf):**
+
 ```hcl
 variable "instance_type" {
-  type    = string
-  default = "t3.micro"
+  description = "EC2 instance type"
+  default     = "t3.micro"
+}
+
+```
+
+#### 2. Use the variable (main.tf):
+
+```sh
+resource "aws_instance" "web" {
+  ami           = "ami-abc123"
+  instance_type = var.instance_type
+}
+```
+#### 3.Set variable values
+
+ - CLI: terraform apply -var="instance_type=t3.small"
+ - TFVARS file: terraform.tfvars
+
+```hcl
+instance_type = "t3.small"
+```
+
+### Example
+- `Scenario`: Deploy multiple environments (dev, prod) with different instance types.
+```hcl
+# variables.tf
+variable "env" {
+  description = "Deployment environment"
+}
+
+variable "instance_type" {
+  description = "EC2 instance type"
+  default     = "t3.micro"
+}
+
+# main.tf
+resource "aws_instance" "web" {
+  ami           = "ami-abc123"
+  instance_type = var.instance_type
+  tags = {
+    Environment = var.env
+  }
 }
 ```
 
+- For dev: `terraform apply -var="env=dev" -var="instance_type=t3.micro"`
+- For prod: `terraform apply -var="env=prod" -var="instance_type=t3.small"`
+
+### One-Line Summary
+
+Terraform variables make your code dynamic and reusable, allowing SREs to manage multiple environments safely without changing the core configuration.
 ---
 
 ### Q6 — What is the difference between `terraform plan` and `terraform apply`?
