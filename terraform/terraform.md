@@ -158,7 +158,7 @@ terraform plan
 
 #### One-Line Summary
 
-**Terraform workflow allows SREs to manage infrastructure changes safely by defining infrastructure as code, reviewing changes through plans, and applying them in a controlled and automated manner.**
+Terraform workflow allows SREs to manage infrastructure changes safely by defining infrastructure as code, reviewing changes through plans, and applying them in a controlled and automated manner.
 
 ---
 
