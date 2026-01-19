@@ -319,55 +319,156 @@ Terraform variables make your code dynamic and reusable, allowing SREs to manage
 
 ---
 
-### Q6 — What is the difference between `terraform plan` and `terraform apply`?
-**Answer**
+## Q6 — Difference Between terraform plan and terraform apply
 
-- `terraform plan`: Shows what changes will be made (dry-run).  
-- `terraform apply`: Implements the changes.  
+- terraform plan shows a preview of changes Terraform will make without actually modifying infrastructure.
 
-Best practice: Run `plan` first to review changes before applying.
+- terraform apply executes those changes and updates real infrastructure and the state file.
 
----
+| Aspect       | terraform plan    | terraform apply    |
+| ------------ | ----------------- | ------------------ |
+| Action       | Preview only      | Makes real changes |
+| Infra Change |  No               |  Yes               |
+| State Update |  No               |  Yes               |
+| Use Case     | Review & approval | Deploy changes     |
 
-### Q7 — How do you manage Terraform state in a team environment?
-**Answer**
+### Example
 
-- Use remote state backends (S3, Azure Blob, GCS).  
-- Enable state locking (DynamoDB for S3 backend, Azure Table, etc.).  
-- Use workspaces or separate states per environment.  
-- Apply access controls on state storage.  
-- Back up state files regularly.
+**Change EC2 instance type in code:**
+```hcl
+instance_type = "t3.small"
+```
+```hcl
+terraform plan
+```
 
----
+- Shows: `~ update aws_instance.web`
+```hcl
+terraform apply
+```
+- Updates EC2 instance
+- Updates Terraform state
 
-### Q8 — What are Terraform modules and why use them?
-**Answer**
+**One-Line Summary**
 
-Modules are containers for multiple resources used together.
-
-Benefits:
-- Reusability across projects.  
-- Encapsulation and abstraction of infrastructure patterns.  
-- Easier organization of complex infra.  
-- Versioning and sharing (private/public registries).
-
----
-
-## Category 3: Advanced Features
-
-### Q9 — What are Terraform workspaces and when to use them?
-**Answer**
-
-Workspaces allow multiple distinct states from the same configuration.
-
-Use cases:
-- Environment separation (dev/stage/prod).  
-- Isolating feature-branch deployments.  
-- Managing multiple regions with the same code.
+terraform plan helps review and prevent risky changes, while terraform apply safely executes approved infrastructure changes.
 
 ---
 
-### Q10 — Explain Terraform provisioners and their types.
+## Q7 — How Do You Manage Terraform State in a Team Environment?
+
+In a team environment, Terraform state is managed using a remote backend with state locking and access control to avoid conflicts and ensure consistency.
+
+**Key Practices**
+
+- Remote State – Store state in S3 / GCS / Terraform Cloud
+- State Locking – Prevents simultaneous updates (e.g., DynamoDB)
+- Access Control – Restrict state access using IAM roles
+- Versioning & Backups – Enables recovery from state corruption
+- CI/CD Pipelines – Run Terraform via pipelines, not local machines
+
+### Example (AWS)
+
+```hcl
+terraform {
+  backend "s3" {
+    bucket         = "terraform-state-prod"
+    key            = "app/terraform.tfstate"
+    region         = "ap-south-1"
+    dynamodb_table = "terraform-locks"
+    encrypt        = true
+  }
+}
+```
+
+#### This setup:
+
+- Stores state centrally
+- Locks state during apply
+- Allows safe collaboration
+
+**One-Line Summary**
+
+Terraform state in teams is managed using remote backends with locking, access control, and CI/CD to ensure safe and consistent infrastructure changes.
+
+---
+
+## Q8 — What Are Terraform Modules and Why Use Them?
+
+- Terraform modules are reusable, self-contained collections of Terraform files that define a set of related resources.
+- They help teams avoid duplication, standardize infrastructure, and manage complex setups easily.
+
+**Why Use Modules ?**
+
+- Reusability across environments (dev, prod)
+- Cleaner and more maintainable code
+- Standardized best practices
+- Easier scaling and updates
+
+### Example
+
+**Create a module (modules/ec2/main.tf):**
+
+```hcl
+resource "aws_instance" "this" {
+  ami           = var.ami
+  instance_type = var.instance_type
+}
+```
+
+**Use the module (main.tf):**
+```hcl
+module "web_ec2" {
+  source        = "./modules/ec2"
+  ami           = "ami-abc123"
+  instance_type = "t3.micro"
+}
+```
+
+- Same module can be reused for dev, staging, prod with different values.
+
+**One-Line Summary**
+
+Terraform modules allow teams to build reusable, standardized infrastructure components, improving maintainability and consistency.
+
+---
+# Category 3: Advanced Features
+
+## Q9 — What Are Terraform Workspaces and When to Use Them?
+
+Terraform workspaces allow you to manage multiple state files using the same Terraform configuration.
+Each workspace represents a separate environment with its own state.
+
+**When to Use Workspaces**
+- Managing multiple environments (dev, staging, prod) with the same code
+- Isolating state without duplicating Terraform configs
+- Simple environment separation
+
+Not recommended for large or highly critical prod environments (better use separate backends).
+
+### Example
+
+**Create and switch workspaces:**
+```hcl
+terraform workspace new dev
+terraform workspace new prod
+terraform workspace select dev
+```
+
+**Use workspace in code:**
+```hcl
+resource "aws_instance" "web" {
+  instance_type = terraform.workspace == "prod" ? "t3.small" : "t3.micro"
+}
+```
+- Each workspace has its own state file, but uses the same configuration.
+
+**One-Line Summary**
+
+Terraform workspaces let you reuse the same code for multiple environments by keeping separate state files.
+---
+
+## Q10 — Explain Terraform provisioners and their types.
 **Answer**
 
 Provisioners execute scripts or actions on resource creation/destruction.
