@@ -9,55 +9,243 @@
 - [Category 6: Advanced Scenarios](#category-6-advanced-scenarios)
 - [Category 7: Real-world Implementation](#category-7-real-world-implementation)
 
+
+# Category 1: Terraform Fundamentals
+
+## Q1 — What is Terraform and How Does It Differ from Ansible
+**Terraform**
+- Terraform is an Infrastructure as Code (IaC) tool used to provision, manage, and version infrastructure declaratively.
+- It ensures desired state is maintained by tracking infrastructure via a state file.
+- Works with cloud providers like AWS, Azure, GCP, and on-prem.
+
+**Ansible**
+- Ansible is a configuration management and automation tool.
+- Focuses on configuring software, installing packages, and managing servers.
+- Uses imperative/playbook-based approach, executes tasks in order.
+
+| Feature          | Terraform                     | Ansible                              |
+| ---------------- | ----------------------------- | ------------------------------------ |
+| Purpose          | Provision infrastructure      | Configure and manage software        |
+| Approach         | Declarative (state-based)     | Imperative (task-based)              |
+| State Management | Maintains state file          | No persistent state (optional facts) |
+| Idempotency      | Built-in via state comparison | Achieved via playbook design         |
+| Example Use Case | Create VPC, EC2, S3           | Install Nginx, update configs        |
+
+### Example
+
+**Terraform: Create an EC2 instance**
+
+```hcl
+resource "aws_instance" "web" {
+  ami           = "ami-abc123"
+  instance_type = "t3.micro"
+}
+```
+
+**Ansible: Install Nginx on EC2**
+```yaml
+- name: Install Nginx
+  hosts: web
+  tasks:
+    - name: Install nginx
+      apt:
+        name: nginx
+        state: present
+```
+
+#### One-Line Summary:
+- Terraform provisions infrastructure declaratively, while Ansible configures and manages it imperatively.
+
 ---
 
-## Category 1: Terraform Fundamentals
+## Q2 — Explain Terraform Workflow
 
-### Q1 — What is Terraform and how does it differ from Ansible?
-**Answer**
+- Terraform workflow is a structured process to safely provision and manage infrastructure as code using a declarative approach.
+- In an SRE model, the workflow emphasizes change safety, reviewability, state management, and automation to ensure infrastructure reliability.
 
-Terraform is an Infrastructure as Code (IaC) tool for building, changing, and versioning infrastructure safely and efficiently.
+**The workflow consists of these main steps:**
+  - `Write` – Define infrastructure in Terraform configuration files (.tf) using HCL.
+  - `Init` – Initialize Terraform to download providers, modules, and configure backend state.
+  - `Validate & Format` – Ensure syntax correctness and enforce coding standards.
+  - `Plan` – Generate an execution plan to preview infrastructure changes before applying them.
+  - `Apply` – Provision or update infrastructure based on the approved plan.
+  - `State Management` – Track real infrastructure using a state file, typically stored remotely.
+  - `Drift Detection` – Regularly run terraform plan to detect manual or unintended changes.
 
-Differences:
-- **Terraform**: Declarative, focuses on infrastructure provisioning, state management.  
-- **Ansible**: Procedural, focuses on configuration management, agentless.
+ This workflow ensures predictable, auditable, and reversible infrastructure changes, which aligns with SRE principles.
+
+### Example
+
+**Step 1️: Write Infrastructure Code**
+
+```hcl
+provider "aws" {
+  region = "ap-south-1"
+}
+
+resource "aws_instance" "web" {
+  ami           = "ami-0abcdef12345"
+  instance_type = "t3.micro"
+
+  tags = {
+    Name = "terraform-web"
+  }
+}
+```
+- Infrastructure is now defined as code.
+
+**Step 2: Initialize Terraform**
+```hcl
+terraform init
+```
+
+- Downloads AWS provider
+- Configures backend
+- Prepares the working directory
+
+**Step 3: Validate Configuration**
+```hcl
+terraform validate
+terraform fmt
+```
+- Ensures correct syntax
+- Applies standard formatting
+
+**Step 4: Plan the Changes**
+```hcl
+terraform plan
+```
+
+**Output shows:**
+- `+ create aws_instance.web`
+- No resources destroyed
+- This step is critical in production to review impact before deployment.
+
+**Step 5: Apply the Plan**
+```hcl
+terraform apply
+```
+
+- Creates EC2 instance
+- Updates Terraform state
+
+**Step 6: Modify Infrastructure (Real-World Change)**
+
+**Change instance type:**
+```hcl
+instance_type = "t3.small"
+```
+
+**Run:**
+```hcl
+terraform plan
+terraform apply
+```
+
+- Terraform updates only what changed
+- No unnecessary resource recreation
+
+**Step 7: Drift Detection Example**
+
+- If someone manually stops or changes the EC2 instance in AWS Console:
+```hcl
+terraform plan
+```
+
+- Terraform detects drift
+- Shows differences from declared state
+
+#### One-Line Summary
+
+**Terraform workflow allows SREs to manage infrastructure changes safely by defining infrastructure as code, reviewing changes through plans, and applying them in a controlled and automated manner.**
 
 ---
 
-### Q2 — Explain Terraform workflow.
-**Answer**
+## Q3 — What is Terraform State and Why Is It Important?
 
-Typical workflow:
-1. **Write**: Define resources in `.tf` files.  
-2. **Plan**: `terraform plan` to preview changes.  
-3. **Apply**: `terraform apply` to create/update resources.  
-4. **Destroy**: `terraform destroy` to remove resources.
+- Terraform state is a file that stores the mapping between Terraform configuration and real-world infrastructure resources.
+- It allows Terraform to understand what resources already exist, their current attributes, and what changes are required to reach the desired state.
+- Terraform state is critical because it enables safe infrastructure changes, drift detection, consistency, and automation.
+
+### Example
+
+**You create an EC2 instance using Terraform.**
+```hcl
+resource "aws_instance" "web" {
+  ami           = "ami-xyz"
+  instance_type = "t3.micro"
+}
+```
+- After `terraform apply`:
+  - Terraform stores the EC2 instance ID in the state file
+
+- If you later change:
+
+  ```hcl 
+  instance_type = "t3.small"
+  ```
+
+**Terraform:**
+- Checks state
+- Identifies the same instance
+- Updates only the instance type
+
+**Note:** 
+- Without state, Terraform wouldn’t know which EC2 instance to modify.
 
 ---
 
-### Q3 — What is Terraform state and why is it important?
-**Answer**
+## Q4 — Explain Terraform Core Concepts: Providers, Resources, Data Sources
+Interview Answer
 
-The state file (`terraform.tfstate`) tracks resource metadata and relationships.
+Providers are plugins that allow Terraform to interact with external services like AWS, Azure, or GCP.
+Resources define infrastructure components that Terraform creates and manages.
+Data Sources are used to fetch existing infrastructure information without creating anything.
 
-Importance:
-- Maps real-world resources to configuration.  
-- Tracks resource dependencies.  
-- Stores resource attributes for performance.  
-- Enables collaboration when stored remotely.
+### Example
+
+#### Provider (Connect to AWS)
+
+```hcl
+provider "aws" {
+  region = "ap-south-1"
+}
+```
+- Tells Terraform which cloud and region to use.
+
+#### Resource (Create Infrastructure)
+
+```hcl
+resource "aws_instance" "web" {
+  ami           = "ami-abc123"
+  instance_type = "t3.micro"
+}
+```
+- Terraform creates and manages this EC2 instance.
+
+#### Data Source (Read Existing Infrastructure)
+```hcl
+data "aws_ami" "latest_amazon_linux" {
+  most_recent = true
+  owners      = ["amazon"]
+}
+````
+```hcl
+resource "aws_instance" "web" {
+  ami           = data.aws_ami.latest_amazon_linux.id
+  instance_type = "t3.micro"
+}
+```
+
+- Terraform reads existing AMI info and uses it, without creating a new AMI.
+
+**One-Line Summary**
+
+Providers connect Terraform to cloud services, resources create and manage infrastructure, and data sources read existing infrastructure details.
 
 ---
 
-### Q4 — Explain Terraform core concepts: Providers, Resources, Data Sources.
-**Answer**
-
-- **Providers**: Plugins that interact with APIs (AWS, Azure, GCP).  
-- **Resources**: Infrastructure components to manage (e.g., `aws_instance`, `aws_s3_bucket`).  
-- **Data Sources**: Read-only lookups for existing infrastructure data.
-
----
-
-## Category 2: Configuration & Modules
+# Category 2: Configuration & Modules
 
 ### Q5 — What are Terraform variables and how are they used?
 **Answer**
