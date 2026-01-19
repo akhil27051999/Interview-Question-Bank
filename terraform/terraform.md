@@ -160,6 +160,8 @@ terraform plan
 
 **Terraform workflow allows SREs to manage infrastructure changes safely by defining infrastructure as code, reviewing changes through plans, and applying them in a controlled and automated manner.**
 
+---
+
 ## Q3 — What is Terraform State and Why Is It Important?
 
 - Terraform state is a file that stores the mapping between Terraform configuration and real-world infrastructure resources.
@@ -314,6 +316,7 @@ resource "aws_instance" "web" {
 ### One-Line Summary
 
 Terraform variables make your code dynamic and reusable, allowing SREs to manage multiple environments safely without changing the core configuration.
+
 ---
 
 ### Q6 — What is the difference between `terraform plan` and `terraform apply`?
