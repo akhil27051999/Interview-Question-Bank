@@ -466,6 +466,7 @@ resource "aws_instance" "web" {
 **One-Line Summary**
 
 Terraform workspaces let you reuse the same code for multiple environments by keeping separate state files.
+
 ---
 
 ## Q10 — Explain Terraform provisioners and their types.
