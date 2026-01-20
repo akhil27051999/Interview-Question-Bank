@@ -955,162 +955,443 @@ Terraform manages dependencies automatically via references and the dependency g
 
 ---
 
-## Category 6: Advanced Scenarios
+# Category 6: Advanced Scenarios
 
-### Q21 — What are Terraform data sources and when to use them?
-**Answer**
 
-Data sources read information from providers without managing creation.
+## Q21 — What Are Terraform Data Sources and When to Use Them?
 
-Use cases:
-- Lookup latest AMI IDs.  
-- Get existing VPC/subnet IDs.  
-- Fetch list of existing resources for referencing in new infra.
+Terraform data sources allow you to fetch or read existing infrastructure information without creating new resources.
+They are used when you need to reference existing resources in your configuration safely.
 
-Example:
+**When to Use Data Sources**
+- To get details of existing resources (e.g., AMIs, subnets, VPCs)
+- To avoid hardcoding values
+- To ensure dynamic and environment-agnostic configurations
+
+#### Example
+
+**Fetch the latest Amazon Linux AMI for an EC2 instance:**
 ```hcl
-data "aws_ami" "ubuntu" {
+data "aws_ami" "latest_amazon_linux" {
   most_recent = true
-  filter { name = "name"  value = ["ubuntu/images/*"] }
-  owners = ["099720109477"]
+  owners      = ["amazon"]
 }
+
+resource "aws_instance" "web" {
+  ami           = data.aws_ami.latest_amazon_linux.id
+  instance_type = "t3.micro"
+}
+
 ```
 
----
+- Terraform reads the existing AMI ID and provisions EC2 using it, without creating a new AMI.
 
-### Q22 — How do you handle multiple environments in Terraform?
-**Answer**
+**One-Line Summary**
 
-Approaches:
-- **Workspaces**: Same code, separate states.  
-- **Directory per environment**: Separate configs per env.  
-- **Terragrunt**: Wrapper tool to DRY common config and manage env overlays.  
-- **Git branches**: Branch-per-environment pattern (less recommended for state management).
-
-Choose based on complexity, team size, and lifecycle requirements.
+Data sources let Terraform read existing infrastructure attributes to make configurations dynamic and avoid hardcoding.
 
 ---
 
-### Q23 — What is `terraform taint` and `terraform untaint`?
-**Answer**
+## Q22 — How Do You Handle Multiple Environments in Terraform?
 
-- `terraform taint <resource>`: Marks a resource for recreation on next `apply`.  
-- `terraform untaint <resource>`: Removes the taint mark.  
+Multiple environments (dev, staging, prod) in Terraform are handled using workspaces, folder-based separation, and parameterized variables. This ensures isolation, reusability, and safe deployments.
 
-Use case: Force recreation of a problematic resource.
+### Common Approaches
+
+#### 1. Workspaces
+
+Each workspace has a separate state file using the same code.
+```hcl
+terraform workspace new dev
+terraform workspace new prod
+terraform workspace select dev
+```
+
+#### 2. Folder-Based Environment Structure
+```txt
+environments/
+  dev/
+    main.tf
+    terraform.tfvars
+  prod/
+    main.tf
+    terraform.tfvars
+modules/
+  vpc/
+  ec2/
+```
+#### 3. Variable Files (TFVARS)
+- Environment-specific variables passed at apply:
+```hcl
+terraform apply -var-file="environments/dev/terraform.tfvars"
+```
+
+#### 4.Parameterized Modules
+- Reuse same modules with different inputs per environment.
+
+#### Example
+```hcl
+# environments/prod/terraform.tfvars
+instance_type = "t3.large"
+vpc_id        = "vpc-abc123"
+
+# environments/dev/terraform.tfvars
+instance_type = "t3.micro"
+vpc_id        = "vpc-def456"
+```
+```sh
+terraform apply -var-file="environments/dev/terraform.tfvars"
+```
+- Dev and prod use the same code but isolated infrastructure and state.
+
+### One-Line Summary
+
+Multiple environments in Terraform are handled via workspaces, folder separation, and parameterized variables to isolate and safely manage infrastructure per environment.
 
 ---
 
-### Q24 — How do you manage Terraform provider versions?
-**Answer**
+## Q23 — What Are terraform taint and terraform untaint?
+- `terraform taint` marks a resource as damaged or needing replacement. Terraform will destroy and recreate it on the next apply.
+- `terraform untaint` removes the tainted status so Terraform will not recreate the resource.
 
-Specify provider requirements in configuration:
+### Example
+
+#### 1. Taint a Resource
+- Suppose an EC2 instance is misconfigured:
+```hcl
+terraform taint aws_instance.web
+```
+- Next `terraform apply` will recreate this EC2 instance.
+
+#### 2. Undo Taint
+- If the resource is fine:
+```hcl
+terraform untaint aws_instance.web
+```
+
+- Terraform will keep the existing resource unchanged on the next apply.
+
+### One-Line Summary
+
+terraform taint forces a resource to be replaced, and terraform untaint reverses that action to preserve the resource.
+
+---
+
+## Q24 — How Do You Manage Terraform Provider Versions?
+
+Terraform provider versions are managed using the required_providers block and version constraints to ensure reproducible and stable infrastructure across environments.
+Locking provider versions prevents breaking changes when the provider updates.
+
+### Best Practices
+
+#### 1. Specify Provider Version
 ```hcl
 terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.0"
+      version = "~> 5.0"
+    }
+  }
+  required_version = ">= 1.5.0"
+}
+```
+
+#### 2. Use Version Constraints
+
+- `=` exact version
+- `~>` compatible version (patch updates allowed)
+- `>=` minimum version
+
+#### 3. Check Provider Lock File
+- Terraform generates .terraform.lock.hcl to pin versions used by your project
+- Commit the lock file for team consistency
+
+#### 4. Update Carefully
+```hcl
+terraform init -upgrade
+```
+- Only update when tested to avoid breaking infrastructure
+
+### Example
+
+**Team project uses AWS provider:**
+```hcl
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
     }
   }
 }
 ```
-Pin versions to avoid unexpected provider upgrades.
+- .terraform.lock.hcl ensures all team members use AWS provider v5.x, avoiding drift or incompatibility.
+
+### One-Line Summary
+
+Terraform provider versions are managed with required_providers and lock files to ensure stable, reproducible, and team-safe infrastructure deployments.
 
 ---
 
-### Q25 — What is Terraform state locking and why is it crucial?
-**Answer**
+## Q25 — What Is Terraform State Locking and Why Is It Crucial?
 
-State locking prevents concurrent `apply` operations that would corrupt or conflict state.
+- Terraform state locking prevents simultaneous modifications to the state file by multiple users or CI/CD pipelines.
+- It is crucial to avoid race conditions, corrupted state, and accidental resource destruction in team environments.
 
-Why it matters:
-- Prevents state corruption and resource conflicts.  
-- Ensures safe team collaboration and CI runs.  
-- Backends like S3 support locking via DynamoDB; other backends have native locking.
+### How It Works
+- Remote backends like S3 + DynamoDB, Terraform Cloud, or GCS support locking.
+- When a user runs terraform apply, Terraform acquires a lock on the state.
+- Other users or processes cannot apply changes until the lock is released.
 
----
-
-## Category 7: Real-world Implementation
-
-### Q26 — How do you implement CI/CD with Terraform?
-**Answer**
-
-Typical flow:
-1. Store Terraform code in VCS (Git).  
-2. Use CI to run `terraform fmt`, `terraform validate`, and `terraform plan`.  
-3. Save plan artifacts and require approvals for production.  
-4. Use remote state with locking.  
-5. Apply in CI/CD using service principals/managed identities with least privilege.  
-6. Integrate policy checks (Sentinel/OPA) and automated testing for infra.
-
----
-
-### Q27 — What are Terraform dynamic blocks?
-**Answer**
-
-Dynamic blocks generate nested multiple blocks programmatically.
-
-Example:
+### Example (AWS S3 + DynamoDB)
 ```hcl
-dynamic "security_group_rule" {
-  for_each = var.rules
-  content {
-    type        = security_group_rule.value.type
-    from_port   = security_group_rule.value.from_port
-    to_port     = security_group_rule.value.to_port
-    protocol    = security_group_rule.value.protocol
-    cidr_blocks = security_group_rule.value.cidr_blocks
+terraform {
+  backend "s3" {
+    bucket         = "terraform-state-prod"
+    key            = "app/terraform.tfstate"
+    region         = "ap-south-1"
+    dynamodb_table = "terraform-locks"
+    encrypt        = true
+  }
+}
+```
+- DynamoDB table manages state locks
+- Prevents multiple pipelines from applying changes at the same time
+
+### One-Line Summary
+
+Terraform state locking ensures safe, concurrent team operations by preventing simultaneous modifications to the infrastructure state.
+
+
+# Category 7: Real-world Implementation
+
+## Q26 — How Do You Implement CI/CD with Terraform?
+
+CI/CD with Terraform automates infrastructure provisioning, review, and deployment, ensuring repeatable, safe, and auditable changes.
+
+### Key Steps
+#### 1. Store Terraform Code in VCS
+  - GitHub, GitLab, Bitbucket, etc.
+  - Enables version control and peer review
+#### 2. Plan Stage (CI)
+  - Triggered on pull requests or branch changes
+  - Runs:
+  ```hcl
+  terraform init
+  terraform validate
+  terraform plan -out=tfplan
+  ```
+  - Plan is reviewed before applying
+
+#### 3. Apply Stage (CD)
+  - Triggered after approval or merge to main/prod
+  - Runs:
+  ```hcl
+  terraform apply tfplan
+  ```
+  - Updates infrastructure safely and updates remote state
+
+#### 4. Use Remote Backends and State Locking
+  - Ensure safe concurrent operations
+
+#### 5. Environment Isolation
+  - Use workspaces or folder separation for dev/staging/prod
+
+### Example
+
+**GitHub Actions Pipeline:**
+```yaml
+name: Terraform CI/CD
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+      - run: terraform init
+      - run: terraform validate
+      - run: terraform plan -out=tfplan
+
+  apply:
+    needs: plan
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v3
+      - run: terraform apply -auto-approve tfplan
+```
+- Automates plan and apply, keeps state consistent, and enforces approvals.
+
+### One-Line Summary
+
+CI/CD with Terraform automates plan, review, and apply using version control, pipelines, and remote state to ensure safe, repeatable infrastructure changes.
+
+---
+
+## Q27 — What Are Terraform Dynamic Blocks?
+
+- Terraform dynamic blocks allow you to generate multiple nested blocks programmatically based on variables, lists, or maps.
+- They are useful when the number of sub-blocks or their values are not known in advance.
+
+### Key Points
+- Helps avoid repetitive code
+- Works with resource arguments that accept multiple nested blocks
+- Often used with for_each or count inside the dynamic block
+
+### Example
+- Suppose you want to attach multiple security group rules dynamically:
+```hcl
+variable "sg_rules" {
+  type = list(object({
+    type        = string
+    from_port   = number
+    to_port     = number
+    cidr_blocks = list(string)
+  }))
+}
+
+resource "aws_security_group" "web_sg" {
+  name = "web-sg"
+
+  dynamic "ingress" {
+    for_each = var.sg_rules
+    content {
+      from_port   = ingress.value.from_port
+      to_port     = ingress.value.to_port
+      protocol    = ingress.value.type
+      cidr_blocks = ingress.value.cidr_blocks
+    }
   }
 }
 ```
 
-Use dynamic blocks for variable-length nested blocks (security rules, tags, etc.).
+- `var.sg_rules` can have any number of rules
+- Terraform generates a corresponding ingress block for each rule
+
+### One-Line Summary
+
+Terraform dynamic blocks let you programmatically create nested blocks based on variables, reducing repetitive code and improving flexibility.
 
 ---
 
-### Q28 — How do you handle conditional resource creation?
-**Answer**
+## Q28 — How Do You Handle Conditional Resource Creation?
 
-Use `count` or `for_each` with conditional expressions.
+- In Terraform, conditional resource creation is handled using the count or for_each argument with a conditional expression.
+- This allows resources to be created only when certain conditions are met, making infrastructure flexible and environment-specific.
 
-Example:
+### Approaches
+
+#### 1. Using `count`
 ```hcl
-resource "aws_instance" "example" {
-  count = var.create_instance ? 1 : 0
-  ami           = var.ami
-  instance_type = var.instance_type
+resource "aws_instance" "web" {
+  count         = var.create_instance ? 1 : 0
+  ami           = "ami-abc123"
+  instance_type = "t3.micro"
 }
 ```
+- If var.create_instance is false, no EC2 instance is created.
 
-This avoids creating resources when not required.
-
----
-
-### Q29 — What is `terraform graph` and how is it useful?
-**Answer**
-
-`terraform graph` outputs the dependency graph in DOT format.
-
-Use cases:
-- Visualize resource dependencies.  
-- Troubleshoot complex creation/destruction order.  
-- Document infra relationships.
-
-Example:
-```bash
-terraform graph | dot -Tpng > graph.png
+#### 2. Using `for_each`
+```hcl
+resource "aws_security_group_rule" "allow_ports" {
+  for_each = var.open_ports_enabled ? toset(var.ports) : {}
+  type        = "ingress"
+  from_port   = each.value
+  to_port     = each.value
+  protocol    = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+}
 ```
+- Creates rules only if var.open_ports_enabled is true.
+
+### Example
+- Dev environment: optional EC2 instance
+```hcl
+variable "create_dev_ec2" {
+  default = true
+}
+
+resource "aws_instance" "dev_web" {
+  count         = var.create_dev_ec2 ? 1 : 0
+  ami           = "ami-dev123"
+  instance_type = "t3.micro"
+}
+```
+- Prod environment: `set create_dev_ec2 = false` → no dev instance created
+
+### One-Line Summary
+
+Conditional resource creation in Terraform is implemented using count or for_each with conditions, allowing resources to be created only when needed.
 
 ---
 
-### Q30 — How do you implement disaster recovery with Terraform?
-**Answer**
+## Q29 — What Is terraform graph and How Is It Useful?
 
-Practices:
-- Maintain regular state backups and versioned remote state.  
-- Keep all configs in version control.  
-- Build modular, repeatable configs for easy recreation.  
-- Document any manual/preconditions.  
-- Use automated `plan`/`apply` in CI and periodically test recoveries.  
-- Use infrastructure testing and drift detection.
+- terraform graph generates a visual representation of the dependency graph of your Terraform resources.
+- It is useful for understanding resource dependencies, debugging complex infrastructure, and planning changes safely.
+
+### Key Points
+- Shows how resources depend on each other
+- Helps identify potential issues or order of creation
+- Outputs in DOT format, which can be visualized using tools like Graphviz
+
+### Example
+- Generate the graph:
+```hcl
+terraform graph > graph.dot
+dot -Tpng graph.dot -o graph.png
+```
+- This produces a PNG image showing resource relationships
+- Example: VPC → Subnet → EC2 → Security Group
+- Helps SREs verify dependencies and avoid accidental deletion of dependent resources
+
+### One-Line Summary
+
+terraform graph visualizes resource dependencies, helping teams understand complex infrastructure and plan safe changes.
+
+---
+
+## Q30 — How Do You Implement Disaster Recovery (DR) with Terraform?
+
+Disaster recovery with Terraform is implemented by version-controlled infrastructure code, automated provisioning, remote state, and multi-region/environment strategies. This ensures infrastructure can be recreated quickly in case of failures.
+
+### Key Practices
+
+#### 1. Version Control Everything
+- Store Terraform code in Git or similar VCS
+- Roll back to known good state easily
+
+#### 2. Remote State Management
+- Store state in S3, GCS, or Terraform Cloud with versioning
+- Enables recovery of last known infrastructure state
+
+#### 3. Automated Provisioning
+- Use Terraform scripts to recreate resources in another region or account
+
+#### 4. Environment & Region Separation
+- Maintain prod and DR environments in separate regions
+- Use parameterized variables or workspaces
+
+#### 5. CI/CD Pipelines
+- Automate terraform plan and apply for DR deployment
+
+### Example
+- Scenario: Primary AWS region goes down
+- DR Strategy:
+  - Terraform code + modules stored in Git
+  - State stored in S3 with versioning
+  - Apply same code in DR region:
+  ```sh
+  terraform workspace select dr
+  terraform apply -var="region=ap-south-1"
+  ```
+  - Infrastructure is recreated automatically in DR region
+
+### One-Line Summary
+
+Disaster recovery with Terraform is achieved by storing code and state securely, version-controlling everything, and automating infrastructure provisioning in alternate regions or environments.
