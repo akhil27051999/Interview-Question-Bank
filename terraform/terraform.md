@@ -715,7 +715,7 @@ Terraform destroys and recreates resources when it detects a change in an attrib
 **4. User Data Changes (EC2)**
   - Modifying user_data often forces replacement
 
-****
+**5. Resource Name / ID Changes**
   - Changing unique identifiers triggers recreation
 
 ### Real Practice Example
