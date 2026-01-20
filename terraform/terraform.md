@@ -702,20 +702,20 @@ Terraform destroys and recreates resources when it detects a change in an attrib
 
 ### Common Real-World Reasons
 
-1. ForceNew Attributes Changed
+**1. ForceNew Attributes Changed**
   - Example: AMI ID, subnet, availability zone
   - These changes require recreation by the provider
 
-2. Immutable Infrastructure Design
+**2. Immutable Infrastructure Design**
   - Some resources are intentionally replaced (e.g., Launch Templates)
 
-3. State Drift
+**3. State Drift**
   - Manual changes outside Terraform cause mismatch
 
-4. User Data Changes (EC2)
+**4. User Data Changes (EC2)**
   - Modifying user_data often forces replacement
 
-5. Resource Name / ID Changes
+****
   - Changing unique identifiers triggers recreation
 
 ### Real Practice Example
@@ -749,6 +749,7 @@ terraform plan
 Terraform recreates resources when immutable or ForceNew attributes change, or when drift causes state mismatch.
 
 ---
+
 ## Q16 — How to Rollback Terraform Changes
 
 Terraform doesn’t have a built-in rollback command. Rollback is achieved by reverting the configuration to the previous state and re-applying it, using version control and state backups.
