@@ -54,7 +54,7 @@ resource "aws_instance" "web" {
         state: present
 ```
 
-#### One-Line Summary:
+### One-Line Summary:
 - Terraform provisions infrastructure declaratively, while Ansible configures and manages it imperatively.
 
 ---
@@ -156,7 +156,7 @@ terraform plan
 - Terraform detects drift
 - Shows differences from declared state
 
-#### One-Line Summary
+### One-Line Summary
 
 Terraform workflow allows SREs to manage infrastructure changes safely by defining infrastructure as code, reviewing changes through plans, and applying them in a controlled and automated manner.
 
@@ -239,7 +239,7 @@ resource "aws_instance" "web" {
 
 - Terraform reads existing AMI info and uses it, without creating a new AMI.
 
-**One-Line Summary**
+### One-Line Summary
 
 Providers connect Terraform to cloud services, resources create and manage infrastructure, and data sources read existing infrastructure details.
 
@@ -349,7 +349,7 @@ terraform apply
 - Updates EC2 instance
 - Updates Terraform state
 
-**One-Line Summary**
+### One-Line Summary
 
 terraform plan helps review and prevent risky changes, while terraform apply safely executes approved infrastructure changes.
 
@@ -387,7 +387,7 @@ terraform {
 - Locks state during apply
 - Allows safe collaboration
 
-**One-Line Summary**
+### One-Line Summary
 
 Terraform state in teams is managed using remote backends with locking, access control, and CI/CD to ensure safe and consistent infrastructure changes.
 
@@ -427,7 +427,7 @@ module "web_ec2" {
 
 - Same module can be reused for dev, staging, prod with different values.
 
-**One-Line Summary**
+### One-Line Summary
 
 Terraform modules allow teams to build reusable, standardized infrastructure components, improving maintainability and consistency.
 
@@ -463,7 +463,7 @@ resource "aws_instance" "web" {
 ```
 - Each workspace has its own state file, but uses the same configuration.
 
-**One-Line Summary**
+### One-Line Summary
 
 Terraform workspaces let you reuse the same code for multiple environments by keeping separate state files.
 
@@ -498,7 +498,7 @@ resource "aws_instance" "web" {
 ```
 - After EC2 is created, Terraform connects via SSH and installs Nginx.
 
-**One-Line Summary**
+### One-Line Summary
 
 Terraform provisioners run scripts during resource lifecycle but should be avoided in favor of configuration management tools for production reliability.
 
@@ -538,7 +538,7 @@ terraform plan
 - Shows differences
 - Helps align code with real infrastructure
 
-**One-Line Summary**
+### One-Line Summary
 
 terraform import allows existing resources to be managed by Terraform by adding them to the state without recreating them.
 
@@ -593,7 +593,7 @@ terraform refresh
   - Check if user data was modified
   - Verify if change requires force recreation
 
-**One-Line Summary**
+### One-Line Summary
 
 Unexpected Terraform plan changes are usually caused by drift, state mismatch, or provider changes, and I debug them by inspecting state, code, and provider behavior.
 
@@ -637,7 +637,7 @@ terraform apply
     ```
   - Re-run pipeline safely
 
-**One-Line Summary**
+### One-Line Summary
 
 State locking errors are resolved by identifying the lock owner and safely releasing the lock, usually with terraform force-unlock, after confirming no active apply is running.
 
@@ -690,7 +690,7 @@ resource "aws_db_instance" "db" {
 }
 ```
 
-**One-Line Summary**
+### One-Line Summary
 
 Secrets in Terraform are handled using external secret managers, sensitive variables, and secure state backends, never by hardcoding values.
 
@@ -744,7 +744,7 @@ terraform plan
   - Avoid manual changes
   - Use modules with stable inputs
 
-**One-Line Summary**
+### One-Line Summary
 
 Terraform recreates resources when immutable or ForceNew attributes change, or when drift causes state mismatch.
 
@@ -785,7 +785,7 @@ terraform apply
   ```
 - EC2 instance is resized back to safe configuration
 
-**One-Line Interview Summary**
+### One-Line Summary
 
 Rollback in Terraform is done by reverting code/state to a previous version and re-applying it, ensuring infrastructure matches the known safe state.
 
