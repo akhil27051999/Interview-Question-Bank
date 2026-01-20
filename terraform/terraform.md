@@ -791,9 +791,7 @@ Rollback in Terraform is done by reverting code/state to a previous version and 
 
 ---
 
-## Category 5: Best Practices & Patterns
-
----
+# Category 5: Best Practices & Patterns
 
 ## Q17 — What Is Terraform Backend Configuration and Why Is It Important?
 
