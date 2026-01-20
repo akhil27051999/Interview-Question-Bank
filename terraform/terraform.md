@@ -883,28 +883,77 @@ Large Terraform projects are structured with modules, environment separation, va
 
 ---
 
-### Q19 — What is Terraform Cloud/Enterprise and its benefits?
-**Answer**
+## Q19 — What Is Terraform Cloud/Enterprise and Its Benefits
 
-Terraform Cloud/Enterprise is a managed platform for Terraform.
+Terraform Cloud (or Enterprise) is a managed service for Terraform that provides remote state management, collaboration, policy enforcement, and CI/CD automation.
+It helps teams scale infrastructure safely and reliably.
 
-Benefits:
-- Remote state and runs.  
-- Collaborative workspaces.  
-- Policy as Code (Sentinel).  
-- Private module registry.  
-- Role-based access control and audit logs.  
-- Integrated VCS workflows.
+### Key Benefits
+- **Remote State Management** – Centralized state storage with versioning and locking
+- **Collaboration** – Team-based access controls and shared workspaces for dev/staging/prod
+- **Policy as Code** – Use Sentinel policies to enforce compliance before `apply`
+- **Automated Workflows** – Plan and apply via VCS triggers (GitHub, GitLab, etc.)
+- **Audit & Governance** – Track who applied changes and when
+
+### Real Practice Example
+1. Team stores state in Terraform Cloud
+2. Developers create a PR → `terraform plan` runs automatically
+3. After approval, `terraform apply` executes in remote workspace
+4. No manual state handling; all changes are audited
+
+### One-Line Summary
+Terraform Cloud/Enterprise enables secure, collaborative, and automated infrastructure management with remote state, policy enforcement, and CI/CD integration.
 
 ---
 
-### Q20 — How do you implement dependency management in Terraform?
-**Answer**
+## Q20 — How Do You Implement Dependency Management in Terraform?
 
-- Implicit dependencies through resource references (recommended).  
-- Explicit dependencies with `depends_on` meta-argument when necessary.  
-- Modules depend via input/output variables.  
-- Use data sources to fetch existing resource attributes where needed.
+Terraform automatically manages dependencies using a resource dependency graph, but explicit dependencies can be defined with depends_on when necessary.
+This ensures resources are created, updated, or destroyed in the correct order.
+
+### How Terraform Handles Dependencies
+
+#### 1. Implicit Dependencies
+- Terraform detects dependencies from references between resources.
+```hcl
+resource "aws_instance" "web" {
+  ami           = data.aws_ami.latest.id
+  instance_type = "t3.micro"
+}
+```
+- Here, `aws_instance.web` depends on `data.aws_ami.latest` automatically.
+
+#### 2. Explicit Dependencies
+- Use depends_on when Terraform can’t infer order.
+```hcl
+resource "aws_route53_record" "www" {
+  zone_id = aws_route53_zone.main.id
+  name    = "www.example.com"
+  type    = "A"
+  ttl     = 300
+  records = [aws_instance.web.public_ip]
+
+  depends_on = [aws_instance.web]
+}
+```
+### Example
+
+- Create VPC → Subnet → EC2
+- Subnet must exist before EC2
+- Terraform handles implicitly via `vpc_id` reference:
+```hcl
+resource "aws_subnet" "app" {
+  vpc_id = aws_vpc.main.id
+}
+resource "aws_instance" "web" {
+  subnet_id = aws_subnet.app.id
+}
+```
+- EC2 will automatically wait until Subnet is created.
+
+### One-Line Summary
+
+Terraform manages dependencies automatically via references and the dependency graph, and depends_on can be used for explicit ordering when needed.
 
 ---
 
