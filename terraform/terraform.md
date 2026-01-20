@@ -468,87 +468,325 @@ resource "aws_instance" "web" {
 Terraform workspaces let you reuse the same code for multiple environments by keeping separate state files.
 
 ---
+## Q10 — Explain Terraform Provisioners and Their Types
 
-## Q10 — Explain Terraform provisioners and their types.
-**Answer**
+- Terraform provisioners are used to execute scripts or commands on a resource after it is created or before it is destroyed.
+- They are mainly used for bootstrapping and last-mile configuration.
+- Provisioners should be used sparingly; configuration tools like Ansible, cloud-init, or user data are preferred.
 
-Provisioners execute scripts or actions on resource creation/destruction.
+**Types of Provisioners**
 
-Types:
-- **local-exec**: Run a command on the machine running Terraform.  
-- **remote-exec**: Run commands on the created resource (via SSH/WinRM).  
-- **file**: Copy files to created resources.
+1. file – Copies files to a resource
+2. local-exec – Runs commands on the machine running Terraform
+3. remote-exec – Runs commands on the created resource
 
-Note: Use provisioners only when necessary; prefer configuration management tools for in-guest configuration.
+### Example
+
+**remote-exec (installing Nginx on EC2):**
+```hcl
+resource "aws_instance" "web" {
+  ami           = "ami-abc123"
+  instance_type = "t3.micro"
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo apt update",
+      "sudo apt install -y nginx"
+    ]
+  }
+}
+```
+- After EC2 is created, Terraform connects via SSH and installs Nginx.
+
+**One-Line Summary**
+
+Terraform provisioners run scripts during resource lifecycle but should be avoided in favor of configuration management tools for production reliability.
 
 ---
 
-### Q11 — What is `terraform import` and when is it used?
-**Answer**
+## Q11 — What Is terraform import and When Is It Used?
 
-`terraform import` imports existing infrastructure into Terraform state.
+- terraform import is used to bring existing infrastructure resources under Terraform management without recreating them.
+- It maps an already-created resource to Terraform state.
 
-Use cases:
-- Bringing manually created resources under Terraform management.  
-- Recovering resources into a state file.  
-- Adopting Terraform for existing environments.
+**When to Use `terraform import`**
+- Infrastructure was created manually (console / CLI)
+- Migrating legacy infrastructure to Terraform
+- Adopting Terraform in an existing environment
+- Import updates only the state, not the .tf code.
+
+### Example
+
+An EC2 instance already exists in AWS with ID `i-0abc123`.
+
+**Define the resource:**
+```hcl
+resource "aws_instance" "web" {}
+```
+
+**Import it:**
+```bash
+terraform import aws_instance.web i-0abc123
+```
+- Terraform now tracks the EC2 instance in state.
+
+**Next step:**
+```bash
+terraform plan
+```
+
+- Shows differences
+- Helps align code with real infrastructure
+
+**One-Line Summary**
+
+terraform import allows existing resources to be managed by Terraform by adding them to the state without recreating them.
 
 ---
 
 ## Category 4: Troubleshooting & Real-time Scenarios
 
-### Q12 — Terraform plan shows unexpected changes. How to debug?
-**Answer**
+## Q12 — Terraform Plan Shows Unexpected Changes. How Do You Debug?
 
-- Run `terraform refresh` to sync state with real infrastructure.  
-- Inspect current state with `terraform show`.  
-- Review recent configuration changes.  
-- Check provider/plugin version changes.  
-- Use `-refresh=false` on `plan` to isolate config-only changes.
+When Terraform plan shows unexpected changes, I debug by checking state, drift, configuration differences, and provider behavior to identify why Terraform thinks a change is needed.
+
+### Debugging Steps (Practical)
+
+#### 1. Check for Drift
+
+- Verify if someone changed resources manually in the console
+
+```hcl
+terraform plan
+```
+
+#### 2. Review Recent Code Changes
+
+- Compare .tf files with the last known good version (Git diff)
+
+#### 3. Inspect State
+
+- Check what Terraform believes exists:
+
+```hcl
+terraform state show <resource>
+```
+
+#### 4. Check Provider or Version Changes
+
+- Provider upgrades can change defaults or behavior
+- Lock provider versions
+
+#### 5. Look for Dynamic Values
+
+- Attributes like timestamps, AMIs, or auto-generated values can cause diffs
+- Use lifecycle `{ ignore_changes = [...] }` if needed
+
+#### 6. Run Refresh (if needed)
+```hcl
+terraform refresh
+```
+### Example
+
+- Terraform plan shows EC2 instance replacement.
+  - Check if AMI changed
+  - Check if user data was modified
+  - Verify if change requires force recreation
+
+**One-Line Summary**
+
+Unexpected Terraform plan changes are usually caused by drift, state mismatch, or provider changes, and I debug them by inspecting state, code, and provider behavior.
 
 ---
 
-### Q13 — `terraform apply` fails with state locking error. How to resolve?
-**Answer**
+## Q13 — terraform apply Fails with State Locking Error. How Do You Resolve It?
 
-- Identify who holds the lock (team/CI).  
-- Verify connectivity to remote backend.  
-- Wait or coordinate with the lock holder.  
-- If safe, manually remove the lock (e.g., delete lock item in DynamoDB) — only after team agreement.  
-- Use `-lock-timeout` for long-running operations.
+A state locking error happens when Terraform detects that the state file is already locked, usually because another apply is running or a previous run didn’t release the lock.
+To resolve it, I identify the lock owner and safely unlock the state.
+
+### Resolution Steps (Practical)
+
+#### 1. Check Who Holds the Lock
+  - Terraform output shows lock ID, user, and time
+  - Confirm no active terraform apply is running
+
+#### 2. Wait or Coordinate
+  - If another teammate or CI job is running, wait for it to finish
+
+#### 3. Force Unlock (Only If Safe)
+```hcl
+terraform force-unlock <LOCK_ID>
+```
+- Use only when you’re sure no apply is in progress
+
+#### 4. Verify Backend Locking
+- Check DynamoDB table (AWS) or backend health
+- Ensure permissions are correct
+
+#### 5. Retry Apply
+```hcl
+terraform apply
+```
+
+### Example (AWS S3 + DynamoDB)
+
+- A CI pipeline crashed during apply → lock remained in DynamoDB.
+  - Confirm pipeline stopped
+    ```hcl
+    terraform force-unlock d4f3c9b2
+    ```
+  - Re-run pipeline safely
+
+**One-Line Summary**
+
+State locking errors are resolved by identifying the lock owner and safely releasing the lock, usually with terraform force-unlock, after confirming no active apply is running.
 
 ---
 
-### Q14 — How do you handle secrets in Terraform?
-**Answer**
+## Q14 — How Do You Handle Secrets in Terraform?
 
-- Avoid hardcoding secrets in `.tf` files.  
-- Use environment variables for sensitive values.  
-- Integrate with secret managers (HashiCorp Vault, AWS Secrets Manager).  
-- Store state in encrypted remote storage.  
-- Limit IAM permissions and use least privilege.
+Secrets in Terraform should never be hardcoded. They are handled using secure secret managers, environment variables, and sensitive variables, while keeping them out of state files and version control as much as possible.
+
+### Best Practices (Practical)
+
+#### 1. Use Secret Managers
+  - AWS Secrets Manager / SSM Parameter Store / Vault
+  - Fetch secrets using data sources
+
+#### 2. Mark Variables as Sensitive
+```hcl
+variable "db_password" {
+  sensitive = true
+}
+```
+#### 3. Use Environment Variables
+```hcl
+export TF_VAR_db_password="mypassword"
+```
+
+#### 4. Secure the State File
+- Remote backend (S3)
+- Encryption at rest
+- Restricted IAM access
+
+#### 5. Avoid Outputting Secrets
+```hcl
+output "db_password" {
+  value     = var.db_password
+  sensitive = true
+}
+```
+
+### Example (AWS SSM)
+```hcl
+data "aws_ssm_parameter" "db_password" {
+  name            = "/prod/db/password"
+  with_decryption = true
+}
+```
+```hcl
+resource "aws_db_instance" "db" {
+  password = data.aws_ssm_parameter.db_password.value
+}
+```
+
+**One-Line Summary**
+
+Secrets in Terraform are handled using external secret managers, sensitive variables, and secure state backends, never by hardcoding values.
 
 ---
 
-### Q15 — Terraform is destroying and recreating resources unnecessarily. Why?
-**Answer**
+## Q15 — Terraform Is Destroying and Recreating Resources Unnecessarily. Why?
 
-Common causes:
-- Changed immutable attributes (e.g., an AMI ID).  
-- Computed or drifted attributes cause diffs.  
-- State out of sync with real resources.  
-- Provider bugs or version changes.  
-- Use `terraform state` inspection and `terraform plan` to identify exact causes.
+Terraform destroys and recreates resources when it detects a change in an attribute that is marked as ForceNew, meaning the provider requires resource replacement instead of an in-place update.
+
+### Common Real-World Reasons
+
+1. ForceNew Attributes Changed
+  - Example: AMI ID, subnet, availability zone
+  - These changes require recreation by the provider
+
+2. Immutable Infrastructure Design
+  - Some resources are intentionally replaced (e.g., Launch Templates)
+
+3. State Drift
+  - Manual changes outside Terraform cause mismatch
+
+4. User Data Changes (EC2)
+  - Modifying user_data often forces replacement
+
+5. Resource Name / ID Changes
+  - Changing unique identifiers triggers recreation
+
+### Real Practice Example
+
+```hcl
+ami = "ami-new123"
+```
+```sh
+terraform plan
+```
+
+**Output:**
+```hcl
+-/+ aws_instance.web (forces new resource)
+```
+- Terraform must destroy and recreate the instance.
+
+### How to Reduce Unnecessary Recreation
+- Review terraform plan carefully
+- Use:
+  ```hcl
+  lifecycle {
+    ignore_changes = [user_data]
+  }
+  ```
+  - Avoid manual changes
+  - Use modules with stable inputs
+
+**One-Line Summary**
+
+Terraform recreates resources when immutable or ForceNew attributes change, or when drift causes state mismatch.
 
 ---
+## Q16 — How to Rollback Terraform Changes
 
-### Q16 — How to rollback Terraform changes?
-**Answer**
+Terraform doesn’t have a built-in rollback command. Rollback is achieved by reverting the configuration to the previous state and re-applying it, using version control and state backups.
 
-- Revert code in version control and re-run `terraform apply`.  
-- Use `terraform state` subcommands to manipulate state if needed.  
-- Implement blue/green or canary patterns for services to avoid destructive rollbacks.  
-- Keep state backups for recovery.
+### Practical Steps
+
+#### 1. Revert Code in Git
+```sh
+git checkout <previous-commit>
+```
+
+#### 2. Use Previous State (Optional)
+  - Remote backend keeps state versions
+  - Restore previous state if needed
+
+#### 3. Apply Old Configuration
+```sh
+terraform apply
+```
+  - Terraform aligns real infra with the reverted configuration
+
+#### 4. Handle Destructive Changes Carefully
+  - Use terraform plan to confirm changes
+  - Optionally use lifecycle { prevent_destroy = true } on critical resources
+
+### Example
+- Accidentally increased EC2 instance type in prod (t3.micro → t3.large)
+- Revert code to original t3.micro
+- Run:
+  ```sh
+  terraform plan
+  terraform apply
+  ```
+- EC2 instance is resized back to safe configuration
+
+**One-Line Interview Summary**
+
+Rollback in Terraform is done by reverting code/state to a previous version and re-applying it, ensuring infrastructure matches the known safe state.
 
 ---
 
