@@ -432,6 +432,7 @@ module "web_ec2" {
 Terraform modules allow teams to build reusable, standardized infrastructure components, improving maintainability and consistency.
 
 ---
+
 # Category 3: Advanced Features
 
 ## Q9 — What Are Terraform Workspaces and When to Use Them?
@@ -1163,6 +1164,7 @@ terraform {
 
 Terraform state locking ensures safe, concurrent team operations by preventing simultaneous modifications to the infrastructure state.
 
+---
 
 # Category 7: Real-world Implementation
 
