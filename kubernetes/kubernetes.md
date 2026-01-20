@@ -1393,7 +1393,6 @@ kubectl top pods
 ```
 Requires Metrics Server installed in the cluster.
 
----
 
 # Category 7: Advanced Concepts
 
