@@ -34,6 +34,7 @@ Main components:
 | kube-proxy | Maintains network rules on the node to allow network communication to Pods. |
 | Container Runtime | Software that runs containers (e.g., Docker, containerd, CRI-O). |
 
+---
 
 ## Q2 — What is the difference between a Pod, a Service, and a Deployment?
 **Answer**
@@ -130,6 +131,7 @@ spec:
 | CrashLoopBackOff | Repeated crashes        |
 | Terminating      | Shutting down           |
 
+---
 ## Q4 — What is etcd in Kubernetes and why is it important?
 **Answer**
 
@@ -240,6 +242,8 @@ spec:
               key: password
 ```
 
+---
+
 ## Q6 — How do you secure a Kubernetes cluster? (Real-time question)
 **Answer**
 
@@ -252,6 +256,8 @@ Key practices:
 - Use trusted base images and scan images for vulnerabilities.  
 - Use TLS for all API and inter-component communication.  
 - Audit logs, monitor control plane and kube-system components, and rotate credentials.
+
+---
 
 ## Q7 — What are the types of Kubernetes probes and what is their use?
 **Answer**
@@ -323,6 +329,7 @@ readinessProbe:
   initialDelaySeconds: 5
   periodSeconds: 3
 ```
+---
 
 ## Q8 — What is the difference between requests and limits in a Pod's resources?
 **Answer**
@@ -479,6 +486,7 @@ spec:
   - Note:
     - Requires a CNI plugin that supports Network Policies (e.g., Calico, Cilium)
 
+---
 
 ## Q10 — What is a Kubernetes Service and what are its types?
 **Answer**
@@ -672,6 +680,7 @@ spec:
 
 Ingress manages incoming traffic to the cluster, while Egress controls outgoing traffic from Pods for security and access control.
 
+---
 
 ## Q12 — What are Network Policies?
 **Answer**
@@ -776,6 +785,8 @@ spec:
 #### Interview One-Liner
 
 Kubernetes abstracts storage via Volumes, PVs, and PVCs, allowing Pods to use persistent storage that survives restarts and can be dynamically provisioned.
+
+---
 
 ## Q14 — What is the difference between emptyDir and hostPath?
 **Answer**
@@ -931,6 +942,7 @@ spec:
 
 Deployments manage stateless Pods with interchangeable replicas, while StatefulSets manage stateful Pods with stable identities, ordering, and persistent storage.
 
+---
 
 ## Q16 — How do you perform a rolling update and rollback with a Deployment?
 **Answer**
@@ -999,6 +1011,7 @@ spec:
 
 Rolling updates replace Pods incrementally without downtime, and rollbacks restore the Deployment to a previous working revision.
 
+---
 
 ## Q17 — What are Taints and Tolerations?
 **Answer**
@@ -1277,6 +1290,8 @@ kubectl exec -it <pod-name> -- /bin/sh
 #### Interview One-Liner
 CrashLoopBackOff occurs when a container repeatedly fails to start; check events, logs, commands, configs, and resource limits to debug.
 
+---
+
 ## Q21 — A pod struck in ImagePullBackOff. How will you debug ?
 
 ### Debugging a Pod in ImagePullBackOff
@@ -1340,6 +1355,8 @@ kubectl describe pod <pod-name>
 
 #### Interview One-Liner
 ImagePullBackOff occurs when Kubernetes cannot pull a container image; check image name, tag, registry credentials, network, and node disk issues to debug.
+
+---
 
 ## Q22 — How do you check the health of your cluster?
 **Answer**
@@ -1447,6 +1464,8 @@ Operator watches MyDatabase:
 #### Interview One-Liner
 
 CRDs extend Kubernetes with custom resources, and Operators automate the lifecycle management of these resources using Kubernetes-native APIs.
+
+---
 
 ## Q26 — What are Init Containers and Sidecars?
 
@@ -1587,6 +1606,8 @@ spec:
 
 HPA automatically adjusts the number of Pod replicas based on observed metrics to ensure applications scale dynamically with workload demand.
 
+---
+
 ## Q28 — What is a DaemonSet?
 **Answer**
 
@@ -1640,6 +1661,8 @@ spec:
 
 A DaemonSet ensures that a Pod runs on all or selected nodes, making it ideal for cluster-level services like logging, monitoring, or networking.
 
+---
+
 ## Q29 — What is the role of the Kubelet?
 **Answer**
 
@@ -1659,6 +1682,7 @@ API Server -> Kubelet on Node -> Container Runtime -> Pod Containers
 3. Kubelet monitors Pod health and reports status back.
 4. Kubelet handles volume mounting, secrets, and config management for Pods.
 
+---
 
 ## Q30 — What are the different kubernetes deployment strategies?
 **Answer**
