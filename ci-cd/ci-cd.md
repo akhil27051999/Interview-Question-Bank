@@ -1,13 +1,15 @@
 # DevOps Interview Preparation Guide — CI/CD 
 
 ## Table of Contents
-- [Category 1: CI/CD Fundamentals](#category-1-ci-cd-fundamentals)
-- [Category 2: CI/CD Tools & Platforms](#category-2-ci-cd-tools--platforms)
+
+- [Category 1: CI/CD Fundamentals](#category-1-cicd-fundamentals)
+- [Category 2: CI/CD Tools & Platforms](#category-2-cicd-tools--platforms)
 - [Category 3: Build & Test Automation](#category-3-build--test-automation)
 - [Category 4: Deployment Strategies](#category-4-deployment-strategies)
-- [Category 5: Security in CI/CD](#category-5-security-in-ci-cd)
+- [Category 5: Security in CI/CD](#category-5-security-in-cicd)
 - [Category 6: Monitoring & Optimization](#category-6-monitoring--optimization)
 - [Category 7: Real-world Scenarios & Troubleshooting](#category-7-real-world-scenarios--troubleshooting)
+
 
 ---
 
