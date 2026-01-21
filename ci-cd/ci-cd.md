@@ -164,7 +164,6 @@ CI/CD improves speed, quality, reliability, and collaboration by automating code
 
 Blue-Green Deployment uses two identical environments to deploy new versions safely, allowing zero downtime and easy rollback.
 
----
 
 # Category 2: CI/CD Tools & Platforms
 
