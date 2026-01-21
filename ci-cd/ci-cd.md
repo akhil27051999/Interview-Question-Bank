@@ -309,7 +309,7 @@ GitLab CI/CD uses .gitlab-ci.yml to define stages, jobs, and runners, automating
 ---
 
 
-### Category 3: Build & Test Automation
+# Category 3: Build & Test Automation
 
 
 ## Q9 — How Do You Manage Dependencies in CI/CD?
@@ -826,8 +826,8 @@ jobs:
 CI/CD pipeline speed is optimized by parallelization, caching, incremental builds, lightweight tests, and artifact reuse to shorten feedback loops and delivery time.
 
 ---
-# Category 7: Real-world Scenarios & Troubleshooting
 
+# Category 7: Real-world Scenarios & Troubleshooting
 
 ## Q22 — Pipeline Fails Randomly Due to Flaky Tests. How to Handle?
 
