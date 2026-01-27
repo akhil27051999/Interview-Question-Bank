@@ -281,6 +281,7 @@ Ensure application reliability by restarting unhealthy containers, controlling t
 **Use Case:**  
   - Used for slow-starting applications
   - Prevents liveness/readiness probes from running too early
+    
 **Action on Failure:** Pod is restarted
 
 **YAML:**
@@ -318,6 +319,7 @@ livenessProbe:
 **Use Case:**  
   - Prevents traffic until the app is fully ready
   - Useful when the app depends on databases or external services
+    
 **Action on Failure:** Pod is removed from Service endpoints (no restart)
 
 **YAML:**
